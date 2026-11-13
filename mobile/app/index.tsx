@@ -16,7 +16,10 @@ export default function Index() {
         const p = await getMyProfile();
         if (!p) return router.replace('/(auth)/welcome');
         const next = nextSignupRoute(p);
-        router.replace(next === '/(auth)/done' ? '/(client)/home' : next);
+        if (next !== '/(auth)/done') return router.replace(next);
+        // taskers who aren't approved yet continue Become a Tasker; everyone else lands on Home
+        if (p.signup_role === 'tasker' && p.tasker_status !== 'active') return router.replace('/(tasker)/verify');
+        router.replace('/(client)/home');
       } catch {
         router.replace('/(auth)/welcome');
       }
