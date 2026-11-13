@@ -22,6 +22,7 @@ const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
     <path d={ICON[name]} />
   </svg>
 );
+const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS' };
 const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.[0] ?? '')).toUpperCase() || 'A';
 const TITLES: Record<Tab, string> = {
   overview: 'Overview', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
@@ -84,7 +85,7 @@ export default function Admin() {
         <div className="navlist">
           {items.map(([k, c]) => (
             <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>
-              <Icon name={k} /><span className="lbl">{TITLES[k]}</span>{c ? <span className="count">{c}</span> : null}
+              <Icon name={k} /><span className="lbl">{NAV[k] ?? TITLES[k]}</span>{c ? <span className="count">{c}</span> : null}
             </button>
           ))}
         </div>
@@ -100,7 +101,7 @@ export default function Admin() {
             <h1>{TITLES[tab]}</h1>
             <button className="chip" onClick={() => setTab('profile')}><span className="avatar sm">{initials(me)}</span>{name}</button>
           </header>
-          {ov && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
+          {ov && (tab === 'overview' || tab === 'settings') && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
           {tab === 'overview' && <OverviewTab ov={ov} go={setTab} />}
           {tab === 'applications' && <Applications onChange={loadOv} />}
           {tab === 'reviews' && <Reviews onChange={loadOv} />}
@@ -159,7 +160,7 @@ function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
           </div>
           <label>First name<input className="input" value={first} onChange={(e) => setFirst(e.target.value)} /></label>
           <label>Last name<input className="input" value={last} onChange={(e) => setLast(e.target.value)} /></label>
-          <label>Mobile number <span className="muted">(optional)</span>
+          <label><span>Mobile number <span className="muted" style={{ fontWeight: 500 }}>(optional)</span></span>
             <div className="prefix"><span>+63</span><input className="input" inputMode="tel" placeholder="917 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
           </label>
           <label>Email<input className="input" value={me.email} disabled /></label>
