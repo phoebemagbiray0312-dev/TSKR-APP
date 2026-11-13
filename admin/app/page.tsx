@@ -2,8 +2,31 @@
 import { useCallback, useEffect, useState } from 'react';
 import { peso, rpc, supabase, when } from '../lib/supabase';
 
-type Tab = 'overview' | 'applications' | 'reviews' | 'tickets' | 'bookings' | 'users' | 'settings';
+type Tab = 'overview' | 'applications' | 'reviews' | 'tickets' | 'bookings' | 'users' | 'settings' | 'profile';
 type Overview = Record<string, number | boolean>;
+type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string };
+
+/* simple line icons (24px grid) */
+const ICON: Record<string, string> = {
+  overview: 'M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6v-9h-6v9Zm0-16v5h6V4h-6Z',
+  applications: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11l2 2 4-4',
+  reviews: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 3 2 2 4-4',
+  tickets: 'M12 3 2 20h20L12 3Zm0 6v5m0 3v.5',
+  bookings: 'M4 6h16v14H4V6Zm0 4h16M8 3v4m8-4v4',
+  users: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6m2-6c3.3 0 6 2.7 6 6',
+  settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7-3 2-1-2-4-2 1-2-2V4h-4v2L9 7 7 6 5 10l2 1v2l-2 1 2 4 2-1 2 2v2h4v-2l2-2 2 1 2-4-2-1v-2Z',
+  profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
+};
+const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d={ICON[name]} />
+  </svg>
+);
+const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.[0] ?? '')).toUpperCase() || 'A';
+const TITLES: Record<Tab, string> = {
+  overview: 'Overview', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
+  bookings: 'Bookings', users: 'Users', settings: 'Settings', profile: 'My profile',
+};
 
 /* ------------------------------------------------------------------ */
 /* Admin shell: login gate + sidebar                                    */
@@ -11,19 +34,31 @@ type Overview = Record<string, number | boolean>;
 export default function Admin() {
   const [state, setState] = useState<'loading' | 'out' | 'notadmin' | 'in'>('loading');
   const [email, setEmail] = useState('');
+  const [me, setMe] = useState<Me | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
   const [ov, setOv] = useState<Overview | null>(null);
 
+  const loadMe = useCallback(async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const [{ data: p }, { data: a }] = await Promise.all([
+      supabase.from('profiles').select('first_name,last_name,phone').eq('id', u.user.id).maybeSingle(),
+      supabase.from('admin_users').select('role').eq('user_id', u.user.id).maybeSingle(),
+    ]);
+    setMe({ id: u.user.id, email: u.user.email ?? '', first_name: p?.first_name ?? '', last_name: p?.last_name ?? '', phone: p?.phone ?? null, role: a?.role ?? 'admin' });
+  }, []);
   const check = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) return setState('out');
     setEmail(data.session.user.email ?? '');
     const { data: isAdmin } = await supabase.rpc('is_admin');
+    if (isAdmin) loadMe();
     setState(isAdmin ? 'in' : 'notadmin');
   }, []);
   useEffect(() => { check(); }, []);
   const loadOv = useCallback(async () => { try { setOv(await rpc<Overview>('admin_overview')); } catch { /* not admin */ } }, []);
   useEffect(() => { if (state === 'in') loadOv(); }, [state, tab]);
+  const signOut = async () => { await supabase.auth.signOut(); setMe(null); setState('out'); };
 
   if (state === 'loading') return <div className="login"><p className="muted">Loading…</p></div>;
   if (state === 'out') return <Login onDone={check} />;
@@ -32,41 +67,125 @@ export default function Admin() {
       <img src="/logo.png" alt="tskr" style={{ height: 30, alignSelf: 'flex-start', filter: 'brightness(0.3)' }} />
       <h2>No admin access yet</h2>
       <p className="muted">Signed in as <b>{email}</b>. Ask the TSKR owner to give this account admin access, then sign in again.</p>
-      <button className="btn" onClick={async () => { await supabase.auth.signOut(); setState('out'); }}>Sign out</button>
+      <button className="btn" onClick={signOut}>Sign out</button>
     </div></div>
   );
 
   const n = (k: string) => Number(ov?.[k] ?? 0);
-  const items: [Tab, string, number?][] = [
-    ['overview', 'Overview'], ['applications', 'Tasker applications', n('applications')],
-    ['reviews', 'QR and skill reviews', n('qr_pending') + n('skills_pending')], ['tickets', 'Reports and SOS', n('tickets_open')],
-    ['bookings', 'Bookings'], ['users', 'Users'], ['settings', 'Settings'],
+  const items: [Tab, number?][] = [
+    ['overview'], ['applications', n('applications')], ['reviews', n('qr_pending') + n('skills_pending')],
+    ['tickets', n('tickets_open')], ['bookings'], ['users'], ['settings'],
   ];
+  const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
   return (
     <div className="shell">
       <aside className="side">
         <div className="brand"><img src="/logo.png" alt="tskr" /><span className="badge">ADMIN</span></div>
-        {items.map(([k, l, c]) => (
-          <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>
-            <span>{l}</span>{c ? <span className="count">{c}</span> : null}
-          </button>
-        ))}
-        <div className="foot">
-          <div>{email}</div>
-          <button onClick={async () => { await supabase.auth.signOut(); setState('out'); }}>Sign out</button>
+        <div className="navlist">
+          {items.map(([k, c]) => (
+            <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>
+              <Icon name={k} /><span className="lbl">{TITLES[k]}</span>{c ? <span className="count">{c}</span> : null}
+            </button>
+          ))}
         </div>
+        <button className={'me' + (tab === 'profile' ? ' on' : '')} onClick={() => setTab('profile')}>
+          <span className="avatar">{initials(me)}</span>
+          <span className="who"><b>{name}</b><small>{me?.role ?? 'admin'}</small></span>
+        </button>
+        <button className="signout" onClick={signOut}>Sign out</button>
       </aside>
       <main>
-        {ov && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
-        {tab === 'overview' && <OverviewTab ov={ov} go={setTab} />}
-        {tab === 'applications' && <Applications onChange={loadOv} />}
-        {tab === 'reviews' && <Reviews onChange={loadOv} />}
-        {tab === 'tickets' && <Tickets onChange={loadOv} />}
-        {tab === 'bookings' && <Bookings />}
-        {tab === 'users' && <Users />}
-        {tab === 'settings' && <Settings onChange={loadOv} />}
+        <div className="wrap">
+          <header className="top">
+            <h1>{TITLES[tab]}</h1>
+            <button className="chip" onClick={() => setTab('profile')}><span className="avatar sm">{initials(me)}</span>{name}</button>
+          </header>
+          {ov && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
+          {tab === 'overview' && <OverviewTab ov={ov} go={setTab} />}
+          {tab === 'applications' && <Applications onChange={loadOv} />}
+          {tab === 'reviews' && <Reviews onChange={loadOv} />}
+          {tab === 'tickets' && <Tickets onChange={loadOv} />}
+          {tab === 'bookings' && <Bookings />}
+          {tab === 'users' && <Users />}
+          {tab === 'settings' && <Settings onChange={loadOv} />}
+          {tab === 'profile' && me && <Profile me={me} onSaved={loadMe} />}
+        </div>
       </main>
     </div>
+  );
+}
+
+function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
+  const [first, setFirst] = useState(me.first_name);
+  const [last, setLast] = useState(me.last_name);
+  const [phone, setPhone] = useState(me.phone ?? '');
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [show, setShow] = useState(false);
+  const [pwMsg, setPwMsg] = useState('');
+  const [pwErr, setPwErr] = useState('');
+  const [busy, setBusy] = useState('');
+  const saveInfo = async () => {
+    setMsg(''); setErr('');
+    if (!first.trim() || !last.trim()) return setErr('Enter your first and last name.');
+    const digits = phone.replace(/\D/g, '').replace(/^63/, '').replace(/^0/, '');
+    if (digits && !/^9\d{9}$/.test(digits)) return setErr('Enter a valid PH mobile number, like 917 123 4567.');
+    setBusy('info');
+    const { error } = await supabase.from('profiles').update({ first_name: first.trim(), last_name: last.trim(), phone: digits || null }).eq('id', me.id);
+    setBusy('');
+    if (error) return setErr(error.message.includes('duplicate') ? 'That mobile number is already used by another account.' : error.message);
+    setMsg('Saved.'); onSaved();
+  };
+  const savePw = async () => {
+    setPwMsg(''); setPwErr('');
+    if (pw.length < 10) return setPwErr('Use at least 10 characters.');
+    if (pw !== pw2) return setPwErr('The two passwords don’t match.');
+    setBusy('pw');
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    setBusy('');
+    if (error) return setPwErr(error.message);
+    setPw(''); setPw2(''); setPwMsg('Password changed. Use the new one next time you sign in.');
+  };
+  return (
+    <>
+      <p className="sub">Your admin account. Your name shows on reviews you approve or reject.</p>
+      <div className="cols">
+        <section className="card form">
+          <div className="row" style={{ gap: 14, marginBottom: 6 }}>
+            <span className="avatar lg">{initials({ ...me, first_name: first, last_name: last })}</span>
+            <div><h2>{`${first} ${last}`.trim() || 'Your name'}</h2><span className="tag">{me.role.toUpperCase()}</span></div>
+          </div>
+          <label>First name<input className="input" value={first} onChange={(e) => setFirst(e.target.value)} /></label>
+          <label>Last name<input className="input" value={last} onChange={(e) => setLast(e.target.value)} /></label>
+          <label>Mobile number <span className="muted">(optional)</span>
+            <div className="prefix"><span>+63</span><input className="input" inputMode="tel" placeholder="917 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+          </label>
+          <label>Email<input className="input" value={me.email} disabled /></label>
+          {err && <div className="err">{err}</div>}
+          {msg && <div className="okmsg">{msg}</div>}
+          <div><button className="btn primary" disabled={busy === 'info'} onClick={saveInfo}>{busy === 'info' ? 'Saving…' : 'Save changes'}</button></div>
+        </section>
+        <section className="card form">
+          <h2>Change password</h2>
+          <p className="muted" style={{ margin: 0 }}>At least 10 characters. Don’t reuse a password from another site.</p>
+          <label>New password
+            <div className="pw">
+              <input className="input" type={show ? 'text' : 'password'} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" />
+              <button type="button" className="eye" onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'}</button>
+            </div>
+          </label>
+          <label>Type it again
+            <input className="input" type={show ? 'text' : 'password'} value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password"
+              onKeyDown={(e) => e.key === 'Enter' && savePw()} />
+          </label>
+          {pwErr && <div className="err">{pwErr}</div>}
+          {pwMsg && <div className="okmsg">{pwMsg}</div>}
+          <div><button className="btn primary" disabled={busy === 'pw' || !pw} onClick={savePw}>{busy === 'pw' ? 'Saving…' : 'Change password'}</button></div>
+        </section>
+      </div>
+    </>
   );
 }
 
@@ -129,7 +248,7 @@ function OverviewTab({ ov, go }: { ov: Overview | null; go: (t: Tab) => void }) 
   );
   return (
     <>
-      <h1>Overview</h1><p className="sub">What needs attention today.</p>
+      <p className="sub">What needs attention today.</p>
       <h2 style={{ marginBottom: 10 }}>To do</h2>
       <div className="grid" style={{ marginBottom: 24 }}>
         {s('sos_open', 'Open SOS alerts', true, 'tickets')}
@@ -182,7 +301,7 @@ function Applications({ onChange }: { onChange: () => void }) {
   };
   return (
     <>
-      <h1>Tasker applications</h1>
+      
       <p className="sub">Compare both IDs and the selfie with the name on the account. Every time you open the photos it’s logged.</p>
       <div className="row" style={{ marginBottom: 14 }}>
         <button className={'btn' + (filter === 'todo' ? ' primary' : '')} onClick={() => setFilter('todo')}>To review</button>
@@ -242,7 +361,7 @@ function Reviews({ onChange }: { onChange: () => void }) {
   const doSkill = async (id: string, ok: boolean) => { try { await rpc('admin_review_skill', { p_id: id, p_approve: ok }); load(); onChange(); } catch (e: any) { alert(e.message); } };
   return (
     <>
-      <h1>QR and skill reviews</h1>
+      
       <p className="sub">QRs land here when the account name doesn’t match the tasker’s ID. Skills land here when they need a license or were typed in by the tasker.</p>
       <h2 style={{ margin: '8px 0 10px' }}>Payment QRs ({qrs.length})</h2>
       <div className="list">
@@ -296,7 +415,7 @@ function Tickets({ onChange }: { onChange: () => void }) {
   const set = async (id: string, s: string) => { try { await rpc('admin_set_ticket', { p_id: id, p_status: s }); load(); onChange(); } catch (e: any) { alert(e.message); } };
   return (
     <>
-      <h1>Reports and SOS</h1>
+      
       <p className="sub">SOS and safety reports first. Resolving a ticket notifies the person who sent it.</p>
       <div className="row" style={{ marginBottom: 14 }}>
         <button className={'btn' + (filter === 'open' ? ' primary' : '')} onClick={() => setFilter('open')}>Open</button>
@@ -350,13 +469,13 @@ function Bookings() {
   useEffect(() => { load(); }, []);
   return (
     <>
-      <h1>Bookings</h1><p className="sub">Latest 200. Search by booking code.</p>
+      <p className="sub">Latest 200. Search by booking code.</p>
       <div className="row" style={{ marginBottom: 12 }}>
         <input className="input" placeholder="BK-…" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load()} />
         <button className="btn" onClick={load}>Search</button>
       </div>
       {rows === null ? <p className="muted">Loading…</p> : (
-        <table>
+        <div className="tablewrap"><table>
           <thead><tr><th>Code</th><th>Status</th><th>Client</th><th>Tasker</th><th>Price</th><th>Coins</th><th>Created</th></tr></thead>
           <tbody>
             {rows.map((b) => (
@@ -371,7 +490,7 @@ function Bookings() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </>
   );
@@ -396,14 +515,14 @@ function Users() {
   };
   return (
     <>
-      <h1>Users</h1><p className="sub">Search by name, email or mobile number.</p>
+      <p className="sub">Search by name, email or mobile number.</p>
       <div className="row" style={{ marginBottom: 12 }}>
         <input className="input" placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load()} />
         <button className="btn" onClick={load}>Search</button>
         <label className="muted"><input type="checkbox" checked={hideDemo} onChange={(e) => setHideDemo(e.target.checked)} /> Hide demo accounts</label>
       </div>
       {rows === null ? <p className="muted">Loading…</p> : (
-        <table>
+        <div className="tablewrap"><table>
           <thead><tr><th>Name</th><th>Contact</th><th>Role</th><th>Plan</th><th>Status</th><th>Joined</th><th></th></tr></thead>
           <tbody>
             {rows.map((u) => (
@@ -418,7 +537,7 @@ function Users() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </>
   );
@@ -441,9 +560,9 @@ function Settings({ onChange }: { onChange: () => void }) {
   };
   return (
     <>
-      <h1>Settings</h1>
+      
       <p className="sub">Fees, limits and switches the apps read live. Changes apply right away. Rows marked PLACEHOLDER still need a final number from management.</p>
-      <table>
+      <div className="tablewrap"><table>
         <thead><tr><th>Setting</th><th>Value</th><th>What it does</th><th></th></tr></thead>
         <tbody>
           {rows.map((r) => {
@@ -459,7 +578,7 @@ function Settings({ onChange }: { onChange: () => void }) {
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </>
   );
 }
