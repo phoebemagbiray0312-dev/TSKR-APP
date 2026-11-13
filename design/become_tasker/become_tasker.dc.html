@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>TSKR become a tasker</title>
+<script src="145ad97d-7b76-43ea-9cc5-d786443d3bdc"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJbecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJnecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("4e5109b1-f85c-44c8-ac91-fd64d83f2dca") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("107ef92a-bc02-47d4-afa5-8288069d9ee9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("ae2cac75-6e19-404c-9844-b1aa70a227c9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("250e780b-1371-49cf-b267-3aafa178e220") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("31bcb527-04c8-4f00-9280-eba56d8876b5") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLDD4Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("ab285df2-4370-47b1-af8a-5f0efd557ac4") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fd1634c9-a22d-42b8-a223-eba9ee5446ba") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0}
+a{color:#044D5E}a:hover{color:#06647A}
+button{font-family:inherit}
+.scroll::-webkit-scrollbar{display:none}
+.scroll{scrollbar-width:none}
+.scroll > *{flex-shrink:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Poppins', system-ui, sans-serif; color: #044D5E; display: flex; flex-direction: column">
+
+<!-- ================= TOP BAR ================= -->
+<div style="padding: 14px 16px 0; display: flex; flex-direction: column; gap: 12px; flex: none">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <button sc-camel-on-click="{{back}}" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F7F6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+    <span style="font-size: 15px; font-weight: 800; flex: 1">Become a Tasker</span>
+    <sc-if value="{{showStepNo}}" hint-placeholder-val="{{true}}"><span style="font-size: 13px; font-weight: 700; color: #5B6472">Step {{stepNo}} of 3</span></sc-if>
+  </div>
+  <sc-if value="{{showStepNo}}" hint-placeholder-val="{{true}}">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{bars}}" as="b" hint-placeholder-count="3"><span style="{{b.style}}"></span></sc-for>
+    </div>
+  </sc-if>
+</div>
+
+<!-- ================= INTRO ================= -->
+<sc-if value="{{isIntro}}" hint-placeholder-val="{{true}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 16px">
+  <h1 style="margin: 0; font-size: 28px; font-weight: 800; line-height: 1.2">Earn with your skills.<br><span style="color: #2E7D32">Get verified first.</span></h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.6">To keep clients safe, every tasker is verified before they can receive bookings. Have these ready:</p>
+  <sc-for list="{{reqs}}" as="r" hint-placeholder-count="4">
+    <div style="display: flex; gap: 14px; align-items: center; border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; padding: 14px">
+      <span style="width: 44px; height: 44px; border-radius: 16px 16px 16px 4px; background: #E6F1F3; display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.icon}}"></path></svg></span>
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{r.title}}</span><span style="font-size: 12px; color: #5B6472; line-height: 1.45">{{r.sub}}</span></span>
+    </div>
+  </sc-for>
+  <div style="background: #E6F1F3; border-radius: 16px 16px 16px 4px; padding: 12px 14px; font-size: 12px; line-height: 1.5">Photos are taken with your phone camera inside the app. Uploads from your gallery aren’t accepted.</div>
+  <div style="background: #E9F8E6; border-radius: 16px 16px 16px 4px; padding: 12px 14px; font-size: 12px; line-height: 1.5; color: #044D5E"><b>Open to taskers all over the Philippines.</b> Bookings start in Metro Manila and nearby provinces (Bulacan, Pampanga, Rizal, Cavite, Laguna, and Lipa, Tanauan and Santo Tomas in Batangas). If you’re outside these areas, get verified now and you’ll be ready the day TSKR opens in your city.</div>
+  <button sc-camel-on-click="{{start}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Start verification</button>
+</div>
+</sc-if>
+
+<!-- ================= BIOMETRIC CONSENT ================= -->
+<sc-if value="{{isConsent}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 14px">
+  <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
+  <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.25">Your consent for ID and face check</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.55">Your government IDs and selfie are sensitive personal information. We need your permission before you scan them.</p>
+  <div style="border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; display: flex; flex-direction: column">
+    <sc-for list="{{consentRows}}" as="c" hint-placeholder-count="5">
+      <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-bottom: 1px solid #EEF0F3"><span style="font-size: 13px; font-weight: 800">{{c.k}}</span><span style="font-size: 13px; color: #5B6472; line-height: 1.5">{{c.v}}</span></div>
+    </sc-for>
+  </div>
+  <button sc-camel-on-click="{{toggleBio}}" role="checkbox" aria-checked="{{bioAria}}" style="display: flex; align-items: flex-start; gap: 10px; border: 0; background: transparent; padding: 2px 0; cursor: pointer; text-align: left; font-size: 13px; line-height: 1.5; color: #044D5E; font-weight: 600"><span style="{{bioBox}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span><span>I agree that TSKR may collect and process my government IDs, selfie and face match to verify my identity, as described above.</span></button>
+  <sc-if value="{{hasBioErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 12px; color: #B42318; font-weight: 600">Please give your consent to continue. You can’t become a tasker without ID verification.</span></sc-if>
+  <button sc-camel-on-click="{{agreeBio}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Agree and continue</button>
+  <span style="font-size: 11px; color: #5B6472; text-align: center; line-height: 1.5">Consent v1.0 · You can withdraw it anytime in Account › Legal and privacy. Withdrawing removes your tasker access.</span>
+</div>
+</sc-if>
+
+<!-- ================= CHOOSE ID TYPE ================= -->
+<sc-if value="{{isType}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 12px">
+  <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.25">{{docTitle}}</h1>
+  <p style="margin: 0 0 4px; font-size: 14px; color: #5B6472; line-height: 1.5">{{typeSub}}</p>
+  <sc-for list="{{idTypes}}" as="t" hint-placeholder-count="5">
+    <button sc-camel-on-click="{{t.pick}}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 56px; padding: 0 16px; border: 1.5px solid #E4E7EC; border-radius: 16px 16px 16px 4px; background: #FFFFFF; color: #044D5E; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left">{{t.label}}<svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#5B6472" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button>
+  </sc-for>
+</div>
+</sc-if>
+
+<!-- ================= DOCUMENT CAMERA ================= -->
+<sc-if value="{{isScan}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; min-height: 0; margin-top: 14px; background: #0B1F26; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; padding: 24px 20px 28px; gap: 18px">
+  <span style="font-size: 17px; font-weight: 700; text-align: center">{{scanTitle}}</span>
+  <span style="font-size: 13px; color: #B9D3D9; text-align: center; line-height: 1.5; max-width: 300px">Place it flat inside the frame. Make sure all text is clear and there’s no glare.</span>
+  <div style="position: relative; width: 330px; height: 210px; margin-top: 10px">
+    <div style="position: absolute; inset: 14px; border-radius: 14px; background: #1E3A44; display: flex; gap: 14px; align-items: center; padding: 18px; box-sizing: border-box; opacity: 0.85">
+      <span style="width: 70px; height: 88px; border-radius: 8px; background: #2D5260; flex: none"></span>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 9px"><span style="height: 9px; width: 80%; border-radius: 5px; background: #2D5260"></span><span style="height: 9px; width: 95%; border-radius: 5px; background: #2D5260"></span><span style="height: 9px; width: 60%; border-radius: 5px; background: #2D5260"></span><span style="height: 9px; width: 75%; border-radius: 5px; background: #2D5260"></span></span>
+    </div>
+    <svg width="330" height="210" sc-camel-view-box="0 0 330 210" aria-hidden="true" style="position: absolute; inset: 0"><path d="M2 36V14A12 12 0 0 1 14 2h22M294 2h22a12 12 0 0 1 12 12v22M328 174v22a12 12 0 0 1-12 12h-22M36 208H14A12 12 0 0 1 2 196v-22" stroke="#6EDA60" stroke-width="4" fill="none" stroke-linecap="round"></path></svg>
+    <sc-if value="{{reading}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 0; border-radius: 14px; background: rgba(4,77,94,0.75); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Reading your document…</div></sc-if>
+  </div>
+  <div style="flex: 1"></div>
+  <button sc-camel-on-click="{{capture}}" aria-label="Take photo" style="width: 76px; height: 76px; border-radius: 38px; border: 4px solid #FFFFFF; background: transparent; padding: 5px; cursor: pointer"><span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: #6EDA60"></span></button>
+  <span style="font-size: 12px; color: #B9D3D9">Camera only · photos from your gallery aren’t accepted</span>
+</div>
+</sc-if>
+
+<!-- ================= READ RESULT (LOCKED) ================= -->
+<sc-if value="{{isResult}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 14px">
+  <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.25">{{resultTitle}}</h1>
+  <div style="display: flex; align-items: center; gap: 12px; background: #F4F7F6; border-radius: 18px 18px 18px 6px; padding: 12px">
+    <span style="width: 92px; height: 58px; border-radius: 8px; background: #1E3A44; display: flex; gap: 6px; align-items: center; padding: 8px; box-sizing: border-box; flex: none"><span style="width: 22px; height: 30px; border-radius: 3px; background: #2D5260"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span style="height: 4px; border-radius: 2px; background: #2D5260"></span><span style="height: 4px; border-radius: 2px; background: #2D5260"></span><span style="height: 4px; width: 60%; border-radius: 2px; background: #2D5260"></span></span></span>
+    <span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{docLabel}}</span><span style="font-size: 12px; color: #2E7D32; font-weight: 700">✓ Photo captured · {{stamp}}</span></span>
+    <button sc-camel-on-click="{{retake}}" style="border: 0; background: transparent; color: #044D5E; font-size: 13px; font-weight: 700; padding: 10px 4px; cursor: pointer; text-decoration: underline">Retake</button>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #044D5E; background: #E6F1F3; border-radius: 12px; padding: 10px 12px"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Read from your document. These details can’t be edited.</div>
+  <sc-for list="{{fields}}" as="f" hint-placeholder-count="4">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; font-weight: 700; color: #5B6472">{{f.label}}</span>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 50px; padding: 0 14px; border-radius: 14px 14px 14px 4px; background: #F4F7F6; border: 1.5px solid #E4E7EC">
+        <span style="font-size: 15px; font-weight: 700; color: #344054">{{f.value}}</span>
+        <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#5B6472" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Locked"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+      </div>
+    </div>
+  </sc-for>
+  <sc-for list="{{checks}}" as="c" hint-placeholder-count="1">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #2E7D32"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>{{c.text}}</div>
+  </sc-for>
+  <span style="font-size: 12px; color: #5B6472; line-height: 1.5">If something was read wrong, tap Retake and scan again in better light.</span>
+  <button sc-camel-on-click="{{next}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Continue</button>
+</div>
+</sc-if>
+
+<!-- ================= FACE CHECK ================= -->
+<sc-if value="{{isFace}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; min-height: 0; margin-top: 14px; background: #0B1F26; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; padding: 24px 20px 28px; gap: 16px">
+  <span style="font-size: 17px; font-weight: 700">Take a selfie</span>
+  <span style="font-size: 13px; color: #B9D3D9; text-align: center; line-height: 1.5; max-width: 300px">{{faceHint}}</span>
+  <div style="position: relative; margin-top: 18px">
+  <div style="{{faceRing}}">
+    <svg width="150" height="170" sc-camel-view-box="0 0 150 170" aria-hidden="true"><circle cx="75" cy="62" r="38" fill="#2D5260"></circle><path d="M8 170c0-40 30-66 67-66s67 26 67 66z" fill="#2D5260"></path></svg>
+    <sc-if value="{{faceBusy}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 0; border-radius: 50%; background: rgba(4,77,94,0.75); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; text-align: center; padding: 30px">Matching your face to your ID…</div></sc-if>
+  </div>
+    <sc-if value="{{faceOk}}" hint-placeholder-val="{{false}}"><div style="position: absolute; right: 14px; bottom: 6px; width: 52px; height: 52px; border-radius: 26px; background: #6EDA60; border: 4px solid #0B1F26; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></div></sc-if>
+  </div>
+  <div style="flex: 1"></div>
+  <sc-if value="{{faceNotOk}}" hint-placeholder-val="{{true}}">
+    <button sc-camel-on-click="{{captureFace}}" aria-label="Take selfie" style="width: 76px; height: 76px; border-radius: 38px; border: 4px solid #FFFFFF; background: transparent; padding: 5px; cursor: pointer"><span style="display: block; width: 100%; height: 100%; border-radius: 50%; background: #6EDA60"></span></button>
+    <span style="font-size: 12px; color: #B9D3D9">Front camera · no glasses, hats or masks</span>
+  </sc-if>
+  <sc-if value="{{faceOk}}" hint-placeholder-val="{{false}}">
+    <button sc-camel-on-click="{{next}}" style="width: 100%; height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #6EDA60; color: #044D5E; font-size: 16px; font-weight: 800; cursor: pointer">Continue</button>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ================= SUBMITTED ================= -->
+<sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 24px 24px 28px; display: flex; flex-direction: column; gap: 14px">
+  <span style="width: 72px; height: 72px; border-radius: 26px 26px 26px 8px; background: #6EDA60; display: flex; align-items: center; justify-content: center"><svg width="34" height="34" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Application submitted</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.6">Our team will review your documents, usually within 24–48 hours. We’ll notify you once you can start receiving bookings.</p>
+  <div style="border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; padding: 4px 16px; display: flex; flex-direction: column">
+    <sc-for list="{{summary}}" as="s" hint-placeholder-count="5">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid #EEF0F3; font-size: 14px"><span style="color: #5B6472">{{s.label}}</span><span style="font-weight: 700; text-align: right">{{s.value}}</span></div>
+    </sc-for>
+  </div>
+  <div style="background: #E6F1F3; border-radius: 16px 16px 16px 4px; padding: 12px 14px; font-size: 12px; line-height: 1.5">Your TSKR name will always match your ID: <b>{{fullName}}</b>. Clients see it masked as <b>{{maskedName}}</b> until they accept your offer.</div>
+  <a href="Tasker.dc.html" style="height: 56px; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none">Preview the Tasker app (demo)</a>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'intro', id1: null, id2: null, reading: false, face: 'idle', stamps: {} };
+  }
+
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const S = this.state;
+    const ID_TYPES = ['PhilSys National ID', 'Driver’s License', 'UMID', 'Passport', 'PRC ID', 'Postal ID', 'Voter’s ID'];
+    const person = { name: 'MARK ANTHONY DELA CRUZ', dob: 'March 14, 1991', addr: 'Brgy. San Jose, Mandaluyong City' };
+    const idNo = { 'PhilSys National ID': '4823-****-****-7712', 'Driver’s License': 'N03-**-****91', 'UMID': '0111-*******-4', 'Passport': 'P*****72A', 'PRC ID': '00*****3', 'Postal ID': 'PRN ****** 5521', 'Voter’s ID': '1376-****-A****-1' };
+    const flow = ['intro', 'consent', 'id1-type', 'id1-scan', 'id1-result', 'id2-type', 'id2-scan', 'id2-result', 'face', 'done'];
+    const i = flow.indexOf(S.step);
+    const go = (st) => this.setState({ step: st, reading: false });
+    const stamp = () => { const n = new Date(); return n.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }) + ' · ' + n.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' }); };
+    const doc = S.step.split('-')[0];
+    const phase = S.step.split('-')[1] || '';
+    const docNo = { id1: 1, id2: 2, face: 3 }[doc] || 0;
+    const docLabel = doc === 'nbi' ? 'NBI Clearance' : (doc === 'id1' ? S.id1 : S.id2) || '';
+
+    let fields = [], checks = [];
+    if (doc === 'id1' || doc === 'id2') {
+      fields = [
+        { label: 'Full name', value: person.name },
+        { label: 'Date of birth', value: person.dob },
+        { label: 'ID number', value: idNo[docLabel] || '' },
+        { label: 'Address', value: person.addr }
+      ];
+      if (doc === 'id2') checks = [{ text: 'Name and birthday match your first ID' }];
+    } else if (doc === 'nbi') {
+      fields = [
+        { label: 'Full name', value: person.name },
+        { label: 'NBI ID number', value: 'B2711****-K3****' },
+        { label: 'Valid until', value: 'October 28, 2027' },
+        { label: 'Remarks', value: 'No record on file' }
+      ];
+      checks = [{ text: 'Name matches your IDs' }, { text: 'Clearance is still valid' }];
+    }
+
+    const capture = () => {
+      if (S.reading) return;
+      this.setState({ reading: true });
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState({ reading: false, step: doc + '-result', stamps: Object.assign({}, this.state.stamps, { [doc]: stamp() }) }), 1400);
+    };
+    const captureFace = () => {
+      if (S.face === 'busy') return;
+      this.setState({ face: 'busy' });
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.setState({ face: 'ok' }), 1600);
+    };
+    const back = () => {
+      if (i <= 0) return;
+      let prev = flow[i - 1];
+      if (prev.endsWith('-scan')) prev = flow[i - 2];
+      if (S.step === 'face') this.setState({ face: 'idle' });
+      go(prev);
+    };
+    const next = () => go(flow[i + 1]);
+    const mask = (n) => { const p = n.split(' '); const f = p[0]; return f.slice(0, 2) + '*'.repeat(Math.max(1, f.length - 3)) + f[f.length - 1] + ' ' + p[p.length - 2][0] + '.'; };
+
+    return {
+      isIntro: S.step === 'intro', isType: phase === 'type', isScan: phase === 'scan', isResult: phase === 'result',
+      isFace: S.step === 'face', isDone: S.step === 'done',
+      showStepNo: S.step !== 'intro' && S.step !== 'done' && S.step !== 'consent',
+      stepNo: docNo,
+      bars: [1, 2, 3].map((n) => ({ style: 'height: 6px; border-radius: 3px; background: ' + (n <= docNo ? '#6EDA60' : '#E6F1F3') })),
+      back: back, next: next,
+      start: () => go('consent'),
+      isConsent: S.step === 'consent',
+      consentRows: [['What we collect', 'Photos of 2 government IDs, the details read from them, a selfie and a face-match result.'], ['Why', 'To confirm you are a real person and that the IDs are yours, so clients can trust who comes to their home.'], ['Who sees it', 'Only TSKR’s verification team and our ID-check provider. Clients never see your IDs. We share data with authorities only when the law requires.'], ['How long we keep it', 'While your tasker account is active, and up to 5 years after it closes, as required by law.'], ['Your rights', 'You can access, correct or request deletion of your data, and withdraw consent, in Account › Legal and privacy.']].map((r) => ({ k: r[0], v: r[1] })),
+      toggleBio: () => this.setState({ bio: !S.bio, bioErr: false }),
+      bioAria: S.bio ? 'true' : 'false', hasBioErr: !!S.bioErr,
+      bioBox: 'width: 22px; height: 22px; flex: none; margin-top: 1px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 2px solid ' + (S.bioErr ? '#B42318' : '#044D5E') + '; background: ' + (S.bio ? '#044D5E' : '#FFFFFF'),
+      agreeBio: () => (S.bio ? go('id1-type') : this.setState({ bioErr: true })),
+      reqs: [
+        { title: '2 valid government IDs', sub: 'Two different IDs, e.g. National ID and Driver’s License.', icon: 'M3 5h18v14H3zM7 9h4v5H7zM14 10h4M14 13h3' },
+        { title: 'Face check', sub: 'A quick selfie to match you with your ID.', icon: 'M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8M4 21a8 8 0 0 1 16 0' },
+        { title: 'Verified Google account and mobile', sub: 'Same sign-in steps as clients.', icon: 'M7 2h10v20H7zM11 18h2' }
+      ],
+      docTitle: doc === 'id2' ? 'Choose your second ID' : 'Choose your first ID',
+      typeSub: doc === 'id2' ? 'Pick a different ID from the first one (' + S.id1 + ').' : 'Pick the government ID you’ll scan first.',
+      idTypes: ID_TYPES.filter((t) => doc !== 'id2' || t !== S.id1).map((t) => ({ label: t, pick: () => this.setState({ [doc]: t, step: doc + '-scan', reading: false }) })),
+      scanTitle: doc === 'nbi' ? 'Scan your NBI Clearance' : 'Scan the front of your ' + docLabel,
+      reading: S.reading, capture: capture,
+      retake: () => go(doc + '-scan'),
+      resultTitle: doc === 'nbi' ? 'NBI Clearance read' : 'ID ' + docNo + ' read',
+      docLabel: docLabel, stamp: (S.stamps || {})[doc] || '',
+      fields: fields, checks: checks,
+      faceHint: S.face === 'ok' ? 'Your face matches your ID.' : 'Keep your face inside the circle, look straight at the camera, then blink.',
+      faceRing: 'position: relative; width: 250px; height: 250px; border-radius: 50%; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; background: #1E3A44; box-shadow: 0 0 0 4px ' + (S.face === 'ok' ? '#6EDA60' : 'rgba(110,218,96,0.6)'),
+      faceBusy: S.face === 'busy', faceOk: S.face === 'ok', faceNotOk: S.face !== 'ok',
+      captureFace: captureFace,
+      fullName: person.name, maskedName: mask(person.name),
+      summary: [
+        { label: 'ID 1', value: (S.id1 || '') + ' ✓' },
+        { label: 'ID 2', value: (S.id2 || '') + ' ✓' },
+        { label: 'Face check', value: 'Matched ✓' },
+        { label: 'Status', value: 'Under review' }
+      ]
+    };
+  }
+}
+</script>
+
+
+</body></html>

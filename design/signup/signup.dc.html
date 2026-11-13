@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>TSKR client sign-up</title>
+<script src="010b0483-e41b-4a8f-b06d-58ac6fe77208"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJbecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJnecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("ea8d6889-2faf-4074-99d0-e9cf31f692cb") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("a78dbe76-dac0-4fab-ab50-f197dc70e496") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("6d8a610d-acb5-4e00-aaba-0f4bd2784c97") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fc564b7e-203b-4e32-ae65-1fa0c24950f9") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("232d10f9-2f3c-412e-a50b-268656c913d0") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLDD4Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("15524733-b735-4752-b9a4-8aa71a880189") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("6712bd56-43ac-4561-ad73-7a67ba11a7b9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0}
+a{color:#044D5E}a:hover{color:#06647A}
+button{font-family:inherit}
+.tskr-dot{position:absolute;top:21.06%;width:7.18%;aspect-ratio:1;border-radius:50%;background:#FFFFFF;opacity:.4;animation:tskr-type 1.4s ease-in-out infinite}
+@keyframes tskr-type{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-35%);opacity:1}}
+@media (prefers-reduced-motion: reduce){.tskr-dot{animation:none;opacity:1}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Poppins', system-ui, sans-serif; color: #044D5E; display: flex; flex-direction: column">
+
+<!-- ================= WELCOME ================= -->
+<sc-if value="{{isWelcome}}" hint-placeholder-val="{{true}}">
+<div style="flex: 1; display: flex; flex-direction: column; background: #044D5E; color: #FFFFFF; position: relative; overflow: hidden">
+  <img src="bada243a-3700-4453-95ea-35e68699857f" alt="" aria-hidden="true" style="position: absolute; width: 440px; height: auto; left: 10px; top: 250px; opacity: 0.12; pointer-events: none">
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 0 28px; position: relative">
+    <div style="position: relative; height: 124px; aspect-ratio: 863 / 888; align-self: flex-start">
+      <img src="73f876ba-e782-416b-b60c-a7018c28b055" alt="tskr" style="height: 100%; width: 100%; display: block">
+      <span class="tskr-dot" style="left: 34.53%; animation-delay: 0s"></span><span class="tskr-dot" style="left: 45.65%; animation-delay: 0.18s"></span><span class="tskr-dot" style="left: 56.66%; animation-delay: 0.36s"></span>
+    </div>
+    <h1 style="margin: 0; font-size: 32px; line-height: 1.2; font-weight: 800">{{heroA}}<br><span style="color: #6EDA60">{{heroB}}</span></h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #CFE3E7">{{heroSub}}</p>
+  </div>
+  <div style="background: #FFFFFF; color: #044D5E; border-radius: 28px 28px 0 0; padding: 24px 24px 30px; display: flex; flex-direction: column; gap: 12px; position: relative">
+    <span style="font-size: 15px; font-weight: 800">How will you use TSKR?</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button sc-camel-on-click="{{pickClient}}" style="{{clientCard}}">
+        <span style="{{clientIcon}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"></path><path d="M9 21v-6h6v6"></path></svg></span>
+        <span style="font-size: 15px; font-weight: 800">Book a service</span>
+        <span style="font-size: 12px; color: #5B6472; line-height: 1.4">Find a trusted tasker near you</span>
+      </button>
+      <button sc-camel-on-click="{{pickTasker}}" style="{{taskerCard}}">
+        <span style="{{taskerIcon}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg></span>
+        <span style="font-size: 15px; font-weight: 800">I want to earn</span>
+        <span style="font-size: 12px; color: #5B6472; line-height: 1.4">Offer my skills as a tasker</span>
+      </button>
+    </div>
+    <button sc-camel-on-click="{{google}}" style="height: 56px; border: 1.5px solid #D0D5DD; border-radius: 18px 18px 18px 6px; background: #FFFFFF; color: #044D5E; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer">
+      <span style="width: 28px; height: 28px; border-radius: 14px; background: #E6F1F3; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800">G</span>Continue with Google
+    </button>
+    <button sc-camel-on-click="{{toggleAgree}}" role="checkbox" aria-checked="{{agreeAria}}" style="display: flex; align-items: flex-start; gap: 10px; border: 0; background: transparent; padding: 2px 0; cursor: pointer; text-align: left; font-size: 12px; line-height: 1.5; color: #5B6472"><span style="{{agreeBox}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span><span>I have read and agree to TSKR’s <u style="color: #044D5E; font-weight: 700">{{roleWord}} Terms of Service</u> and <u style="color: #044D5E; font-weight: 700">{{roleWord}} Privacy Policy</u>.</span></button>
+    <span style="font-size: 11px; color: #5B6472; line-height: 1.4; margin-top: -4px">{{agreeHint}}</span>
+    <sc-if value="{{hasAgreeErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 12px; color: #B42318; font-weight: 600">Please agree to the Terms and Privacy Policy to continue.</span></sc-if>
+    <a href="Main.dc.html" style="align-self: center; font-size: 13px; font-weight: 600; padding: 10px">Skip to the app (demo)</a>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= STEPPED HEADER ================= -->
+<sc-if value="{{showSteps}}" hint-placeholder-val="{{false}}">
+<div style="padding: 14px 16px 0; display: flex; flex-direction: column; gap: 14px; flex: none">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <button sc-camel-on-click="{{back}}" aria-label="Back" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F7F6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+    <span style="font-size: 13px; font-weight: 700; color: #5B6472">Step {{stepNo}} of 5</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+    <sc-for list="{{bars}}" as="b" hint-placeholder-count="5"><span style="{{b.style}}"></span></sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= 1. GOOGLE ACCOUNT ================= -->
+<sc-if value="{{isAccount}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Choose your Google account</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">TSKR will use your name and email address. We never post anything for you.</p>
+  <sc-for list="{{accounts}}" as="a" hint-placeholder-count="2">
+    <button sc-camel-on-click="{{a.pick}}" style="display: flex; align-items: center; gap: 14px; padding: 14px; border: 1.5px solid #E4E7EC; border-radius: 20px 20px 20px 6px; background: #FFFFFF; cursor: pointer; text-align: left; color: #044D5E">
+      <span style="width: 44px; height: 44px; border-radius: 22px; background: #044D5E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex: none">{{a.initials}}</span>
+      <span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 15px; font-weight: 700">{{a.name}}</span><span style="font-size: 13px; color: #5B6472">{{a.email}}</span></span>
+    </button>
+  </sc-for>
+</div>
+</sc-if>
+
+<!-- ================= NAME AS ON ID ================= -->
+<sc-if value="{{isName}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px">
+  <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2.2"></circle><path d="M5.5 16.5c.6-1.6 1.9-2.4 3.5-2.4s2.9.8 3.5 2.4M14.5 10h4M14.5 13.5h3"></path></svg></span>
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Your name, as on your ID</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">We filled this in from your Google account. Change it if it doesn’t match a valid government ID.</p>
+  <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 700">First name (and middle name)</span><input type="text" value="{{first}}" sc-camel-on-input="{{onFirst}}" autocomplete="given-name" style="height: 54px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; padding: 0 14px; font: inherit; font-size: 16px; font-weight: 600; color: #044D5E; outline: none"></label>
+  <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 700">Last name</span><input type="text" value="{{last}}" sc-camel-on-input="{{onLast}}" autocomplete="family-name" style="height: 54px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; padding: 0 14px; font: inherit; font-size: 16px; font-weight: 600; color: #044D5E; outline: none"></label>
+  <div role="note" style="background: #FFF4E5; border-radius: 14px 14px 14px 4px; padding: 12px 14px; font-size: 13px; color: #6B3A16; line-height: 1.5; font-weight: 600">{{nameNote}}</div>
+  <sc-if value="{{hasErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{err}}</span></sc-if>
+  <button sc-camel-on-click="{{saveName}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Continue</button>
+</div>
+</sc-if>
+
+<!-- ================= 2. EMAIL CODE ================= -->
+<sc-if value="{{isEmail}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+  <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span>
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Check your email</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">We sent a 6-digit code to <b style="color: #044D5E">{{maskedEmail}}</b>. (Demo code: 482913)</p>
+  <input type="text" inputmode="numeric" maxlength="6" value="{{emailCode}}" sc-camel-on-input="{{onEmailCode}}" aria-label="Email verification code" placeholder="••••••" style="height: 64px; border: 1.5px solid #D0D5DD; border-radius: 18px 18px 18px 6px; text-align: center; font: inherit; font-size: 28px; font-weight: 800; letter-spacing: 12px; color: #044D5E; outline: none">
+  <sc-if value="{{hasErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{err}}</span></sc-if>
+  <button sc-camel-on-click="{{verifyEmail}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Verify email</button>
+  <button sc-camel-on-click="{{resend}}" style="border: 0; background: transparent; color: #044D5E; font-size: 13px; font-weight: 700; padding: 10px; cursor: pointer">Resend code</button>
+</div>
+</sc-if>
+
+<!-- ================= 3. MOBILE NUMBER ================= -->
+<sc-if value="{{isPhone}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+  <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg></span>
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Add your mobile number</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">Your tasker can call you about the job. We’ll text you a one-time code to confirm it’s yours.</p>
+  <label style="display: flex; align-items: center; gap: 10px; height: 60px; border: 1.5px solid #D0D5DD; border-radius: 18px 18px 18px 6px; padding: 0 16px">
+    <span style="font-size: 17px; font-weight: 800; padding-right: 10px; border-right: 1.5px solid #E4E7EC">+63</span>
+    <input type="tel" inputmode="numeric" maxlength="10" value="{{phone}}" sc-camel-on-input="{{onPhone}}" aria-label="Mobile number" placeholder="917 123 4567" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 18px; font-weight: 700; color: #044D5E; background: transparent">
+  </label>
+  <sc-if value="{{hasErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{err}}</span></sc-if>
+  <button sc-camel-on-click="{{sendOtp}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Send code by SMS</button>
+</div>
+</sc-if>
+
+<!-- ================= 4. SMS OTP ================= -->
+<sc-if value="{{isOtp}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+  <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg></span>
+  <h1 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.25">Enter the SMS code</h1>
+  <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">Sent to <b style="color: #044D5E">{{maskedPhone}}</b>. (Demo code: 135790)</p>
+  <input type="text" inputmode="numeric" maxlength="6" value="{{smsCode}}" sc-camel-on-input="{{onSmsCode}}" aria-label="SMS one-time code" placeholder="••••••" style="height: 64px; border: 1.5px solid #D0D5DD; border-radius: 18px 18px 18px 6px; text-align: center; font: inherit; font-size: 28px; font-weight: 800; letter-spacing: 12px; color: #044D5E; outline: none">
+  <sc-if value="{{hasErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{err}}</span></sc-if>
+  <button sc-camel-on-click="{{verifySms}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Verify number</button>
+  <button sc-camel-on-click="{{resend}}" style="border: 0; background: transparent; color: #044D5E; font-size: 13px; font-weight: 700; padding: 10px; cursor: pointer">Resend code</button>
+</div>
+</sc-if>
+
+<!-- ================= 5. DONE ================= -->
+<sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1; padding: 22px 24px 30px; display: flex; flex-direction: column; gap: 16px">
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center">
+    <span style="width: 84px; height: 84px; border-radius: 30px 30px 30px 10px; background: #6EDA60; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+    <h1 style="margin: 0; font-size: 26px; font-weight: 800">You’re all set, {{firstName}}!</h1>
+    <p style="margin: 0; font-size: 14px; color: #5B6472; line-height: 1.5">{{doneSub}}</p>
+    <div style="width: 100%; border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; padding: 6px 16px; display: flex; flex-direction: column; text-align: left">
+      <div style="display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid #EEF0F3; font-size: 14px"><span style="color: #5B6472">Name</span><span style="font-weight: 700">{{fullName}}</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid #EEF0F3; font-size: 14px"><span style="color: #5B6472">Email</span><span style="font-weight: 700">{{email}} ✓</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; font-size: 14px"><span style="color: #5B6472">Mobile</span><span style="font-weight: 700">+63 {{phoneFmt}} ✓</span></div>
+    </div>
+  </div>
+  <sc-if value="{{isTaskerRole}}" hint-placeholder-val="{{false}}">
+    <a href="TaskerSignup.dc.html" style="height: 56px; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none">Next: verify your IDs</a>
+  </sc-if>
+  <sc-if value="{{isClientRole}}" hint-placeholder-val="{{true}}">
+  <a href="Main.dc.html" style="height: 56px; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none">Start exploring</a>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ================= TERMS / PRIVACY READER ================= -->
+<sc-if value="{{hasDoc}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-modal="true" aria-label="{{docTitle}}" style="position: absolute; inset: 0; z-index: 40; background: rgba(4,30,38,0.55); display: flex; flex-direction: column; justify-content: flex-end">
+  <div style="height: 92%; background: #FFFFFF; border-radius: 28px 28px 0 0; display: flex; flex-direction: column; overflow: hidden">
+    <div style="padding: 18px 20px 12px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #EEF0F3; flex: none">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+        <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #5B6472">{{docStep}}</span>
+        <button sc-camel-on-click="{{closeDoc}}" aria-label="Close" style="width: 40px; height: 40px; border-radius: 20px; border: 0; background: #F4F7F6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+      </div>
+      <h2 style="margin: 0; font-size: 22px; font-weight: 800">{{docTitle}}</h2>
+      <span style="font-size: 12px; color: #5B6472">Version 1.0 · Effective November 2026</span>
+      <div style="height: 6px; border-radius: 3px; background: #E6F1F3; overflow: hidden"><div style="{{docBar}}"></div></div>
+    </div>
+    <sc-if value="{{isTermsDoc}}" hint-placeholder-val="{{true}}">
+    <div class="scroll" sc-camel-on-scroll="{{onDocScroll}}" style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 14px">
+      <sc-for list="{{docSections}}" as="d" hint-placeholder-count="6">
+        <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 15px; font-weight: 800">{{d.h}}</span><span style="font-size: 13px; color: #344054; line-height: 1.6">{{d.p}}</span></div>
+      </sc-for>
+      <div style="border-top: 1px solid #EEF0F3; padding-top: 12px; font-size: 12px; color: #5B6472; text-align: center">End of {{docTitle}}</div>
+    </div>
+    </sc-if>
+    <sc-if value="{{isPrivacyDoc}}" hint-placeholder-val="{{false}}">
+    <div class="scroll" sc-camel-on-scroll="{{onDocScroll}}" style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 14px">
+      <sc-for list="{{docSections}}" as="d" hint-placeholder-count="6">
+        <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 15px; font-weight: 800">{{d.h}}</span><span style="font-size: 13px; color: #344054; line-height: 1.6">{{d.p}}</span></div>
+      </sc-for>
+      <div style="border-top: 1px solid #EEF0F3; padding-top: 12px; font-size: 12px; color: #5B6472; text-align: center">End of {{docTitle}}</div>
+    </div>
+    </sc-if>
+    <div style="padding: 12px 20px 22px; border-top: 1px solid #EEF0F3; flex: none; display: flex; flex-direction: column; gap: 6px">
+      <button sc-camel-on-click="{{agreeDoc}}" aria-disabled="{{docLockedAria}}" style="{{agreeDocStyle}}">{{agreeDocLabel}}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'welcome', role: 'client', acct: null, emailCode: '', phone: '', smsCode: '', err: '', agree: false, agreeErr: false, doc: null, readTerms: false, readPrivacy: false, docEnd: false, docPct: 0 };
+  }
+
+  renderVals() {
+    const S = this.state;
+    const accounts = [
+      { name: 'Juan Dela Cruz', email: 'juan.delacruz@gmail.com', initials: 'JD' },
+      { name: 'Juan D. Cruz', email: 'juan.work@gmail.com', initials: 'JC' }
+    ];
+    const clientTerms = [
+      ['1. About TSKR', 'TSKR is an online marketplace that connects you with independent service providers (taskers). TSKR does not perform the services itself. Taskers are not TSKR employees.'],
+      ['2. Your account', 'You must be at least 18 years old. You sign up with a verified email and a mobile number confirmed by a one-time code. One person, one account.'],
+      ['3. Your name', 'Use your real name, exactly as it appears on a valid government ID. When your tasker arrives, they may ask to see your ID to confirm the booking.'],
+      ['4. Bookings and prices', 'Your tasker sends an initial offer in chat. After seeing the actual work on site, the tasker confirms a final price, which you may accept or decline. Declining the final price cancels the booking at no charge.'],
+      ['5. Payment', 'You pay your tasker directly, in cash or by scanning their payment QR, which you see after accepting their offer. TSKR does not collect or hold payment for services.'],
+      ['6. Cancellations', 'Cancelling is free before your tasker leaves. After that, one late cancellation per month is free; later ones carry a ₱100 fee, paid straight to that tasker’s payment QR before your next booking. It is always free if your tasker is 15+ minutes late, cannot be reached, or asks to deal outside TSKR.'],
+      ['7. Free plan and TSKR Plus', 'Free accounts can book 1 service per day, for now only. TSKR Plus lets you book up to 5 services at once and schedule for later, for a monthly fee. You can cancel TSKR Plus anytime.'],
+      ['8. Deliveries', 'You enter the pickup (FROM) and drop-off (TO) addresses when you book. Items must fit a motorcycle top box or compartment. You may not send people, animals, hazardous or PDEA-regulated chemicals, drugs or medicines, alcohol, cigarettes or vapes, poison, illegal items or weapons. Your tasker may open and check your items before starting.'],
+      ['9. Safety and conduct', 'Be respectful and keep chats, calls and photos in the app. Personal services such as massage, escort, companion, model or hostess services are not allowed. Use SOS or Report if anything feels unsafe.'],
+      ['10. Reviews', 'Ratings and reviews only count for bookings made in TSKR and must be honest. Taskers also rate clients.'],
+      ['11. Deactivating or deleting your account', 'You may deactivate or delete your account in the app after giving a reason, once you have no active booking and no unpaid fee. Records of your bookings, payments, chats and reports are kept as stated in the Privacy Policy, and come back if you sign up again.'],
+      ['12. Suspension and liability', 'We may suspend accounts that break these Terms or move bookings outside TSKR. Taskers are responsible for their work; to the extent allowed by law, TSKR is not liable for losses caused by a tasker. Raise disputes in the Help center.'],
+      ['13. Changes and governing law', 'We will ask you to accept major changes. These Terms are governed by the laws of the Republic of the Philippines.']
+    ];
+    const taskerTerms = [
+      ['1. Your relationship with TSKR', 'You are an independent contractor, not an employee or agent of TSKR. You set your own prices, choose which jobs to accept and decide your own hours.'],
+      ['2. Verification', 'To receive bookings you must pass identity verification: 2 valid government IDs and a selfie face check. The name on your account must match your IDs. We may re-verify you at any time.'],
+      ['3. Skills and licenses', 'Your first 2 skills are free. You may add up to 3 more (5 in total) for 100 coins per extra skill each week. Skills that need a license (for example medical, legal or electrical work) require proof of that license. Personal services such as massage, escort, companion, model or hostess services are prohibited.'],
+      ['4. Coins and fees', 'You get 1,000 coins on sign-up and may buy more (1 coin = ₱1). A booking fee in coins is deducted only when you tap Start job. Extra skills are charged weekly in coins; if you lack coins, they are hidden until you buy more. Coins are non-refundable, cannot be converted to cash and cannot be transferred.'],
+      ['5. Prices and payment', 'You send an initial offer and confirm the final price on site. The client pays you directly, in cash or to the payment QR you upload. The QR’s account name must match your verified ID. TSKR does not hold your earnings. You are responsible for your own taxes.'],
+      ['6. Cancellations and strikes', 'Cancelling an accepted job without a valid reason earns a strike: 100 coins for the first, 200 coins and lower ranking for the second, and a 7-day pause for the third within 30 days. A no-show counts as 2 strikes.'],
+      ['7. Deliveries and driving', 'Deliveries are by motorcycle only and must fit your top box. You may open and check items before starting and decline prohibited ones. You may never carry people. As a driver for hire, you drive only the client’s own vehicle.'],
+      ['8. Safety and conduct', 'Go only to the booked address. You may ask the client to show an ID on arrival. Keep chats, calls and photos in the app. Use SOS or cancel with “I don’t feel safe” (no strike) if anything is wrong.'],
+      ['9. Reviews and portfolio', 'Ratings only count for bookings made in TSKR. Portfolio photos must be your own work, taken with the in-app camera.'],
+      ['10. Deactivating or deleting your account', 'You may deactivate or delete your account in the app after giving a reason, once you have no active job. Unused coins are not refunded. Your verification, coin, booking and strike records are kept as stated in the Privacy Policy, and come back if you sign up again.'],
+      ['11. Suspension and liability', 'We may suspend or remove accounts that break these Terms, receive serious reports, or move bookings outside TSKR. You are responsible for the quality and safety of your work and any damage you cause.'],
+      ['12. Changes and governing law', 'We will ask you to accept major changes. These Terms are governed by the laws of the Republic of the Philippines.']
+    ];
+    const clientPrivacy = [
+      ['1. Who we are', 'TSKR is the personal information controller for data collected through the app. You can reach our Data Protection Officer through the Help center.'],
+      ['2. What we collect', 'Your name, email and mobile number; addresses you save; chats, offers, photos and reviews; and booking and payment records. We do not collect a profile photo, government ID or selfie from clients.'],
+      ['3. Location', 'We use your location only during an active booking, to show the live map, ETA and safety features. We do not track you outside bookings.'],
+      ['4. Why we use it', 'To create and verify your account, match you with taskers, run bookings, keep users safe, prevent fraud, handle support and disputes, and meet legal duties.'],
+      ['5. Who we share it with', 'Your tasker sees your masked name, then your full name and booking address after you accept an offer. We also share data with service providers that help us run TSKR (cloud hosting, SMS, payments) and with authorities when the law requires.'],
+      ['6. How long we keep it', 'While your account is active, and for 5 years after you deactivate or delete it: your account details, bookings, payment references, chats, reports and the reason you gave for leaving. We keep these only for disputes, fraud and safety investigations, and lawful requests from authorities.'],
+      ['7. Your rights', 'Under the Data Privacy Act of 2012, you may access, correct and download your data, deactivate or delete your account (records are kept as in item 6), object to processing and withdraw consent, in Account › Legal and privacy. You may also complain to the National Privacy Commission.'],
+      ['8. Security and changes', 'We encrypt sensitive data and limit staff access. We will tell you about important changes and ask for consent again when required.']
+    ];
+    const taskerPrivacy = [
+      ['1. Who we are', 'TSKR is the personal information controller for data collected through the app. You can reach our Data Protection Officer through the Help center.'],
+      ['2. What we collect', 'Your name, email, mobile number and profile photo; photos of 2 government IDs, the details read from them, a selfie and a face-match result; your skills, prices, availability, portfolio photos, payment QR, coin and payment records, chats, reviews and strikes.'],
+      ['3. Location', 'We use your location only while you are online for a booking and during an active job, for the live map, ETA, arrival checks and safety. We do not track you outside bookings.'],
+      ['4. Why we use it', 'To verify your identity, show your profile to clients, match you with bookings, process coins and fees, keep users safe, prevent fraud, handle disputes and meet legal duties, including anti-money laundering rules.'],
+      ['5. Who sees it', 'Clients see your photo, masked name, skills, ratings and portfolio, then your full name after accepting your offer. Clients never see your IDs. Our verification team and ID-check provider see your IDs and selfie. We share data with payment partners and authorities when the law requires.'],
+      ['6. How long we keep it', 'While your account is active, and for 5 years after you deactivate or delete it: your ID checks, bookings, coin history, payment QR, chats, strikes, reports and the reason you gave for leaving. We keep these only for disputes, fraud and safety investigations, and lawful requests from authorities.'],
+      ['7. Your rights', 'Under the Data Privacy Act of 2012, you may access, correct and download your data, deactivate or delete your account (records are kept as in item 6), object to processing and withdraw consent, in Account › Legal and privacy. Withdrawing ID consent ends your tasker access. You may also complain to the National Privacy Commission.'],
+      ['8. Security and changes', 'We encrypt IDs and selfies, limit staff access and log who views verification records. We will tell you about important changes and ask for consent again when required.']
+    ];
+    const isT = S.role === 'tasker';
+    const termsDoc = isT ? taskerTerms : clientTerms;
+    const privacyDoc = isT ? taskerPrivacy : clientPrivacy;
+    const order = ['account', 'name', 'email', 'phone', 'otp'];
+    const idx = order.indexOf(S.step);
+    const A = S.acct || accounts[0];
+    const maskEmail = (e) => { const [u, d] = e.split('@'); return u.slice(0, 2) + '*'.repeat(Math.max(1, u.length - 2)) + '@' + d; };
+    const digits = (v) => (v || '').replace(/\D/g, '');
+    const ph = digits(S.phone);
+    const phoneFmt = ph.length === 10 ? ph.slice(0, 3) + ' ' + ph.slice(3, 6) + ' ' + ph.slice(6) : ph;
+    const go = (step) => this.setState({ step: step, err: '' });
+    const card = (on) => 'display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border-radius: 20px 20px 20px 6px; cursor: pointer; text-align: left; color: #044D5E; border: 2px solid ' + (on ? '#044D5E' : '#E4E7EC') + '; background: ' + (on ? '#E6F1F3' : '#FFFFFF');
+    const ico = (on) => 'width: 40px; height: 40px; border-radius: 14px 14px 14px 4px; display: flex; align-items: center; justify-content: center; background: ' + (on ? '#044D5E' : '#E6F1F3') + '; color: ' + (on ? '#6EDA60' : '#044D5E');
+
+    return {
+      heroA: S.role === 'tasker' ? 'Earn with your skills,' : 'Trusted taskers,',
+      heroB: S.role === 'tasker' ? 'on your own time.' : 'right at your door.',
+      heroSub: S.role === 'tasker' ? 'Set your own prices, choose your jobs, and get paid directly by clients near you.' : 'Book verified people for repairs, cleaning, tech, lessons and more. Free booking fee, always.',
+      pickClient: () => (S.role === 'client' ? null : this.setState({ role: 'client', agree: false, readTerms: false, readPrivacy: false })), pickTasker: () => (S.role === 'tasker' ? null : this.setState({ role: 'tasker', agree: false, readTerms: false, readPrivacy: false })),
+      clientCard: card(S.role === 'client'), taskerCard: card(S.role === 'tasker'),
+      clientIcon: ico(S.role === 'client'), taskerIcon: ico(S.role === 'tasker'),
+      isTaskerRole: S.role === 'tasker', isClientRole: S.role !== 'tasker',
+      doneSub: S.role === 'tasker' ? 'Your email and mobile number are verified. Next, verify your IDs and face to start receiving bookings.' : 'Your email and mobile number are verified.',
+      isWelcome: S.step === 'welcome', isAccount: S.step === 'account', isEmail: S.step === 'email',
+      isPhone: S.step === 'phone', isOtp: S.step === 'otp', isDone: S.step === 'done',
+      showSteps: idx >= 0,
+      stepNo: idx + 1,
+      bars: order.map((o, i) => ({ style: 'height: 6px; border-radius: 3px; background: ' + (i <= idx ? '#6EDA60' : '#E6F1F3') })),
+      back: () => go(idx <= 0 ? 'welcome' : order[idx - 1]),
+      google: () => (S.agree ? go('account') : this.setState({ agreeErr: true })),
+      toggleAgree: () => (S.agree ? this.setState({ agree: false }) : this.setState({ doc: S.readTerms ? 'privacy' : 'terms', docEnd: false, docPct: 0, agreeErr: false })),
+      agreeHint: S.agree ? 'You read and accepted both documents.' : 'Tap the box to read both documents. You can agree after scrolling to the end of each.',
+      hasDoc: !!S.doc,
+      isTermsDoc: S.doc === 'terms', isPrivacyDoc: S.doc === 'privacy',
+      docTitle: (isT ? 'Tasker ' : 'Client ') + (S.doc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'),
+      docStep: S.doc === 'privacy' ? 'STEP 2 OF 2' : 'STEP 1 OF 2',
+      docSections: (S.doc === 'privacy' ? privacyDoc : termsDoc).map((d) => ({ h: d[0], p: d[1] })),
+      docBar: 'height: 6px; border-radius: 3px; background: #6EDA60; width: ' + (S.docEnd ? 100 : Math.max(4, S.docPct)) + '%',
+      onDocScroll: (e) => { const el = e.target; const pct = Math.round((el.scrollTop + el.clientHeight) / el.scrollHeight * 100); const end = el.scrollTop + el.clientHeight >= el.scrollHeight - 12; if (end !== S.docEnd || Math.abs(pct - S.docPct) >= 5) this.setState({ docEnd: S.docEnd || end, docPct: Math.max(S.docPct, pct) }); },
+      closeDoc: () => this.setState({ doc: null }),
+      docLockedAria: S.docEnd ? 'false' : 'true',
+      agreeDocLabel: !S.docEnd ? 'Scroll to the end to continue' : (S.doc === 'privacy' ? 'I agree to the Privacy Policy' : 'I agree · Next: Privacy Policy'),
+      agreeDocStyle: 'height: 54px; border: 0; border-radius: 16px 16px 16px 4px; font-size: 15px; font-weight: 800; cursor: ' + (S.docEnd ? 'pointer' : 'not-allowed') + '; background: ' + (S.docEnd ? '#044D5E' : '#E4E7EC') + '; color: ' + (S.docEnd ? '#FFFFFF' : '#98A2B3'),
+      agreeDoc: () => { if (!S.docEnd) return; if (S.doc === 'terms') this.setState({ readTerms: true, doc: 'privacy', docEnd: false, docPct: 0 }); else this.setState({ readPrivacy: true, doc: null, agree: true, agreeErr: false }); },
+      agreeAria: S.agree ? 'true' : 'false', hasAgreeErr: !!S.agreeErr,
+      agreeBox: 'width: 22px; height: 22px; flex: none; margin-top: 1px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 2px solid ' + (S.agreeErr ? '#B42318' : '#044D5E') + '; background: ' + (S.agree ? '#044D5E' : '#FFFFFF'),
+      accounts: accounts.map((a) => Object.assign({}, a, { pick: () => this.setState({ acct: a, step: 'name', first: a.name.split(' ').slice(0, -2).join(' ') || a.name.split(' ')[0], last: a.name.split(' ').slice(-2).join(' '), err: '' }) })),
+      roleWord: isT ? 'Tasker' : 'Client', isName: S.step === 'name',
+      first: S.first || '', last: S.last || '',
+      onFirst: (e) => this.setState({ first: e.target.value, err: '' }), onLast: (e) => this.setState({ last: e.target.value, err: '' }),
+      nameNote: isT ? 'This must match the 2 government IDs you\u2019ll scan next. Names that don\u2019t match can\u2019t be verified.' : 'Your tasker may ask to see a valid ID when they arrive, to confirm the booking. Use the name exactly as it appears on your ID.',
+      saveName: () => ((S.first || '').trim().length > 1 && (S.last || '').trim().length > 1 ? go('email') : this.setState({ err: 'Enter your first and last name as shown on your ID.' })),
+      maskedEmail: maskEmail(A.email),
+      emailCode: S.emailCode,
+      onEmailCode: (e) => this.setState({ emailCode: digits(e.target.value).slice(0, 6), err: '' }),
+      verifyEmail: () => (S.emailCode === '482913' ? go('phone') : this.setState({ err: 'That code is incorrect. Check your inbox and try again.' })),
+      phone: S.phone,
+      onPhone: (e) => this.setState({ phone: digits(e.target.value).slice(0, 10), err: '' }),
+      sendOtp: () => (/^9\d{9}$/.test(ph) ? go('otp') : this.setState({ err: 'Enter a valid PH mobile number, like 917 123 4567.' })),
+      maskedPhone: '+63 ' + (ph.length === 10 ? ph.slice(0, 3) + ' *** ' + ph.slice(6) : ph),
+      smsCode: S.smsCode,
+      onSmsCode: (e) => this.setState({ smsCode: digits(e.target.value).slice(0, 6), err: '' }),
+      verifySms: () => (S.smsCode === '135790' ? go('done') : this.setState({ err: 'That code is incorrect. Try again or resend.' })),
+      resend: () => this.setState({ err: 'A new code was sent.' }),
+      err: S.err, hasErr: !!S.err,
+      firstName: (S.first || A.name).split(' ')[0], fullName: S.first ? S.first + ' ' + (S.last || '') : A.name, email: A.email, phoneFmt: phoneFmt
+    };
+  }
+}
+</script>
+
+
+</body></html>

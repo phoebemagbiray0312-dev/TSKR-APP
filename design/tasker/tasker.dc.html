@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>TSKR tasker app</title>
+<script src="54871c69-cb88-4938-b96c-61b31159a641"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJbecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJnecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("796e1b98-6dbb-4e21-8b24-442055609e0a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("4c873516-7804-4396-953f-4f9f77c47567") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("8cd3bf55-b562-4301-ad71-e1cdaf14b40b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("15389e96-caef-4682-a19f-46486d99f768") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("9cd0349e-dab9-48be-81d7-6590e57f8d2e") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLDD4Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF4, U+1CF7-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B0A;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("a1789b47-c8f8-4dfe-bcae-fd302ef03c2b") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("ccbf62b2-f425-48e0-86c1-7bff9ab48d3a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0}
+a{color:#044D5E}a:hover{color:#06647A}
+button{font-family:inherit}
+.scroll::-webkit-scrollbar{display:none}
+.scroll{scrollbar-width:none}
+.scroll > *{flex-shrink:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F7F6; font-family: 'Poppins', system-ui, sans-serif; color: #044D5E; display: flex; flex-direction: column">
+
+<!-- ================= HEADER ================= -->
+<div style="background: #044D5E; color: #FFFFFF; padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; border-radius: 0 0 28px 28px; flex: none">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <img src="6312107c-e94e-4f1c-b81b-6c4f1ea637b8" alt="tskr" style="height: 26px; width: auto; flex: none">
+      <span style="font-size: 11px; font-weight: 800; letter-spacing: 1px; background: #6EDA60; color: #044D5E; border-radius: 6px; padding: 3px 7px">TASKER</span>
+    </div>
+    <button sc-camel-on-click="{{toggleOnline}}" style="{{onlineStyle}}"><span style="{{onlineDot}}"></span>{{onlineLabel}}</button>
+  </div>
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="width: 48px; height: 48px; border-radius: 18px 18px 18px 6px; background: #FFFFFF; color: #044D5E; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex: none">MD</span>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 17px; font-weight: 800">M. Dela Cruz</span>
+        <span style="font-size: 12px; color: #B9D3D9; font-weight: 500">{{roleLine}}</span>
+      </div>
+    </div>
+    <button sc-camel-on-click="{{goWallet}}" aria-label="Coin balance" style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border: 0; border-radius: 14px 14px 14px 4px; background: rgba(255,255,255,0.12); color: #FFFFFF; cursor: pointer; font-size: 15px; font-weight: 800">
+      <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="#6EDA60" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke="#044D5E" stroke-width="1.8" fill="none" stroke-linecap="round"></path></svg>{{coinsText}}
+    </button>
+  </div>
+</div>
+
+<!-- ================= HOME ================= -->
+<sc-if value="{{isHome}}" hint-placeholder-val="{{true}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px 16px 110px; display: flex; flex-direction: column; gap: 16px">
+
+  <sc-if value="{{isBroke}}" hint-placeholder-val="{{false}}">
+    <div role="alert" style="background: #FFF4E5; border: 1.5px solid #E8590C; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 800; color: #8A3A08">You’re out of coins</span>
+      <span style="font-size: 13px; color: #6B3A16; line-height: 1.5">You can’t receive bookings until you buy coins. ₱1,000 gets you 1,000 coins.</span>
+      <button sc-camel-on-click="{{openTopUp}}" style="align-self: flex-start; height: 44px; padding: 0 18px; border: 0; border-radius: 14px 14px 14px 4px; background: #044D5E; color: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer">Buy 1,000 coins · ₱1,000</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isLow}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="background: #FFF4E5; border: 1px solid #F5C08A; border-radius: 20px 20px 20px 6px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+      <span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 14px; font-weight: 800; color: #8A3A08">Low on coins · {{coinsText}} left</span><span style="font-size: 12px; color: #6B3A16; line-height: 1.45">{{lowSub}}</span></span>
+      <button sc-camel-on-click="{{openTopUp}}" style="flex: none; height: 40px; padding: 0 14px; border: 0; border-radius: 12px 12px 12px 4px; background: #044D5E; color: #FFFFFF; font-size: 13px; font-weight: 700; cursor: pointer">Buy coins</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{hasFeeDue}}" hint-placeholder-val="{{false}}">
+    <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 22px 22px 22px 6px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #2E7D32">{{feeDueTag}}</span>
+      <span style="font-size: 16px; font-weight: 800">₱100 late-cancellation fee</span>
+      <span style="font-size: 13px; color: #5B6472; line-height: 1.5">{{feeDueText}}</span>
+      <sc-if value="{{feeDuePaid}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 8px">
+          <button sc-camel-on-click="{{feeNotReceived}}" style="flex: 1; height: 46px; border: 1.5px solid #B42318; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #B42318; font-size: 13px; font-weight: 700; cursor: pointer">Not received</button>
+          <button sc-camel-on-click="{{feeReceived}}" style="flex: 1.3; height: 46px; border: 0; border-radius: 14px 14px 14px 4px; background: #044D5E; color: #FFFFFF; font-size: 13px; font-weight: 800; cursor: pointer">I received ₱100</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{feeDueWaiting}}" hint-placeholder-val="{{true}}">
+        <button sc-camel-on-click="{{clientPaysFee}}" style="height: 44px; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 700; cursor: pointer">Client pays to your QR (demo)</button>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showRequest}}" hint-placeholder-val="{{true}}">
+    <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 22px 22px 22px 6px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 24px rgba(4,77,94,0.12)">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #044D5E"><span style="width: 8px; height: 8px; border-radius: 4px; background: #6EDA60"></span>NEW BOOKING REQUEST</span>
+        <span style="font-size: 12px; font-weight: 700; color: #5B6472">{{req.when}}</span>
+      </div>
+      <sc-if value="{{req.repeat}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; background: #6EDA60; color: #044D5E; border-radius: 6px; padding: 4px 8px">REPEAT CLIENT · ONLY {{reqFeeText}}</span></sc-if>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 18px; font-weight: 800">{{req.service}}</span>
+        <span style="font-size: 13px; color: #5B6472">{{req.client}} · {{req.area}} · {{req.distance}}</span>
+      </div>
+      <sc-if value="{{req.isDelivery}}" hint-placeholder-val="{{false}}">
+        <div style="background: #F4F7F6; border-radius: 14px 14px 14px 4px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; gap: 10px; align-items: flex-start"><span style="flex: none; width: 44px; height: 24px; border-radius: 8px; background: #044D5E; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">FROM</span><span style="display: flex; flex-direction: column"><span style="font-size: 13px; font-weight: 700; line-height: 1.4">{{req.from}}</span><span style="font-size: 11px; color: #5B6472">Pickup · {{req.distance}} from you</span></span></div>
+          <div style="display: flex; gap: 10px; align-items: flex-start"><span style="flex: none; width: 44px; height: 24px; border-radius: 8px; background: #B42318; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">TO</span><span style="display: flex; flex-direction: column"><span style="font-size: 13px; font-weight: 700; line-height: 1.4">{{req.to}}</span><span style="font-size: 11px; color: #5B6472">Drop-off · {{req.tripKm}} trip</span></span></div>
+          <span style="font-size: 12px; color: #5B6472; line-height: 1.45">Items: {{req.details}}</span>
+        </div>
+      </sc-if>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <div style="background: #F4F7F6; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column"><span style="font-size: 11px; color: #5B6472; font-weight: 600">Your starting price</span><span style="font-size: 17px; font-weight: 800">{{req.priceText}}</span></div>
+        <div style="background: #F4F7F6; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column"><span style="font-size: 11px; color: #5B6472; font-weight: 600">Fee on arrival</span><span style="font-size: 17px; font-weight: 800">{{reqFeeText}}</span></div>
+      </div>
+      <sc-if value="{{req.isDelivery}}" hint-placeholder-val="{{false}}">
+        <div style="background: #FFF4E5; border-radius: 14px 14px 14px 4px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; font-weight: 800; color: #8A3A08">Delivery job · check the items first</span>
+          <span style="font-size: 12px; color: #6B3A16; line-height: 1.5">You may open and inspect the items before you accept. Decline if you find people, animals, hazardous or PDEA-regulated chemicals, drugs or medicines, alcohol, cigarettes or vapes, poison, illegal items or weapons. No strike.</span>
+          <button sc-camel-on-click="{{declineProhibited}}" style="align-self: flex-start; height: 38px; padding: 0 12px; border: 1.5px solid #B42318; border-radius: 12px 12px 12px 4px; background: #FFFFFF; color: #B42318; font-size: 12px; font-weight: 800; cursor: pointer">Decline: prohibited item</button>
+        </div>
+      </sc-if>
+      <div style="display: flex; gap: 8px">
+        <button sc-camel-on-click="{{decline}}" style="flex: 1; height: 50px; border-radius: 16px 16px 16px 4px; border: 1.5px solid #D0D5DD; background: #FFFFFF; color: #044D5E; font-size: 15px; font-weight: 700; cursor: pointer">Decline</button>
+        <button sc-camel-on-click="{{accept}}" style="{{acceptStyle}}">{{acceptLabel}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showWaiting}}" hint-placeholder-val="{{false}}">
+    <div style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 22px 22px 22px 6px; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+      <span style="font-size: 16px; font-weight: 800">{{waitTitle}}</span>
+      <span style="font-size: 13px; color: #5B6472; line-height: 1.5">{{waitSub}}</span>
+      <sc-if value="{{canSimulate}}" hint-placeholder-val="{{true}}">
+        <button sc-camel-on-click="{{newRequest}}" style="margin-top: 4px; height: 44px; padding: 0 16px; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 700; cursor: pointer">Simulate a new request (demo)</button>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{hasJob}}" hint-placeholder-val="{{false}}">
+    <button sc-camel-on-click="{{goJob}}" style="background: #044D5E; color: #FFFFFF; border: 0; border-radius: 22px 22px 22px 6px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; text-align: left">
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 700; color: #6EDA60">ACTIVE JOB · {{jobStatus}}</span><span style="font-size: 16px; font-weight: 800">{{job.service}}</span><span style="font-size: 12px; color: #B9D3D9">{{job.client}} · {{job.area}}</span></span>
+      <svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+    </button>
+  </sc-if>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+    <div style="background: #FFFFFF; border-radius: 18px 18px 18px 6px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 800">{{earnedText}}</span><span style="font-size: 11px; color: #5B6472; font-weight: 600">Earned today</span></div>
+    <div style="background: #FFFFFF; border-radius: 18px 18px 18px 6px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 800">{{jobsDone}}</span><span style="font-size: 11px; color: #5B6472; font-weight: 600">Jobs today</span></div>
+    <div style="background: #FFFFFF; border-radius: 18px 18px 18px 6px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 800">4.9</span><span style="font-size: 11px; color: #5B6472; font-weight: 600">Rating</span></div>
+  </div>
+  <span style="font-size: 12px; color: #5B6472; line-height: 1.45; margin-top: -6px">Ratings and reviews only count for jobs booked in TSKR. Repeat clients cost you only {{repeatText}}.</span>
+
+  <button sc-camel-on-click="{{goServices}}" style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; color: #044D5E">
+    <span style="width: 42px; height: 42px; border-radius: 14px 14px 14px 4px; background: #E6F1F3; display: flex; align-items: center; justify-content: center; flex: none"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg></span>
+    <span style="display: flex; flex-direction: column; flex: 1"><span style="font-size: 15px; font-weight: 700">My skills · {{skillCount}} of 5</span><span style="font-size: 12px; color: #5B6472">{{skillsSub}}</span></span>
+    <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#5B6472" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+  </button>
+
+  <a href="Main.dc.html" style="align-self: center; font-size: 13px; font-weight: 600; padding: 10px">Switch to client app</a>
+</div>
+</sc-if>
+
+<!-- ================= JOB (IN TRANSIT) ================= -->
+<sc-if value="{{isJob}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px 16px 110px; display: flex; flex-direction: column; gap: 14px">
+  <sc-if value="{{noJob}}" hint-placeholder-val="{{false}}">
+    <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 24px; text-align: center; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 16px; font-weight: 800">No active job</span><span style="font-size: 13px; color: #5B6472">Reply to a booking request on Home to start chatting with a client.</span></div>
+  </sc-if>
+
+  <sc-if value="{{isChatStage}}" hint-placeholder-val="{{true}}">
+    <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+      <span style="width: 42px; height: 42px; border-radius: 21px; background: #E6F1F3; color: #044D5E; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex: none">{{job.initials}}</span>
+      <span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 15px; font-weight: 800">{{job.client}}</span><span style="font-size: 12px; color: #5B6472">{{job.service}} · {{job.when}}</span></span>
+    </div>
+    <sc-if value="{{job.isDelivery}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border-radius: 18px 18px 18px 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.4">
+        <span><b style="color: #044D5E">FROM:</b> {{job.from}}</span>
+        <span><b style="color: #B42318">TO:</b> {{job.to}} · {{job.tripKm}}</span>
+      </div>
+    </sc-if>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{tmsgs}}" as="m" hint-placeholder-count="3">
+        <sc-if value="{{m.isText}}" hint-placeholder-val="{{true}}"><div style="{{m.bubble}}">{{m.text}}</div></sc-if>
+        <sc-if value="{{m.isPhoto}}" hint-placeholder-val="{{false}}">
+          <div style="{{m.photoWrap}}">
+            <div style="height: 150px; border-radius: 14px; background: #0A6378; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #CFE3E7"><svg width="40" height="40" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><span style="font-size: 12px; font-weight: 600">{{m.caption}}</span></div>
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #2E7D32; padding: 6px 2px 0"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>Taken in TSKR · {{m.stamp}}</span>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+    <sc-if value="{{isCompose}}" hint-placeholder-val="{{true}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #2E7D32">YOUR INITIAL OFFER</span>
+        <label style="display: flex; align-items: center; gap: 8px; height: 56px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; padding: 0 14px">
+          <span style="font-size: 22px; font-weight: 800">₱</span>
+          <input type="number" inputmode="numeric" min="0" step="100" value="{{offerAmt}}" sc-camel-on-input="{{onOfferAmt}}" aria-label="Offer amount" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 24px; font-weight: 800; color: #044D5E; background: transparent">
+        </label>
+        <span style="font-size: 12px; color: #5B6472; line-height: 1.5">Your starting price is {{job.priceText}}. Include labor and travel{{routeHint}}. You can confirm the final price on site. {{jobFeeText}} is deducted only when you tap Start job.</span>
+        <button sc-camel-on-click="{{sendOffer}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{sendLabel}}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isOffered}}" hint-placeholder-val="{{false}}">
+      <div style="align-self: flex-end; width: 82%; background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 6px 20px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #2E7D32">INITIAL OFFER SENT</span>
+        <span style="font-size: 26px; font-weight: 800">{{job.amountText}}</span>
+        <span style="font-size: 13px; color: #5B6472">Waiting for {{job.client}} to accept…</span>
+      </div>
+      <button sc-camel-on-click="{{clientAccepts}}" style="height: 46px; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 700; cursor: pointer">Client accepts the initial offer (demo)</button>
+    </sc-if>
+    <button sc-camel-on-click="{{askPhotos}}" style="align-self: flex-start; flex: none; height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #044D5E; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 600; cursor: pointer">Ask for photos of the area</button>
+    <div style="display: flex; gap: 8px; align-items: center; flex: none">
+      <button sc-camel-on-click="{{takePhoto}}" aria-label="Take a photo with the camera" style="width: 46px; height: 46px; border-radius: 23px; border: 0; background: #044D5E; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+      <label style="flex: 1; min-width: 0; display: flex; align-items: center; height: 46px; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 999px; padding: 0 16px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Message</span><input type="text" value="{{tdraft}}" sc-camel-on-input="{{onTdraft}}" placeholder="Type a message…" style="flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: #044D5E; outline: none"></label>
+      <button sc-camel-on-click="{{sendTmsg}}" aria-label="Send message" style="width: 46px; height: 46px; border-radius: 23px; border: 0; background: #6EDA60; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isTransit}}" hint-placeholder-val="{{false}}">
+    <div style="height: 190px; flex: none; border-radius: 22px 22px 22px 6px; background: #E7EEF0; position: relative; overflow: hidden">
+      <svg width="358" height="190" sc-camel-view-box="0 0 358 190" aria-hidden="true" style="position: absolute; inset: 0">
+        <rect x="96" y="62" width="76" height="40" rx="6" fill="#D6E4E2"></rect><rect x="206" y="128" width="66" height="46" rx="6" fill="#D6E4E2"></rect>
+        <path d="M0 46h358M0 118h358M70 0v190M190 0v190M290 0v190" stroke="#FFFFFF" stroke-width="10" fill="none"></path>
+        <path d="M70 160 V118 H190 V46 H290" stroke="#044D5E" stroke-width="4" stroke-dasharray="8 7" stroke-linecap="round" fill="none"></path>
+      </svg>
+      <span style="position: absolute; left: 275px; top: 31px; width: 30px; height: 30px; border-radius: 15px 15px 15px 4px; background: #6EDA60; border: 3px solid #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2)"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"></path></svg></span>
+<sc-if value="{{showDrop}}" hint-placeholder-val="{{false}}">
+        <svg width="358" height="190" sc-camel-view-box="0 0 358 190" aria-hidden="true" style="position: absolute; inset: 0"><path d="M290 46 V118 H190 V140" stroke="#6EDA60" stroke-width="4" stroke-dasharray="8 7" stroke-linecap="round" fill="none"></path></svg>
+        <div style="position: absolute; left: 175px; top: 128px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="width: 30px; height: 30px; border-radius: 15px 15px 15px 4px; background: #B42318; border: 3px solid #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2)"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"></path></svg></span><span style="background: #FFFFFF; border-radius: 6px; padding: 1px 6px; font-size: 10px; font-weight: 800; color: #B42318">DROP-OFF</span></div>
+      </sc-if>
+      <div style="{{pinStyle}}">MD</div>
+      <span style="position: absolute; left: 12px; top: 12px; background: #FFFFFF; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700">{{etaText}}</span>
+      <sc-if value="{{notDrop}}" hint-placeholder-val="{{true}}"><span style="position: absolute; right: 12px; bottom: 12px; background: #044D5E; color: #FFFFFF; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700">Client sees your live location</span></sc-if>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <button sc-camel-on-click="{{openSos}}" style="flex: 1; height: 48px; border: 0; border-radius: 16px 16px 16px 4px; background: #B42318; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"></path><path d="M12 8v5M12 16.5v.01"></path></svg>SOS</button>
+      <button sc-camel-on-click="{{shareTrip}}" style="flex: 1.6; height: 48px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; background: #FFFFFF; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"></path></svg>Share my job</button>
+    </div>
+    <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #2E7D32">{{jobStatus}}</span>
+      <span style="font-size: 19px; font-weight: 800">{{job.service}}</span>
+      <span style="font-size: 13px; color: #5B6472">{{job.client}} · {{job.addrLine}}</span>
+      <div style="height: 8px; border-radius: 4px; background: #E6F1F3; margin-top: 10px; overflow: hidden"><div style="{{progressStyle}}"></div></div>
+      <div style="display: flex; gap: 8px; margin-top: 12px">
+        <button aria-label="Chat with client" style="flex: 1; height: 46px; border-radius: 14px 14px 14px 4px; border: 1.5px solid #D0D5DD; background: #FFFFFF; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Chat</button>
+        <button aria-label="Call client" style="flex: 1; height: 46px; border-radius: 14px 14px 14px 4px; border: 1.5px solid #D0D5DD; background: #FFFFFF; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Call</button>
+        <button aria-label="Open navigation" style="flex: 1; height: 46px; border-radius: 14px 14px 14px 4px; border: 1.5px solid #D0D5DD; background: #FFFFFF; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Navigate</button>
+      </div>
+    </div>
+    <sc-if value="{{isOtp}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 16px; font-weight: 800">Enter the client’s arrival code</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Ask {{job.client}} for the 4-digit code in their TSKR app. This confirms you’re the right tasker. (Demo code: 4827)</span>
+        <button sc-camel-on-click="{{openIdPop}}" style="border: 0; border-radius: 12px 12px 12px 4px; background: #E6F1F3; color: #044D5E; padding: 10px 12px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 8px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M14.5 10h4M14.5 13.5h3"></path></svg><span>You may also ask to see the client’s ID. It should say <b>{{job.client}}</b>.</span></button>
+        <input type="text" inputmode="numeric" maxlength="4" value="{{otpIn}}" sc-camel-on-input="{{onOtp}}" aria-label="Arrival code" placeholder="• • • •" style="height: 60px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; text-align: center; font: inherit; font-size: 28px; font-weight: 800; letter-spacing: 14px; color: #044D5E; outline: none">
+        <sc-if value="{{hasOtpErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{otpErr}}</span></sc-if>
+        <button sc-camel-on-click="{{confirmOtp}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Confirm arrival</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isFinal}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 16px; font-weight: 800">Confirm the final price</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Check the actual work. If it’s harder than expected, set a new price and say why. Initial offer: {{job.initialText}}.</span>
+        <label style="display: flex; align-items: center; gap: 8px; height: 56px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; padding: 0 14px">
+          <span style="font-size: 22px; font-weight: 800">₱</span>
+          <input type="number" inputmode="numeric" min="0" step="100" value="{{finalAmt}}" sc-camel-on-input="{{onFinalAmt}}" aria-label="Final price" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 24px; font-weight: 800; color: #044D5E; background: transparent">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; font-weight: 700">Reason for the change</span><input type="text" value="{{finalReason}}" sc-camel-on-input="{{onFinalReason}}" placeholder="e.g. Unit is high up, needs a tall ladder" style="height: 46px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 12px; font: inherit; font-size: 14px; color: #044D5E; outline: none"></label>
+        <button sc-camel-on-click="{{takePhoto}}" style="height: 44px; border: 1.5px solid #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 700; cursor: pointer">Take a photo of the work area</button>
+        <button sc-camel-on-click="{{sendFinal}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{finalLabel}}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isFinalSent}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.6px; color: #2E7D32">FINAL PRICE SENT</span>
+        <span style="font-size: 26px; font-weight: 800">{{finalText}}</span>
+        <span style="font-size: 13px; color: #5B6472">Waiting for {{job.client}} to accept. If they decline, the booking is cancelled and no coins are deducted.</span>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button sc-camel-on-click="{{clientDeclinesFinal}}" style="flex: 1; height: 46px; border: 1.5px dashed #B42318; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #B42318; font-size: 13px; font-weight: 700; cursor: pointer">Client declines (demo)</button>
+        <button sc-camel-on-click="{{clientAcceptsFinal}}" style="flex: 1; height: 46px; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 13px; font-weight: 700; cursor: pointer">Client accepts (demo)</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isReady}}" hint-placeholder-val="{{false}}">
+      <div style="background: #E6F1F3; border-radius: 20px 20px 20px 6px; padding: 14px 16px; font-size: 13px; line-height: 1.5">Final price agreed: <b>{{finalText}}</b>. Tap Start job when you begin. {{jobFeeText}} will be deducted then.</div>
+      <button sc-camel-on-click="{{startJob}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Start job · −{{jobFeeText}}</button>
+    </sc-if>
+    <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 14px"><span style="color: #5B6472">Collect from client · cash or your QR</span><span style="font-weight: 800">{{job.amountText}}</span></div>
+    <sc-if value="{{isInspect}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 16px; font-weight: 800">Check the items before you start</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Open the package and look inside. You can decline if anything is unsafe, prohibited or too big. No strike and no coins deducted.</span>
+        <sc-for list="{{inspectChecks}}" as="c" hint-placeholder-count="3">
+          <button sc-camel-on-click="{{c.pick}}" role="checkbox" aria-checked="{{c.aria}}" style="display: flex; align-items: flex-start; gap: 10px; border: 0; background: transparent; padding: 4px 0; cursor: pointer; text-align: left; font-size: 14px; line-height: 1.45; color: #044D5E; font-weight: 600"><span style="{{c.box}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span><span>{{c.label}}</span></button>
+        </sc-for>
+        <button sc-camel-on-click="{{itemsOk}}" style="{{itemsOkStyle}}">Items are OK · confirm final price</button>
+        <button sc-camel-on-click="{{declineItems}}" style="height: 46px; border: 1.5px solid #B42318; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #B42318; font-size: 14px; font-weight: 800; cursor: pointer">Decline: unsafe or prohibited item</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isProofStep}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border: 2px solid #6EDA60; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 16px; font-weight: 800">Proof of delivery</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">At the drop-off, take a photo of the items with the recipient or at the door. It’s sent to the client right away.</span>
+        <sc-if value="{{hasProof}}" hint-placeholder-val="{{false}}">
+          <div style="height: 130px; border-radius: 14px 14px 14px 4px; background: linear-gradient(135deg, #CFE3E7, #9FBFC6); position: relative"><span style="position: absolute; left: 8px; bottom: 8px; background: rgba(4,77,94,0.8); color: #FFFFFF; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700">{{proofStamp}}</span></div>
+        </sc-if>
+        <button sc-camel-on-click="{{takeProof}}" style="height: 48px; border: 1.5px solid #044D5E; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #044D5E; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg>{{proofBtn}}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isDoneStage}}" hint-placeholder-val="{{false}}">
+      <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 16px; font-weight: 800">How did {{job.client}} pay you?</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Confirm once you’ve received {{job.amountText}}. If they pay to your QR, check your e-wallet or bank app first.</span>
+        <div style="display: flex; gap: 8px"><sc-for list="{{paidOpts}}" as="o" hint-placeholder-count="3"><button sc-camel-on-click="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px; border: 2px solid #6EDA60">
+        <span style="font-size: 16px; font-weight: 800">Rate {{job.client}}</span>
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Your rating helps other taskers know who they’re working with.</span>
+        <div style="display: flex; gap: 6px">
+          <sc-for list="{{rateStars}}" as="r" hint-placeholder-count="5">
+            <button sc-camel-on-click="{{r.pick}}" aria-label="{{r.label}}" style="width: 48px; height: 48px; border: 0; border-radius: 14px 14px 14px 4px; background: #F4F7F6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="{{r.fill}}" stroke="{{r.stroke}}" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"></path></svg></button>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{rateTags}}" as="t" hint-placeholder-count="4">
+            <button sc-camel-on-click="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{showAdvance}}" hint-placeholder-val="{{true}}">
+      <button sc-camel-on-click="{{advance}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">{{nextLabel}}</button>
+    </sc-if>
+    <sc-if value="{{isOnway}}" hint-placeholder-val="{{false}}">
+      <button sc-camel-on-click="{{clientCancelsLate}}" style="height: 44px; border: 1.5px dashed #B42318; border-radius: 14px 14px 14px 4px; background: #FFFFFF; color: #B42318; font-size: 13px; font-weight: 700; cursor: pointer">Client cancels while you’re on the way (demo)</button>
+    </sc-if>
+    <div style="display: flex; justify-content: center; gap: 4px">
+      <sc-if value="{{canCancelJob}}" hint-placeholder-val="{{true}}"><button sc-camel-on-click="{{openCancel}}" style="border: 0; background: transparent; color: #B42318; font-size: 13px; font-weight: 700; padding: 10px 12px; cursor: pointer">Cancel job</button></sc-if>
+      <button sc-camel-on-click="{{openReport}}" style="border: 0; background: transparent; color: #5B6472; font-size: 13px; font-weight: 700; padding: 10px 12px; cursor: pointer">Report or block client</button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ================= SKILLS ================= -->
+<sc-if value="{{isServices}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px 16px 110px; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; flex-direction: column; gap: 2px">
+    <h1 style="margin: 0; font-size: 22px; font-weight: 800">My skills</h1>
+    <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Pick your skills and set your own base fee. Clients see it as “Starts at”. Your first 2 skills are free. Each extra skill costs {{extraText}} per week, up to 5 skills.</span>
+  </div>
+  <div style="background: #FFFFFF; border-radius: 18px 18px 18px 6px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px">
+    <span style="font-size: 13px; color: #5B6472; font-weight: 600">Weekly skill charge</span>
+    <span style="font-size: 15px; font-weight: 800">{{weeklyText}}</span>
+  </div>
+  <sc-for list="{{mySkills}}" as="k" hint-placeholder-count="2">
+    <div style="background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 20px 20px 20px 6px; padding: 14px; display: flex; align-items: center; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0">
+        <span style="{{k.tagStyle}}">{{k.tag}}</span>
+        <span style="font-size: 15px; font-weight: 700">{{k.name}}</span>
+        <label style="display: flex; align-items: center; gap: 8px; margin-top: 4px">
+          <span style="font-size: 12px; color: #5B6472; font-weight: 600; flex: none">Starts at ₱</span>
+          <input type="number" inputmode="numeric" min="0" step="50" value="{{k.price}}" sc-camel-on-input="{{k.setPrice}}" aria-label="Starting price" style="width: 110px; height: 40px; box-sizing: border-box; border: 1.5px solid #D0D5DD; border-radius: 12px 12px 12px 4px; padding: 0 10px; font: inherit; font-size: 15px; font-weight: 700; color: #044D5E; background: #FFFFFF">
+          
+        </label>
+      </div>
+      <button sc-camel-on-click="{{k.remove}}" aria-label="Remove skill" style="width: 44px; height: 44px; border-radius: 14px; border: 1.5px solid #E4E7EC; background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#5B6472" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button>
+    </div>
+  </sc-for>
+  <sc-if value="{{canAdd}}" hint-placeholder-val="{{true}}">
+    <div style="background: #FFFFFF; border: 1.5px dashed #B9D3D9; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="font-size: 16px; font-weight: 800">Add a skill</span><span style="{{addCostStyle}}">{{addCostNote}}</span></span>
+      <label style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 12px; font-weight: 700">Skill</span>
+        <sc-raw-select value="{{addSel}}" sc-camel-on-change="{{onAddSel}}" style="height: 50px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 12px; font: inherit; font-size: 15px; color: #044D5E; background: #FFFFFF">
+          <option value="">Choose a skill…</option>
+          <optgroup label="Home repairs"><option value="Aircon cleaning">Aircon cleaning</option><option value="Aircon repair and installation">Aircon repair and installation</option><option value="Plumbing">Plumbing</option><option value="Electrical work">Electrical work</option><option value="Carpentry">Carpentry</option><option value="Painting">Painting</option><option value="Tile setting">Tile setting</option><option value="Appliance repair">Appliance repair</option></optgroup>
+          <optgroup label="Cleaning"><option value="House cleaning">House cleaning</option><option value="Deep cleaning">Deep cleaning</option><option value="Sofa and mattress cleaning">Sofa and mattress cleaning</option><option value="Solar panel cleaning">Solar panel cleaning</option></optgroup>
+          <optgroup label="Tech and gadgets"><option value="Computer and laptop repair">Computer and laptop repair</option><option value="Phone repair and battery replacement">Phone repair and battery replacement</option><option value="Wi-Fi and network setup">Wi-Fi and network setup</option><option value="CCTV installation">CCTV installation</option></optgroup>
+          <optgroup label="Auto"><option value="Car mechanic">Car mechanic</option><option value="Car wash">Car wash</option></optgroup>
+          <optgroup label="Garden and pets"><option value="Gardening">Gardening</option><option value="Pet grooming">Pet grooming</option></optgroup>
+          <optgroup label="Lessons"><option value="Academic tutoring">Academic tutoring</option><option value="Music lessons">Music lessons</option><option value="AI lessons">AI lessons</option></optgroup>
+          <optgroup label="Care and wellness"><option value="Caregiver">Caregiver</option><option value="Yaya or babysitter">Yaya or babysitter</option><option value="Fitness coach">Fitness coach</option><option value="Wellness coach">Wellness coach</option></optgroup>
+          <optgroup label="Grooming and beauty"><option value="Barber">Barber</option><option value="Hair and makeup">Hair and makeup</option></optgroup>
+          <optgroup label="Creative and events"><option value="Photography">Photography</option><option value="Video editing">Video editing</option><option value="Graphic design">Graphic design</option><option value="Events host">Events host</option><option value="Musician">Musician</option></optgroup>
+          <optgroup label="Delivery"><option value="Driver for hire">Driver for hire (client’s car only)</option><option value="Courier and delivery">Courier and delivery (motorcycle)</option></optgroup>
+          <option value="__other">Others (please specify)</option>
+        </sc-raw-select>
+      </label>
+      <sc-if value="{{isOther}}" hint-placeholder-val="{{false}}">
+        <label style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; font-weight: 700">Your skill</span>
+          <input type="text" value="{{addOther}}" sc-camel-on-input="{{onAddOther}}" placeholder="e.g. Aquarium cleaning" style="height: 48px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 12px; font: inherit; font-size: 15px; color: #044D5E">
+          <span style="font-size: 12px; color: #5B6472; line-height: 1.45">We’ll review it. Popular requests get added to the skills list.</span>
+        </label>
+      </sc-if>
+      <label style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 12px; font-weight: 700">Base fee (starts at)</span>
+        <span style="display: flex; align-items: center; gap: 8px; height: 50px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 12px"><span style="font-size: 17px; font-weight: 800">₱</span><input type="number" inputmode="numeric" min="0" step="50" value="{{addPrice}}" sc-camel-on-input="{{onAddPrice}}" placeholder="e.g. 800" aria-label="Base fee" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 17px; font-weight: 700; color: #044D5E; background: transparent"></span>
+      </label>
+      <sc-if value="{{hasAddErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{addErr}}</span></sc-if>
+      <button sc-camel-on-click="{{addSkill}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Add skill</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{atMax}}" hint-placeholder-val="{{false}}">
+    <div style="background: #E6F1F3; border-radius: 18px 18px 18px 6px; padding: 14px; font-size: 13px; line-height: 1.5">You’ve reached the maximum of 5 skills. Remove one to add another.</div>
+  </sc-if>
+
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <span style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 16px; font-weight: 800">Service radius</span><span style="font-size: 16px; font-weight: 800; color: #2E7D32">{{radiusText}}</span></span>
+    <input type="range" min="1" max="10" step="0.5" value="{{radius}}" sc-camel-on-input="{{onRadius}}" aria-label="Service radius in kilometers" style="width: 100%; accent-color: #044D5E">
+    <span style="display: flex; justify-content: space-between; font-size: 11px; color: #5B6472; font-weight: 600"><span>1 km</span><span>10 km max</span></span>
+    <span style="font-size: 12px; color: #5B6472; line-height: 1.45">You’ll only get booking requests within this distance from your location. The maximum is 10 km. Clients see the nearest taskers first, with your ETA.</span>
+  </div>
+  <span style="font-size: 12px; color: #5B6472; line-height: 1.5">Massage, escort, usherette, modeling and other personal services aren’t allowed on TSKR.</span>
+</div>
+</sc-if>
+
+<!-- ================= WALLET ================= -->
+<sc-if value="{{isWallet}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px 16px 110px; display: flex; flex-direction: column; gap: 14px">
+  <div style="background: #FFFFFF; border-radius: 24px 24px 24px 6px; padding: 20px; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden">
+    <svg width="160" height="144" sc-camel-view-box="0 0 80 72" fill="none" stroke="#6EDA60" stroke-opacity="0.25" stroke-width="7" aria-hidden="true" style="position: absolute; right: -36px; bottom: -34px"><path d="M20 4h40a16 16 0 0 1 16 16v20a16 16 0 0 1-16 16H30l-14 12 2-12A16 16 0 0 1 4 40V20A16 16 0 0 1 20 4z"></path></svg>
+    <span style="font-size: 13px; color: #5B6472; font-weight: 600">Coin balance</span>
+    <span style="font-size: 36px; font-weight: 800; line-height: 1.1">{{coinsText}}</span>
+    <span style="font-size: 12px; color: #5B6472">1 coin = ₱1 · Booking fee {{feeText}} (repeat client {{repeatText}}) · Extra skill {{extraText}}/week</span>
+    <button sc-camel-on-click="{{openTopUp}}" style="position: relative; margin-top: 10px; height: 50px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Buy 1,000 coins · ₱1,000</button>
+  </div>
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h2 style="margin: 0; font-size: 16px; font-weight: 800">History</h2>
+    <button sc-camel-on-click="{{runWeekly}}" style="border: 0; background: transparent; color: #044D5E; font-size: 12px; font-weight: 700; padding: 10px 0; cursor: pointer; text-decoration: underline">Run weekly charge (demo)</button>
+  </div>
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; display: flex; flex-direction: column">
+    <sc-for list="{{history}}" as="h" hint-placeholder-count="3">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #EEF0F3">
+        <span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 600">{{h.label}}</span><span style="font-size: 12px; color: #5B6472">{{h.when}}</span></span>
+        <span style="{{h.amtStyle}}">{{h.amtText}}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= ME ================= -->
+<sc-if value="{{isMe}}" hint-placeholder-val="{{false}}">
+<div class="scroll" style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px 16px 110px; display: flex; flex-direction: column; gap: 14px">
+
+  <!-- Earnings -->
+  <div style="background: #044D5E; color: #FFFFFF; border-radius: 24px 24px 24px 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-size: 13px; font-weight: 700; color: #B9D3D9">Earnings</span>
+      <div style="display: flex; background: rgba(255,255,255,0.12); border-radius: 999px; padding: 3px">
+        <sc-for list="{{periodOpts}}" as="o" hint-placeholder-count="2"><button sc-camel-on-click="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column"><span style="font-size: 32px; font-weight: 800; line-height: 1.1">{{earnTotal}}</span><span style="font-size: 12px; color: #B9D3D9">{{earnSub}}</span></div>
+    <div style="display: flex; align-items: flex-end; gap: 8px; height: 90px">
+      <sc-for list="{{earnBars}}" as="b" hint-placeholder-count="7">
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end"><div style="{{b.style}}"></div><span style="font-size: 10px; color: #B9D3D9; font-weight: 600">{{b.label}}</span></div>
+      </sc-for>
+    </div>
+    <span style="font-size: 11px; color: #B9D3D9; line-height: 1.45">Amounts you collected directly from clients for jobs booked in TSKR. Coin fees are shown in Wallet.</span>
+  </div>
+
+  <!-- Payment QR -->
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 16px; font-weight: 800">Payment QR</span><span style="{{qrTagStyle}}">{{qrTag}}</span></div>
+    <span style="font-size: 12px; color: #5B6472; line-height: 1.45">Clients see it only after they accept your offer. They use it to pay you for the job and for the ₱100 late-cancellation fee. TSKR doesn’t hold this money.</span>
+    <sc-if value="{{hasQr}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; gap: 12px; align-items: center">
+        <span style="flex: none; padding: 6px; background: #F4F7F6; border-radius: 14px 14px 14px 4px"><svg width="120" height="120" sc-camel-view-box="-2 -2 29 29" role="img" aria-label="Payment QR code" style="display: block; background: #FFFFFF; border-radius: 10px"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM15 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM10 7h1v1h-1zM15 7h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM13 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM17 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM2 9h1v1h-1zM3 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM18 9h1v1h-1zM23 9h1v1h-1zM24 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM3 10h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM13 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM3 13h1v1h-1zM9 13h1v1h-1zM11 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM19 13h1v1h-1zM20 13h1v1h-1zM23 13h1v1h-1zM2 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM10 14h1v1h-1zM13 14h1v1h-1zM14 14h1v1h-1zM15 14h1v1h-1zM16 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM23 14h1v1h-1zM1 15h1v1h-1zM6 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM15 15h1v1h-1zM19 15h1v1h-1zM21 15h1v1h-1zM22 15h1v1h-1zM3 16h1v1h-1zM8 16h1v1h-1zM15 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM22 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM11 17h1v1h-1zM14 17h1v1h-1zM17 17h1v1h-1zM19 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM17 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM13 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM21 19h1v1h-1zM22 19h1v1h-1zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM12 20h1v1h-1zM14 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM23 20h1v1h-1zM24 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM20 21h1v1h-1zM23 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM9 22h1v1h-1zM11 22h1v1h-1zM14 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM9 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM17 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM21 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM0 24h1v1h-1zM1 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM14 24h1v1h-1zM15 24h1v1h-1zM18 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1z" fill="#0B1F26"></path></svg></span>
+        <span style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+          <span style="font-size: 14px; font-weight: 800">{{qrWallet}}</span>
+          <span style="font-size: 12px; color: #5B6472">Account name must match your ID: Mark Dela Cruz</span>
+          <button sc-camel-on-click="{{openQrSheet}}" style="align-self: flex-start; height: 38px; padding: 0 12px; border: 1.5px solid #044D5E; border-radius: 12px 12px 12px 4px; background: #FFFFFF; color: #044D5E; font-size: 12px; font-weight: 700; cursor: pointer">Replace QR</button>
+        </span>
+      </div>
+    </sc-if>
+    <sc-if value="{{noQr}}" hint-placeholder-val="{{false}}">
+      <button sc-camel-on-click="{{openQrSheet}}" style="height: 50px; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #F4F7F6; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Upload your payment QR</button>
+      <span style="font-size: 12px; color: #B42318; font-weight: 600">You need a payment QR before you can send offers.</span>
+    </sc-if>
+  </div>
+
+  <!-- Availability -->
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 16px; font-weight: 800">Availability</span><span style="font-size: 12px; color: #5B6472; font-weight: 600">{{availSummary}}</span></div>
+    <span style="font-size: 12px; color: #5B6472">Clients can only schedule you on these days and hours.</span>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{dayOpts}}" as="d" hint-placeholder-count="7"><button sc-camel-on-click="{{d.pick}}" aria-pressed="{{d.on}}" style="{{d.style}}">{{d.label}}</button></sc-for>
+    </div>
+    <div style="display: flex; gap: 8px">
+      <label style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; font-weight: 700">From</span>
+        <sc-raw-select value="{{hFrom}}" sc-camel-on-change="{{onFrom}}" style="height: 46px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 10px; font: inherit; font-size: 14px; color: #044D5E; background: #FFFFFF">
+          <option value="6">6:00 AM</option><option value="7">7:00 AM</option><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option>
+        </sc-raw-select></label>
+      <label style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; font-weight: 700">To</span>
+        <sc-raw-select value="{{hTo}}" sc-camel-on-change="{{onTo}}" style="height: 46px; border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 0 10px; font: inherit; font-size: 14px; color: #044D5E; background: #FFFFFF">
+          <option value="16">4:00 PM</option><option value="17">5:00 PM</option><option value="18">6:00 PM</option><option value="19">7:00 PM</option><option value="20">8:00 PM</option>
+        </sc-raw-select></label>
+    </div>
+    <span style="font-size: 12px; color: #5B6472">Going Offline in the header pauses all new requests anytime.</span>
+  </div>
+
+  <!-- Portfolio -->
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 16px; font-weight: 800">Portfolio · {{portCount}}</span><span style="font-size: 12px; color: #5B6472; font-weight: 600">Shown on your profile</span></div>
+    <span style="font-size: 12px; color: #5B6472; line-height: 1.45">Photos of your finished work. Camera only, so every photo is real and stamped by TSKR.</span>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+      <button sc-camel-on-click="{{addPortfolio}}" style="aspect-ratio: 1; border: 1.5px dashed #044D5E; border-radius: 14px 14px 14px 4px; background: #F4F7F6; color: #044D5E; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg>Take photo</button>
+      <sc-for list="{{portfolio}}" as="p" hint-placeholder-count="4">
+        <div style="{{p.style}}"><span style="position: absolute; left: 4px; right: 4px; bottom: 4px; font-size: 8px; font-weight: 700; color: #FFFFFF; background: rgba(4,77,94,0.75); border-radius: 6px; padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">TSKR · {{p.date}}</span></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- Job history -->
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <h2 style="margin: 0; font-size: 16px; font-weight: 800">Job history</h2>
+    <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; display: flex; flex-direction: column">
+      <sc-for list="{{jobHistory}}" as="j" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #EEF0F3">
+          <span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{j.service}}</span><span style="font-size: 12px; color: #5B6472">{{j.client}} · {{j.when}}</span><span style="{{j.statusStyle}}">{{j.status}}</span></span>
+          <span style="font-size: 15px; font-weight: 800; flex: none">{{j.amtText}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 15px; font-weight: 800">Reliability</span><span style="{{strikeTagStyle}}">{{strikeTag}}</span></div>
+    <span style="font-size: 13px; color: #5B6472; line-height: 1.5">{{reliabilityText}}</span>
+    <div style="height: 8px; border-radius: 4px; background: #E6F1F3; overflow: hidden"><div style="{{reliabilityBar}}"></div></div>
+    <div style="display: flex; flex-direction: column; border: 1px solid #EEF0F3; border-radius: 14px 14px 14px 4px; overflow: hidden">
+      <sc-for list="{{ladder}}" as="l" hint-placeholder-count="5">
+        <div style="{{l.style}}"><span style="font-weight: 800; flex: none; width: 92px">{{l.k}}</span><span style="flex: 1">{{l.v}}</span></div>
+      </sc-for>
+    </div>
+    <span style="font-size: 11px; color: #5B6472; line-height: 1.45">Strikes count for unjustified cancellations after the client accepts your offer. A no-show (not arriving and not cancelling) counts as 2 strikes.</span>
+  </div>
+
+  <div style="background: #FFFFFF; border-radius: 20px 20px 20px 6px; display: flex; flex-direction: column">
+    <button sc-camel-on-click="{{openDeact}}" style="border: 0; border-bottom: 1px solid #EEF0F3; background: transparent; color: #044D5E; padding: 16px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left">Deactivate account</button>
+    <button sc-camel-on-click="{{openDelete}}" style="border: 0; background: transparent; color: #B42318; padding: 16px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left">Delete account</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= TOAST ================= -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+  <div role="status" style="position: absolute; top: 150px; left: 16px; right: 16px; background: #044D5E; color: #FFFFFF; border-radius: 16px 16px 16px 4px; padding: 12px 14px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 24px rgba(4,77,94,0.3)">{{toast}}</div>
+</sc-if>
+
+<!-- ================= BUY COINS SHEET ================= -->
+<sc-if value="{{showTopUp}}" hint-placeholder-val="{{false}}">
+  <div style="position: absolute; inset: 0; background: rgba(4,30,38,0.45); display: flex; flex-direction: column; justify-content: flex-end">
+    <div style="background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800">Buy coins</h2>
+        <button sc-camel-on-click="{{closeTopUp}}" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F7F6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+      </div>
+      <div style="background: #E6F1F3; border-radius: 18px 18px 18px 6px; padding: 16px; display: flex; justify-content: space-between; align-items: center"><span style="font-size: 15px; font-weight: 700">1,000 coins</span><span style="font-size: 20px; font-weight: 800">₱1,000</span></div>
+      <span style="font-size: 13px; font-weight: 700">Pay with</span>
+      <div style="display: flex; gap: 8px">
+        <sc-for list="{{payOpts}}" as="o" hint-placeholder-count="2">
+          <button sc-camel-on-click="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+        </sc-for>
+      </div>
+      <button sc-camel-on-click="{{topUp}}" style="height: 56px; border: 0; border-radius: 18px 18px 18px 6px; background: #044D5E; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Pay ₱1,000</button>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= SAFETY SHEETS ================= -->
+<sc-if value="{{hasSheet}}" hint-placeholder-val="{{false}}">
+  <div style="position: absolute; inset: 0; background: rgba(4,30,38,0.45); display: flex; flex-direction: column; justify-content: flex-end">
+    <div class="scroll" style="background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 12px; max-height: 92%; overflow-y: auto; box-sizing: border-box">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800">{{sheetTitle}}</h2>
+        <button sc-camel-on-click="{{closeSheet}}" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F7F6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+      </div>
+      <sc-if value="{{isSosSheet}}" hint-placeholder-val="{{false}}">
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Use this if you feel unsafe at the client’s place. Your live location and job details go with every alert.</span>
+        <a href="tel:911" style="height: 54px; border-radius: 16px 16px 16px 4px; background: #B42318; color: #FFFFFF; font-size: 16px; font-weight: 800; text-decoration: none; display: flex; align-items: center; justify-content: center">Call 911</a>
+        <button sc-camel-on-click="{{alertTeam}}" style="height: 50px; border: 1.5px solid #B42318; border-radius: 16px 16px 16px 4px; background: #FFFFFF; color: #B42318; font-size: 15px; font-weight: 700; cursor: pointer">Alert TSKR safety team</button>
+        <button sc-camel-on-click="{{sendContact}}" style="height: 50px; border: 1.5px solid #D0D5DD; border-radius: 16px 16px 16px 4px; background: #FFFFFF; color: #044D5E; font-size: 15px; font-weight: 700; cursor: pointer">Send my location to emergency contact</button>
+      </sc-if>
+      <sc-if value="{{isCancelSheet}}" hint-placeholder-val="{{false}}">
+        <div style="background: #FFF4E5; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #6B3A16; line-height: 1.5; font-weight: 600">{{cancelWarn}}</div>
+        <span style="font-size: 12px; font-weight: 700">Reason</span>
+        <sc-for list="{{tCancelReasons}}" as="r" hint-placeholder-count="4"><button sc-camel-on-click="{{r.pick}}" style="{{r.style}}">{{r.label}}</button></sc-for>
+        <button sc-camel-on-click="{{confirmCancel}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #B42318; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Cancel this job</button>
+        <button sc-camel-on-click="{{closeSheet}}" style="height: 44px; border: 0; background: transparent; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Keep the job</button>
+      </sc-if>
+      <sc-if value="{{isQrSheet}}" hint-placeholder-val="{{false}}">
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Save your QR from your e-wallet or bank app, then upload it here. This is the only photo you can upload from your gallery.</span>
+        <span style="font-size: 12px; font-weight: 700">QR from</span>
+        <div style="display: flex; gap: 8px"><sc-for list="{{qrOpts}}" as="o" hint-placeholder-count="3"><button sc-camel-on-click="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div>
+        <div style="background: #FFF4E5; border-radius: 14px 14px 14px 4px; padding: 10px 12px; font-size: 12px; color: #6B3A16; line-height: 1.5; font-weight: 600">The account name on the QR must match your verified ID. We check every new QR before clients see it.</div>
+        <button sc-camel-on-click="{{uploadQr}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Choose QR image from gallery</button>
+      </sc-if>
+      <sc-if value="{{isAcctSheet}}" hint-placeholder-val="{{false}}">
+        <div style="background: #FFF4E5; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #6B3A16; line-height: 1.5; font-weight: 600">{{acctWarn}}</div>
+        <span style="font-size: 12px; font-weight: 700">Why are you leaving?</span>
+        <sc-for list="{{acctReasons}}" as="r" hint-placeholder-count="5"><button sc-camel-on-click="{{r.pick}}" style="{{r.style}}">{{r.label}}</button></sc-for>
+        <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; font-weight: 700">Tell us more (optional)</span><textarea value="{{acctMore}}" sc-camel-on-input="{{onAcctMore}}" rows="2" placeholder="Anything we could do better?" style="border: 1.5px solid #D0D5DD; border-radius: 14px 14px 14px 4px; padding: 10px 12px; font: inherit; font-size: 14px; color: #044D5E; resize: none; outline: none"></textarea></label>
+        <div style="background: #F4F7F6; border-radius: 14px 14px 14px 4px; padding: 12px 14px; font-size: 12px; color: #344054; line-height: 1.5">{{acctKeep}}</div>
+        <button sc-camel-on-click="{{toggleAcctAck}}" role="checkbox" aria-checked="{{acctAckAria}}" style="display: flex; align-items: flex-start; gap: 10px; border: 0; background: transparent; padding: 4px 0; cursor: pointer; text-align: left; font-size: 13px; line-height: 1.45; color: #044D5E; font-weight: 600"><span style="{{acctAckBox}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span><span>I understand how my data is kept</span></button>
+        <sc-if value="{{hasAcctErr}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #B42318; font-weight: 600">{{acctErr}}</span></sc-if>
+        <button sc-camel-on-click="{{confirmAcct}}" style="{{acctBtnStyle}}">{{acctBtnLabel}}</button>
+        <button sc-camel-on-click="{{closeSheet}}" style="height: 44px; border: 0; background: transparent; color: #044D5E; font-size: 14px; font-weight: 700; cursor: pointer">Keep my account</button>
+      </sc-if>
+      <sc-if value="{{isReportSheet}}" hint-placeholder-val="{{false}}">
+        <span style="font-size: 13px; color: #5B6472; line-height: 1.5">Tell us what happened. The client won’t see who reported them.</span>
+        <sc-for list="{{tReportReasons}}" as="r" hint-placeholder-count="4"><button sc-camel-on-click="{{r.pick}}" style="{{r.style}}">{{r.label}}</button></sc-for>
+        <button sc-camel-on-click="{{toggleBlock}}" style="display: flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 6px 0; cursor: pointer; font-size: 14px; font-weight: 600; color: #044D5E; text-align: left"><span style="{{blockBox}}"></span>Block this client so they can’t book me again</button>
+        <button sc-camel-on-click="{{submitReport}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Send report</button>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{hasIdPop}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-modal="true" aria-label="Check your client’s ID when you arrive" style="position: absolute; inset: 0; z-index: 30; background: rgba(4,30,38,0.55); display: flex; align-items: center; justify-content: center; padding: 20px">
+    <div style="width: 100%; background: #FFFFFF; border-radius: 28px 28px 28px 8px; padding: 22px 20px 18px; display: flex; flex-direction: column; gap: 12px; position: relative">
+      <button sc-camel-on-click="{{closeIdPop}}" aria-label="Close" style="position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 20px; border: 0; background: #F4F7F6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+      <span style="width: 56px; height: 56px; border-radius: 20px 20px 20px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="30" height="30" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2.2"></circle><path d="M5.5 16.5c.6-1.6 1.9-2.4 3.5-2.4s2.9.8 3.5 2.4M14.5 10h4M14.5 13.5h3"></path></svg></span>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 800; line-height: 1.25; padding-right: 36px">Check your client’s ID when you arrive</h2>
+      <div style="display: flex; align-items: center; gap: 12px; background: #F4F7F6; border-radius: 16px 16px 16px 4px; padding: 12px">
+        <span style="{{idPopAvatar}}">{{idPopInitials}}</span>
+        <span style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 12px; color: #5B6472; font-weight: 600">Your client</span><span style="font-size: 16px; font-weight: 800">{{idPopName}}</span><span style="font-size: 12px; color: #2E7D32; font-weight: 700">{{idPopSub}}</span></span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{idPopBullets}}" as="b" hint-placeholder-count="3">
+          <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: #344054"><span style="flex: none; width: 22px; height: 22px; border-radius: 11px; background: #044D5E; color: #FFFFFF; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{b.n}}</span><span>{{b.t}}</span></div>
+        </sc-for>
+      </div>
+      <div style="background: #FFF4E5; border-radius: 14px 14px 14px 4px; padding: 10px 12px; font-size: 12px; color: #6B3A16; line-height: 1.5; font-weight: 600">Name doesn’t match or something feels off? Don’t proceed. Use SOS or report it right away.</div>
+      <button sc-camel-on-click="{{closeIdPop}}" style="height: 52px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Got it</button>
+      <button sc-camel-on-click="{{idPopSos}}" style="height: 40px; border: 0; background: transparent; color: #B42318; font-size: 13px; font-weight: 700; cursor: pointer">Open SOS</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{hasAcctClosed}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-modal="true" aria-label="{{closedTitle}}" style="position: absolute; inset: 0; z-index: 40; background: #F4F7F6; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 28px 24px">
+    <span style="width: 64px; height: 64px; border-radius: 22px 22px 22px 6px; background: #E6F1F3; display: flex; align-items: center; justify-content: center"><svg width="32" height="32" sc-camel-view-box="0 0 24 24" fill="none" stroke="#044D5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 13-6.2M16 17l5 5M21 17l-5 5"></path></svg></span>
+    <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2">{{closedTitle}}</h1>
+    <span style="font-size: 14px; color: #344054; line-height: 1.55">{{closedText}}</span>
+    <div style="background: #FFFFFF; border-radius: 16px 16px 16px 4px; padding: 14px; font-size: 12px; color: #5B6472; line-height: 1.5">Your ID checks, bookings, coin history, strikes and reports are kept for 5 years for disputes, safety and legal requests.</div>
+    <button sc-camel-on-click="{{reactivate}}" style="height: 54px; border: 0; border-radius: 16px 16px 16px 4px; background: #044D5E; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{closedBtn}}</button>
+  </div>
+</sc-if>
+
+<!-- ================= BOTTOM NAV ================= -->
+<sc-if value="{{showNav}}" hint-placeholder-val="{{true}}">
+<nav style="position: absolute; left: 16px; right: 16px; bottom: 14px; height: 68px; background: #FFFFFF; border-radius: 999px; box-shadow: 0 10px 30px rgba(4,77,94,0.18); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; padding: 6px; box-sizing: border-box">
+  <button sc-camel-on-click="{{nav.home}}" style="{{navStyle.home}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</button>
+  <button sc-camel-on-click="{{nav.job}}" style="{{navStyle.job}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Job</button>
+  <button sc-camel-on-click="{{nav.services}}" style="{{navStyle.services}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Skills</button>
+  <button sc-camel-on-click="{{nav.wallet}}" style="{{navStyle.wallet}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"></path></svg>Wallet</button>
+  <button sc-camel-on-click="{{nav.me}}" style="{{navStyle.me}}"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Me</button>
+</nav>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;bookingFee&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:300,&quot;min&quot;:0,&quot;max&quot;:500,&quot;unit&quot;:&quot;coins&quot;,&quot;section&quot;:&quot;Coins&quot;},&quot;repeatFee&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:100,&quot;min&quot;:0,&quot;max&quot;:500,&quot;unit&quot;:&quot;coins&quot;,&quot;section&quot;:&quot;Coins&quot;},&quot;deliveryFee&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:50,&quot;min&quot;:0,&quot;max&quot;:500,&quot;unit&quot;:&quot;coins&quot;,&quot;section&quot;:&quot;Coins&quot;},&quot;skillWeekly&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:100,&quot;min&quot;:0,&quot;max&quot;:1000,&quot;unit&quot;:&quot;coins/week per extra skill&quot;,&quot;section&quot;:&quot;Coins&quot;},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: 'home', online: true, coins: 1000, earned: 0, done: 0,
+      skills: [{ id: 'k1', name: 'Aircon cleaning', price: 1200 }, { id: 'k2', name: 'Aircon repair and installation', price: 800 }], radius: 3, addSel: '', addOther: '', addPrice: '', addErr: '', reqIdx: 0, hasReq: true, job: null, step: 0,
+      topUpOpen: false, pay: 'gcash', toast: '', qr: 'gcash', feeDue: null,
+      history: [{ label: 'Welcome bonus', when: 'On sign-up', amt: 1000 }],
+      sheet: null, cReason: '', rReason: '', block: false, crate: 0, ctags: [], period: 'week',
+      days: [true, true, true, true, true, true, false], hFrom: '8', hTo: '18', strikes: 0,
+      portfolio: [{ date: 'Oct 28', hue: 0 }, { date: 'Oct 21', hue: 1 }, { date: 'Oct 9', hue: 2 }, { date: 'Sep 30', hue: 3 }],
+      jobsLog: [
+        { service: 'Aircon cleaning – split type', client: 'Ana Reyes', when: 'Nov 2', amt: 2400, status: 'Completed' },
+        { service: 'Aircon check-up', client: 'Liza Tan', when: 'Oct 30', amt: 500, status: 'Completed' },
+        { service: 'Aircon cleaning – window type', client: 'Ben Cruz', when: 'Oct 27', amt: 0, status: 'Cancelled by client · no coins deducted' },
+        { service: 'Freon recharge', client: 'Grace Lim', when: 'Oct 21', amt: 1500, status: 'Completed' }
+      ]
+    };
+  }
+
+  catalog() {
+    return [
+      { id: 's1', name: 'Aircon cleaning – window type', price: 800, dur: '1 hr' },
+      { id: 's2', name: 'Aircon cleaning – split type', price: 1200, dur: '1.5 hrs' },
+      { id: 's3', name: 'Freon recharge', price: 1500, dur: '1 hr' },
+      { id: 's4', name: 'Aircon check-up', price: 500, dur: '45 min' },
+      { id: 's5', name: 'Aircon installation', price: 2500, dur: '3 hrs' },
+      { id: 's6', name: 'Electrical troubleshooting', price: 800, dur: '1 hr' }
+    ];
+  }
+
+  requests() {
+    return [
+      { client: 'Juan Dela Cruz', details: '2 split-type units, both on the 2nd floor.', area: 'Brgy. San Jose, Mandaluyong', address: '122 Primo Cruz St, Mandaluyong', distance: '2.1 km', when: 'Now (ASAP)', service: 'Aircon cleaning – split type', price: 1200, pay: 'Cash' },
+      { client: 'Grace Lim', repeat: true, details: 'Just 1 window-type unit in the bedroom.', area: 'Wack-Wack, Mandaluyong', address: 'Shaw Blvd, Mandaluyong', distance: '3.4 km', when: 'Today, 2:00 PM', service: 'Aircon cleaning – window type', price: 800, pay: 'GCash' },
+      { client: 'Liza Tan', isDelivery: true, from: 'Pioneer St, Brgy. Highway Hills, Mandaluyong', to: '5th Ave, Brgy. Bel-Air, Makati', tripKm: '5.3 km', details: 'One box of clothes and 2 pairs of shoes, about 8 kg.', area: 'Highway Hills, Mandaluyong', address: 'Pioneer St, Mandaluyong', distance: '1.6 km', when: 'Now (ASAP)', service: 'Same-day item delivery', price: 250, pay: 'GCash' },
+      { client: 'Paolo Reyes', details: '3 split-type units. One is leaking water.', area: 'Kapitolyo, Pasig', address: 'East Capitol Dr, Pasig', distance: '4.8 km', when: 'Tomorrow, 9:00 AM', service: 'Aircon cleaning – split type', price: 1200, pay: 'Cash' }
+    ];
+  }
+
+  peso(n) { return '₱' + Number(n).toLocaleString('en-PH'); }
+  coins(n) { return Number(n).toLocaleString('en-PH'); }
+
+  flash(msg) {
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2200);
+    return msg;
+  }
+
+  log(entry) { return [Object.assign({ when: 'Today' }, entry)].concat(this.state.history); }
+
+  renderVals() {
+    const S = this.state;
+    const baseFee = this.props.bookingFee ?? 300;
+    const repeatFee = this.props.repeatFee ?? 100;
+    const curReq = this.requests()[S.reqIdx % this.requests().length];
+    const deliveryFee = this.props.deliveryFee ?? 50;
+    const feeFor = (r) => (r.isDelivery ? deliveryFee : (r.repeat ? repeatFee : baseFee));
+    const fee = feeFor(S.job || curReq);
+    const extra = this.props.skillWeekly ?? 100; // weekly coins per extra skill (skills 3 to 5)
+    const cat = this.catalog();
+    const reqs = this.requests();
+    const extraCount = Math.max(0, S.skills.length - 2);
+    const weekly = extraCount * extra;
+    const broke = S.coins < fee;
+
+    const req = reqs[S.reqIdx % reqs.length];
+    const maskName = (n) => {
+      const sp = n.indexOf(' ');
+      const f = n.slice(0, sp).toUpperCase(), sur = n.slice(sp + 1).toUpperCase();
+      const mf = f.length <= 3 ? f[0] + '*'.repeat(Math.max(1, f.length - 2)) + (f.length > 2 ? f[f.length - 1] : '') : f.slice(0, 2) + '*'.repeat(f.length - 3) + f[f.length - 1];
+      return mf + ' ' + sur[0] + '.';
+    };
+    // Full name shows only after the client accepts the offer
+    const reqView = Object.assign({}, req, { client: maskName(req.client), priceText: this.peso(req.price) });
+    const initialsOf = (n) => n.replace(/\./g, '').split(' ').map((w) => w[0]).join('').slice(0, 2);
+
+    const accept = () => {
+      if (broke) { this.setState({ topUpOpen: true }); return; }
+      const guess = Math.ceil(req.price * 1.25 / 100) * 100 * (parseInt(req.details, 10) || 1);
+      const now = new Date();
+      const stamp = now.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + now.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
+      this.setState({ hasReq: false, job: req, stage: 'chat', offerAmt: guess, otpIn: '', otpErr: '', tab: 'job', tdraft: '', finalAmt: 0, finalReason: '',
+        tmsgs: [
+          { me: false, text: 'Hi! I\u2019d like to book ' + req.service + '. When: ' + req.when + '.' },
+          { me: true, text: req.isDelivery ? 'Hi! Thanks for booking. I see pickup in ' + req.from.split(', ').slice(-1)[0] + ' and drop-off in ' + req.to.split(', ').slice(-1)[0] + '. Do the items fit a motorcycle top box?' : 'Hi! Thanks for booking. How many units and what type, so I can confirm the price?' },
+          { me: false, text: req.details },
+          { me: false, photo: true, caption: 'Photo from client', stamp: stamp }
+        ] });
+    };
+
+    const stage = S.stage || 'chat';
+    const DEMO_OTP = '4827';
+    const stageOrder = ['onway', 'otp', 'final', 'working', 'done'];
+    const sIdx = Math.max(0, stageOrder.indexOf(stage === 'finalSent' || stage === 'ready' || stage === 'inspect' ? 'final' : stage));
+    const DL = !!(S.job && S.job.isDelivery);
+    const statusTitles = DL ? { onway: 'ON THE WAY TO PICKUP', otp: 'AT PICKUP · CONFIRM CODE', inspect: 'AT PICKUP · CHECK THE ITEMS', final: 'AT PICKUP · CONFIRM FINAL PRICE', finalSent: 'AT PICKUP · WAITING FOR CLIENT', ready: 'READY TO START', working: 'ON THE WAY TO DROP-OFF', done: 'DELIVERED' } : { onway: 'ON THE WAY', otp: 'ARRIVED · CONFIRM CODE', final: 'ON SITE · CONFIRM FINAL PRICE', finalSent: 'ON SITE · WAITING FOR CLIENT', ready: 'READY TO START', working: 'WORKING ON IT', done: 'COMPLETED' };
+    const nextLabels = DL ? { onway: 'I\u2019m at the pickup', working: 'Mark as delivered', done: 'Submit rating and finish' } : { onway: 'I\u2019ve arrived', working: 'Mark as done', done: 'Submit rating and finish' };
+    const etas = DL ? { onway: 'Pickup in 12 min · 1.6 km', otp: 'At the pickup address', inspect: 'At pickup', final: 'At pickup', finalSent: 'At pickup', ready: 'At pickup', working: 'Drop-off in 25 min · 5.3 km', done: 'Delivered' } : { onway: 'ETA 18 min · 2.1 km', otp: 'You\u2019re at the client\u2019s address', final: 'On site', finalSent: 'On site', ready: 'On site', working: 'Job in progress', done: 'Job completed' };
+    const pinLeft = (DL ? [58, 278, 278, 226, 172] : [58, 278, 278, 278, 278])[sIdx];
+    const pinTop = (DL ? [146, 34, 34, 100, 104] : [146, 34, 34, 34, 34])[sIdx];
+    const amount = S.offerAmt || 0;
+
+    const advance = () => {
+      if (stage === 'onway') { this.setState({ stage: 'otp', otpIn: '', otpErr: '' }); return; }
+      if (stage === 'working') { if (DL && !S.proof) { this.setState({ toast: this.flash('Take the proof-of-delivery photo first') }); return; } this.setState({ stage: 'done', toast: DL ? this.flash('Delivered. Proof photo sent to the client.') : '' }); return; }
+      if (stage === 'done') {
+        if (!S.paidVia) { this.setState({ toast: this.flash('Confirm how the client paid you first') }); return; }
+        this.setState({ job: null, stage: 'chat', tab: 'home', paidVia: null, earned: S.earned + amount, done: S.done + 1, reqIdx: S.reqIdx + 1, hasReq: false, crate: 0, ctags: [],
+          jobsLog: [{ service: S.job.service, client: S.job.client, when: 'Today', amt: amount, status: 'Completed' + (S.paidVia === 'qr' ? ' \u00b7 paid to QR' : ' \u00b7 paid in cash') }].concat(S.jobsLog),
+          toast: this.flash(S.crate ? 'Thanks! You rated ' + S.job.client.split(' ')[0] + ' ' + S.crate + ' stars.' : 'Job done. Collect ' + this.peso(amount) + ' from the client.') });
+      }
+    };
+    const confirmOtp = () => {
+      if ((S.otpIn || '').trim() !== DEMO_OTP) { this.setState({ otpErr: 'That code doesn\u2019t match. Ask the client to check their app.' }); return; }
+      if (DL) { this.setState({ stage: 'inspect', otpErr: '', finalAmt: S.offerAmt, chk: [false, false, false], toast: this.flash('Code confirmed. Check the items before you start.') }); return; }
+      this.setState({ stage: 'final', otpErr: '', finalAmt: S.offerAmt, toast: this.flash('Arrival confirmed. Check the work and confirm the final price.') });
+    };
+    const finalAmt = S.finalAmt || 0;
+    const sendFinal = () => {
+      if (!finalAmt) return;
+      this.setState({ stage: 'finalSent', toast: this.flash('Final price of ' + this.peso(finalAmt) + ' sent to the client') });
+    };
+    const startJob = () => {
+      if (broke) { this.setState({ topUpOpen: true }); return; }
+      this.setState({ stage: 'working', coins: Math.max(0, S.coins - fee),
+        proof: false, history: this.log({ label: (DL ? 'Delivery fee · ' : (S.job.repeat ? 'Repeat-client fee · ' : 'Booking fee · ')) + S.job.service, amt: -fee }),
+        toast: this.flash('Job started. ' + fee + ' coins deducted.') });
+    };
+    const stampNow = () => { const n = new Date(); return n.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + n.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' }); };
+    const addTmsg = (m, extra) => this.setState(Object.assign({ tmsgs: (this.state.tmsgs || []).concat([m]) }, extra || {}));
+    const sendOffer = () => {
+      if (broke) { this.setState({ topUpOpen: true }); return; }
+      if (!S.qr) { this.setState({ toast: this.flash('Upload your payment QR in Me first') }); return; }
+      if (!amount) return;
+      this.setState({ stage: 'offered', toast: this.flash('Offer of ' + this.peso(amount) + ' sent') });
+    };
+
+    const mySkills = S.skills.map((k, i) => {
+      const free = i < 2;
+      const tag = k.custom ? 'PENDING REVIEW' : (free ? 'FREE SKILL' : 'EXTRA SKILL · ' + extra + ' COINS/WEEK');
+      return Object.assign({}, k, {
+        setPrice: (e) => { const v = Math.max(0, parseInt(e.target.value || '0', 10) || 0); this.setState({ skills: this.state.skills.map((x) => (x.id === k.id ? Object.assign({}, x, { price: v }) : x)) }); },
+        priceText: this.peso(k.price),
+        tag: tag,
+        tagStyle: 'align-self: flex-start; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; border-radius: 6px; padding: 3px 7px; ' + (k.custom ? 'background: #FFF4E5; color: #8A3A08' : (free ? 'background: #E6F1F3; color: #044D5E' : 'background: #6EDA60; color: #044D5E')),
+        remove: () => this.setState({ skills: this.state.skills.filter((x) => x.id !== k.id), toast: this.flash(k.name + ' removed') })
+      });
+    });
+    const bannedWords = ['massage', 'masahe', 'escort', 'usher', 'model', 'companion', 'hostess'];
+    const addSkill = () => {
+      const isOther = S.addSel === '__other';
+      const name = (isOther ? (S.addOther || '') : S.addSel).trim();
+      const price = parseInt(S.addPrice || '0', 10) || 0;
+      if (!S.addSel) return this.setState({ addErr: 'Choose a skill from the list.' });
+      if (isOther && !name) return this.setState({ addErr: 'Type the skill you offer.' });
+      if (bannedWords.some((w) => name.toLowerCase().indexOf(w) >= 0)) return this.setState({ addErr: 'Personal services like massage, escort or modeling aren\u2019t allowed on TSKR.' });
+      if (S.skills.some((x) => x.name.toLowerCase() === name.toLowerCase())) return this.setState({ addErr: 'You already offer this skill.' });
+      if (!price) return this.setState({ addErr: 'Enter your base fee.' });
+      const willPay = S.skills.length >= 2;
+      this.setState({ skills: S.skills.concat([{ id: 'k' + Date.now(), name: name, price: price, custom: isOther }]), addSel: '', addOther: '', addPrice: '', addErr: '',
+        toast: this.flash(isOther ? name + ' sent for review' : (willPay ? name + ' added · ' + extra + ' coins/week' : name + ' added for free')) });
+    };
+
+    const payOpts = [['gcash', 'GCash'], ['maya', 'Maya'], ['card', 'Card']].map((p) => ({
+      label: p[1], pick: () => this.setState({ pay: p[0] }),
+      style: 'flex: 1; height: 46px; border-radius: 14px 14px 14px 4px; cursor: pointer; font-size: 14px; font-weight: 700; border: 1.5px solid ' + (S.pay === p[0] ? '#044D5E' : '#D0D5DD') + '; background: ' + (S.pay === p[0] ? '#044D5E' : '#FFFFFF') + '; color: ' + (S.pay === p[0] ? '#FFFFFF' : '#044D5E')
+    }));
+
+    const history = S.history.map((h) => ({
+      label: h.label, when: h.when,
+      amtText: (h.amt > 0 ? '+' : '−') + this.coins(Math.abs(h.amt)),
+      amtStyle: 'font-size: 15px; font-weight: 800; flex: none; color: ' + (h.amt > 0 ? '#2E7D32' : '#044D5E')
+    }));
+
+    const tab = S.tab;
+    const navBtn = (on) => 'border: 0; border-radius: 999px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 700; background: ' + (on ? '#6EDA60' : 'transparent') + '; color: ' + (on ? '#044D5E' : '#5B6472');
+    const showReq = S.online && S.hasReq && !S.job;
+
+    // ---- Safety, rating, Me tab
+    const sheet = S.sheet;
+    const optBtn = (on) => 'height: 46px; border-radius: 14px 14px 14px 4px; text-align: left; padding: 0 14px; cursor: pointer; font-size: 14px; font-weight: 600; border: 1.5px solid ' + (on ? '#044D5E' : '#E4E7EC') + '; background: ' + (on ? '#E6F1F3' : '#FFFFFF') + '; color: #044D5E';
+    const afterAccept = stage === 'onway' || stage === 'otp';
+    const tCancelReasons = [['unsafe', 'I don\u2019t feel safe'], ['client', 'Client asked to cancel'], ['absent', 'Client isn\u2019t at the address (waited 15 min)'], ['emergency', 'Personal emergency'], ['other', 'Changed my mind or took another job']].map((r) => ({ label: r[1], pick: () => this.setState({ cReason: r[0] }), style: optBtn(S.cReason === r[0]) }));
+    const tReportReasons = [['rude', 'Rude or abusive'], ['unsafe', 'Unsafe place or situation'], ['offapp', 'Asked to pay or book outside TSKR'], ['noshow', 'Client wasn\u2019t there']].map((r) => ({ label: r[1], pick: () => this.setState({ rReason: r[0] }), style: optBtn(S.rReason === r[0]) }));
+    const emLeft = S.emLeft === undefined ? 1 : S.emLeft;
+    const noPenalty = S.cReason === 'unsafe' || S.cReason === 'client' || (S.cReason === 'absent' && stage === 'otp') || (S.cReason === 'emergency' && emLeft > 0);
+    const strikeFine = [100, 200, 0];
+    const nextStrike = S.strikes + 1;
+    const fine = nextStrike <= 2 ? strikeFine[nextStrike - 1] : 0;
+    const reasonNote = { unsafe: 'No strike. Our safety team will review your report and call you.', client: 'No strike once the client confirms in their app.', absent: stage === 'otp' ? 'No strike. Your live location shows you waited at the address.' : 'You need to be at the address and wait 15 minutes first. This counts as a strike.', emergency: emLeft > 0 ? 'No strike. You have 1 emergency cancellation per month without proof.' : 'You already used your emergency cancellation this month. This counts as a strike.', other: 'Unjustified. This counts as a strike.' }[S.cReason] || '';
+    const penaltyText = noPenalty ? '' : (nextStrike >= 3 ? ' Strike 3: your account will be paused for 7 days.' : ' Strike ' + nextStrike + ': ' + fine + ' coins penalty' + (nextStrike === 2 ? ' and lower search ranking for 7 days.' : '.'));
+    const logJob = (status, amt) => [{ service: S.job.service, client: S.job.client, when: 'Today', amt: amt, status: status }].concat(S.jobsLog);
+    const confirmCancel = () => {
+      if (!S.cReason) { this.setState({ toast: this.flash('Choose a reason first') }); return; }
+      const hist = fine && !noPenalty ? this.log({ label: 'Cancellation penalty · strike ' + nextStrike, amt: -fine }) : S.history;
+      this.setState({ sheet: null, job: null, stage: 'chat', tab: 'home', reqIdx: S.reqIdx + 1, hasReq: false, strikes: S.strikes + (noPenalty ? 0 : 1), cReason: '',
+        emLeft: S.cReason === 'emergency' && emLeft > 0 ? 0 : emLeft, paused: !noPenalty && nextStrike >= 3,
+        coins: Math.max(0, S.coins - (noPenalty ? 0 : fine)), history: hist,
+        jobsLog: logJob('Cancelled by you' + (noPenalty ? '' : ' · strike ' + nextStrike), 0),
+        toast: this.flash(noPenalty ? 'Job cancelled with no strike. The client gets a new tasker first.' : 'Job cancelled. Strike ' + nextStrike + (fine ? ' · ' + fine + ' coins deducted' : ' · account paused 7 days')) });
+    };
+    const rateStars = [1, 2, 3, 4, 5].map((n) => ({ label: n + ' star' + (n > 1 ? 's' : ''), pick: () => this.setState({ crate: n }), fill: n <= S.crate ? '#F5B301' : 'none', stroke: n <= S.crate ? '#F5B301' : '#98A2B3' }));
+    const rateTags = ['Clear instructions', 'Paid on time', 'Friendly', 'Safe place to work'].map((t) => { const on = S.ctags.indexOf(t) >= 0; return { label: t, pick: () => this.setState({ ctags: on ? S.ctags.filter((x) => x !== t) : S.ctags.concat([t]) }), style: 'height: 36px; padding: 0 12px; border-radius: 999px; cursor: pointer; font-size: 12px; font-weight: 700; border: 1.5px solid ' + (on ? '#044D5E' : '#D0D5DD') + '; background: ' + (on ? '#044D5E' : '#FFFFFF') + '; color: ' + (on ? '#FFFFFF' : '#044D5E') }; });
+
+    const weekData = [['Mon', 1200], ['Tue', 0], ['Wed', 2400], ['Thu', 800], ['Fri', 3000], ['Sat', 1500], ['Sun', S.earned]];
+    const monthData = [['Wk 1', 6400], ['Wk 2', 8100], ['Wk 3', 5200], ['Wk 4', 8900 + S.earned]];
+    const pData = S.period === 'week' ? weekData : monthData;
+    const pMax = Math.max.apply(null, pData.map((d) => d[1]).concat([1]));
+    const pTotal = pData.reduce((a, d) => a + d[1], 0);
+    const pJobs = S.period === 'week' ? 7 + S.done : 26 + S.done;
+    const periodOpts = [['week', 'This week'], ['month', 'This month']].map((o) => ({ label: o[1], pick: () => this.setState({ period: o[0] }), style: 'height: 30px; padding: 0 12px; border: 0; border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 700; background: ' + (S.period === o[0] ? '#6EDA60' : 'transparent') + '; color: ' + (S.period === o[0] ? '#044D5E' : '#FFFFFF') }));
+    const earnBars = pData.map((d) => ({ label: d[0], style: 'width: 100%; border-radius: 6px 6px 2px 2px; background: ' + (d[1] ? '#6EDA60' : 'rgba(255,255,255,0.18)') + '; height: ' + Math.max(4, Math.round(d[1] / pMax * 64)) + 'px' }));
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dayOpts = dayNames.map((d, i) => { const on = S.days[i]; return { label: d.slice(0, 2), on: on ? 'true' : 'false', pick: () => this.setState({ days: S.days.map((x, j) => (j === i ? !x : x)) }), style: 'height: 42px; border-radius: 12px 12px 12px 4px; cursor: pointer; font-size: 12px; font-weight: 800; padding: 0; border: 1.5px solid ' + (on ? '#044D5E' : '#D0D5DD') + '; background: ' + (on ? '#044D5E' : '#FFFFFF') + '; color: ' + (on ? '#FFFFFF' : '#98A2B3') }; });
+    const hLabel = (h) => { h = parseInt(h, 10); return (h % 12 || 12) + (h < 12 ? ' AM' : ' PM'); };
+    const onDays = S.days.filter(Boolean).length;
+    const tints = ['#CFE3E7', '#D7EBD3', '#E3DDD0', '#D5DCEB'];
+    const portfolio = S.portfolio.map((p) => ({ date: p.date, style: 'aspect-ratio: 1; border-radius: 14px 14px 14px 4px; position: relative; overflow: hidden; background: linear-gradient(135deg, ' + tints[p.hue % 4] + ', #9FBFC6)' }));
+    const jobHistory = S.jobsLog.map((j) => ({ service: j.service, client: j.client, when: j.when, status: j.status, amtText: j.amt ? this.peso(j.amt) : '—', statusStyle: 'font-size: 11px; font-weight: 700; color: ' + (j.status.indexOf('Completed') === 0 ? '#2E7D32' : '#B42318') }));
+    const relPct = Math.max(40, 98 - S.strikes * 15);
+
+    return {
+      isMe: tab === 'me',
+      hasIdPop: !!S.idPop && !!S.job,
+      closeIdPop: () => this.setState({ idPop: false }),
+      openIdPop: () => this.setState({ idPop: true }),
+      idPopSos: () => this.setState({ idPop: false, sheet: 'sos' }),
+      idPopName: S.job ? S.job.client : '', idPopInitials: S.job ? S.job.client.split(' ').map((w) => w[0]).join('').slice(0, 2) : '',
+      idPopSub: 'Verified email and mobile number (OTP)',
+      idPopAvatar: 'width: 48px; height: 48px; flex: none; border-radius: 16px 16px 16px 4px; background: #6EDA60; color: #044D5E; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center',
+      idPopBullets: [['1', 'When you arrive, you may ask the client to show a valid ID.'], ['2', 'Check that the name matches the booking and that you\u2019re at the right address.'], ['3', 'If anything feels off, don\u2019t enter. Use SOS or cancel with \u201cI don\u2019t feel safe\u201d (no strike).']].map((b) => ({ n: b[0], t: b[1] })),
+      isLow: !broke && S.coins < baseFee * 2,
+      lowSub: 'Enough for ' + Math.floor(S.coins / baseFee) + ' more booking. Buy coins so you don\u2019t miss requests.',
+      openSos: () => this.setState({ sheet: 'sos' }),
+      shareTrip: () => this.setState({ toast: this.flash('Live job link sent to your emergency contact') }),
+      openCancel: () => this.setState({ sheet: 'cancel', cReason: '' }),
+      openReport: () => this.setState({ sheet: 'report', rReason: '', block: false }),
+      closeSheet: () => this.setState({ sheet: null }),
+      hasSheet: !!sheet, isSosSheet: sheet === 'sos', isCancelSheet: sheet === 'cancel', isReportSheet: sheet === 'report',
+      sheetTitle: ({ sos: 'Emergency help', cancel: 'Cancel this job?', report: 'Report this client', qr: 'Upload payment QR', acct: S.acctMode === 'delete' ? 'Delete your account?' : 'Deactivate your account?' })[sheet] || '',
+      alertTeam: () => this.setState({ sheet: null, toast: this.flash('TSKR safety team alerted. We\u2019ll call you now.') }),
+      sendContact: () => this.setState({ sheet: null, toast: this.flash('Location sent to your emergency contact') }),
+      canCancelJob: afterAccept || stage === 'inspect' || stage === 'final' || stage === 'finalSent' || stage === 'ready',
+      cancelWarnStyle: '',
+      cancelWarn: S.cReason ? reasonNote + penaltyText : 'The client already accepted your offer. Cancelling without a valid reason counts as a strike. Choose your reason below.',
+      isOnway: stage === 'onway',
+      clientCancelsLate: () => this.setState({ job: null, stage: 'chat', tab: 'home', reqIdx: S.reqIdx + 1, hasReq: false,
+        feeDue: { client: S.job.client, paid: false },
+        jobsLog: logJob('Cancelled by client on the way \u00b7 \u20b1100 fee to your QR', 0),
+        toast: this.flash('Client cancelled. They pay you \u20b1100 by QR.') }),
+      hasFeeDue: !!S.feeDue,
+      feeDuePaid: !!(S.feeDue && S.feeDue.paid), feeDueWaiting: !!(S.feeDue && !S.feeDue.paid),
+      feeDueTag: S.feeDue && S.feeDue.paid ? 'CHECK YOUR E-WALLET' : 'CLIENT CANCELLED ON YOUR WAY',
+      feeDueText: !S.feeDue ? '' : (S.feeDue.paid ? S.feeDue.client + ' says they paid to your QR. Ref no. ' + S.feeDue.ref + '. Check your e-wallet or bank app, then confirm.' : S.feeDue.client + ' must pay you \u20b1100 straight to your QR before booking again. You\u2019ll get a notice with the reference number.'),
+      clientPaysFee: () => this.setState({ feeDue: Object.assign({}, S.feeDue, { paid: true, ref: '1023456789' }) }),
+      feeReceived: () => this.setState({ feeDue: null, toast: this.flash('Thanks! Marked as received.') }),
+      feeNotReceived: () => this.setState({ feeDue: null, toast: this.flash('Reported. The client can\u2019t book until our team sorts it out.') }),
+      paidOpts: [['cash', 'Cash'], ['qr', 'To my QR']].map((o) => ({ label: o[1], pick: () => this.setState({ paidVia: o[0], toast: this.flash(o[0] === 'qr' ? 'Payment to your QR confirmed' : 'Cash payment confirmed') }), style: 'flex: 1; height: 46px; border-radius: 14px 14px 14px 4px; cursor: pointer; font-size: 14px; font-weight: 700; border: 1.5px solid ' + (S.paidVia === o[0] ? '#044D5E' : '#D0D5DD') + '; background: ' + (S.paidVia === o[0] ? '#044D5E' : '#FFFFFF') + '; color: ' + (S.paidVia === o[0] ? '#FFFFFF' : '#044D5E') })),
+      hasQr: !!S.qr, noQr: !S.qr,
+      qrWallet: ({ gcash: 'GCash', maya: 'Maya', bank: 'Bank (QR Ph)' })[S.qr] || '',
+      qrTag: S.qr ? 'SHOWN TO CLIENTS' : 'NOT SET',
+      qrTagStyle: 'font-size: 11px; font-weight: 800; border-radius: 6px; padding: 3px 8px; ' + (S.qr ? 'background: #E9F8E6; color: #2E7D32' : 'background: #FFF4E5; color: #8A3A08'),
+      openQrSheet: () => this.setState({ sheet: 'qr', qrPick: S.qr || 'gcash' }),
+      isQrSheet: sheet === 'qr',
+      qrOpts: [['gcash', 'GCash'], ['maya', 'Maya'], ['bank', 'Bank']].map((o) => ({ label: o[1], pick: () => this.setState({ qrPick: o[0] }), style: 'flex: 1; height: 44px; border-radius: 14px 14px 14px 4px; cursor: pointer; font-size: 14px; font-weight: 700; border: 1.5px solid ' + ((S.qrPick || 'gcash') === o[0] ? '#044D5E' : '#D0D5DD') + '; background: ' + ((S.qrPick || 'gcash') === o[0] ? '#044D5E' : '#FFFFFF') + '; color: ' + ((S.qrPick || 'gcash') === o[0] ? '#FFFFFF' : '#044D5E') })),
+      uploadQr: () => this.setState({ sheet: null, qr: S.qrPick || 'gcash', toast: this.flash('QR uploaded. Clients see it after they accept your offer.') }),
+      openDeact: () => this.setState({ sheet: 'acct', acctMode: 'deact', acctReason: '', acctMore: '', acctAck: false, acctErr: '' }),
+      openDelete: () => this.setState({ sheet: 'acct', acctMode: 'delete', acctReason: '', acctMore: '', acctAck: false, acctErr: '' }),
+      isAcctSheet: sheet === 'acct',
+      acctWarn: S.acctMode === 'delete' ? 'Your tasker account will be closed and you won\u2019t be able to log in. Your profile, skills and portfolio are removed from the app. Coins left in your wallet can\u2019t be refunded or transferred.' : 'Your profile is hidden and you won\u2019t get booking requests. Your coins stay in your wallet. Log in anytime to turn it back on.',
+      acctReasons: [['few', 'Not getting enough bookings'], ['cost', 'Coins and fees cost too much'], ['break', 'Taking a break'], ['work', 'Found other work'], ['privacy', 'Privacy concerns'], ['other', 'Other reason']].map((r) => ({ label: r[1], pick: () => this.setState({ acctReason: r[0], acctErr: '' }), style: optBtn(S.acctReason === r[0]) })),
+      acctMore: S.acctMore || '', onAcctMore: (e) => this.setState({ acctMore: e.target.value }),
+      acctKeep: 'We keep your ID checks, bookings, coin history, chats, strikes and reports for 5 years after you leave. They\u2019re used only for disputes, safety investigations and lawful requests from authorities. Signing up again with the same ID, mobile number or email brings back your past record, including strikes.',
+      toggleAcctAck: () => this.setState({ acctAck: !S.acctAck, acctErr: '' }),
+      acctAckAria: S.acctAck ? 'true' : 'false',
+      acctAckBox: 'width: 22px; height: 22px; flex: none; margin-top: 1px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 2px solid #044D5E; background: ' + (S.acctAck ? '#044D5E' : '#FFFFFF'),
+      acctErr: S.acctErr || '', hasAcctErr: !!S.acctErr,
+      acctBtnLabel: S.acctMode === 'delete' ? 'Delete my account' : 'Deactivate my account',
+      acctBtnStyle: 'height: 52px; border: 0; border-radius: 16px 16px 16px 4px; font-size: 15px; font-weight: 800; cursor: pointer; color: #FFFFFF; background: ' + (S.acctMode === 'delete' ? '#B42318' : '#044D5E'),
+      confirmAcct: () => {
+        if (!S.acctReason) return this.setState({ acctErr: 'Choose a reason first.' });
+        if (S.job) return this.setState({ acctErr: 'Finish or cancel your active job first.' });
+        if (!S.acctAck) return this.setState({ acctErr: 'Tick the box to confirm.' });
+        this.setState({ sheet: null, acctStatus: S.acctMode === 'delete' ? 'deleted' : 'deactivated', online: false });
+      },
+      hasAcctClosed: !!S.acctStatus,
+      closedTitle: S.acctStatus === 'deleted' ? 'Your tasker account is deleted' : 'Your tasker account is deactivated',
+      closedText: S.acctStatus === 'deleted' ? 'You\u2019ve been logged out and can\u2019t log in again with this account.' : 'You\u2019re offline and hidden from clients. Log in anytime to turn your account back on.',
+      closedBtn: S.acctStatus === 'deleted' ? 'Restore account (demo)' : 'Log in to reactivate',
+      reactivate: () => this.setState({ acctStatus: null, tab: 'home', online: true, toast: this.flash(S.acctStatus === 'deleted' ? 'Demo: account restored' : 'Welcome back! You\u2019re online again.') }),
+      strikeTag: S.paused ? 'PAUSED 7 DAYS' : S.strikes + ' of 3 strikes',
+      strikeTagStyle: 'font-size: 11px; font-weight: 800; border-radius: 6px; padding: 3px 8px; ' + (S.paused ? 'background: #B42318; color: #FFFFFF' : (S.strikes ? 'background: #FFF4E5; color: #8A3A08' : 'background: #E9F8E6; color: #2E7D32')),
+      ladder: [['1st strike', 'Warning + 100 coins'], ['2nd strike', '200 coins + lower ranking for 7 days'], ['3rd strike', 'Paused for 7 days'], ['5 in 90 days', 'Account review, may be removed'], ['No-show', 'Counts as 2 strikes']].map((l, i) => ({ k: l[0], v: l[1], style: 'display: flex; gap: 8px; padding: 9px 12px; font-size: 12px; line-height: 1.4; border-bottom: 1px solid #EEF0F3; ' + (i < 3 && i === S.strikes - 1 ? 'background: #FFF4E5; color: #8A3A08' : 'color: #044D5E') })),
+      tCancelReasons: tCancelReasons, confirmCancel: confirmCancel,
+      tReportReasons: tReportReasons,
+      toggleBlock: () => this.setState({ block: !S.block }),
+      blockBox: 'width: 22px; height: 22px; flex: none; border-radius: 6px; border: 2px solid #044D5E; background: ' + (S.block ? '#044D5E' : '#FFFFFF') + '; box-shadow: inset 0 0 0 3px #FFFFFF',
+      submitReport: () => { if (!S.rReason) { this.setState({ toast: this.flash('Choose what happened first') }); return; } this.setState({ sheet: null, toast: this.flash('Report sent' + (S.block ? ' and client blocked' : '') + '. Ticket TKT-' + (4000 + S.reqIdx * 7)) }); },
+      isDoneStage: stage === 'done',
+      rateStars: rateStars, rateTags: rateTags,
+      periodOpts: periodOpts, earnBars: earnBars,
+      earnTotal: this.peso(pTotal), earnSub: pJobs + ' jobs · ' + (S.period === 'week' ? 'Nov 1 – 7' : 'November'),
+      dayOpts: dayOpts, hFrom: S.hFrom, hTo: S.hTo,
+      onFrom: (e) => this.setState({ hFrom: e.target.value }), onTo: (e) => this.setState({ hTo: e.target.value }),
+      availSummary: onDays + ' days · ' + hLabel(S.hFrom) + '–' + hLabel(S.hTo),
+      portCount: S.portfolio.length + ' photos', portfolio: portfolio,
+      addPortfolio: () => this.setState({ portfolio: [{ date: 'Today', hue: S.portfolio.length }].concat(S.portfolio), toast: this.flash('Photo added to your profile gallery') }),
+      jobHistory: jobHistory,
+      reliabilityText: S.strikes ? S.strikes + ' strike' + (S.strikes > 1 ? 's' : '') + ' in the last 30 days. 3 strikes pauses new requests for 7 days.' : 'No cancellations or no-shows in the last 30 days. Keep it up to rank higher in search.',
+      reliabilityBar: 'height: 8px; border-radius: 4px; background: ' + (S.strikes ? '#E8590C' : '#6EDA60') + '; width: ' + relPct + '%',
+      isHome: tab === 'home', isJob: tab === 'job', isServices: tab === 'services', isWallet: tab === 'wallet',
+      showNav: !S.topUpOpen && !sheet && !S.acctStatus,
+      coinsText: this.coins(S.coins),
+      feeText: baseFee + ' coins', repeatText: repeatFee + ' coins', reqFeeText: fee + ' coins', jobFeeText: fee + ' coins', extraText: extra + ' coins',
+      weeklyText: weekly ? weekly + ' coins/week' : 'Free',
+      roleLine: 'Aircon technician',
+      onlineLabel: S.online ? 'Online' : 'Offline',
+      onlineStyle: 'display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border: 0; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 700; ' + (S.online ? 'background: #6EDA60; color: #044D5E' : 'background: rgba(255,255,255,0.14); color: #FFFFFF'),
+      onlineDot: 'width: 8px; height: 8px; border-radius: 4px; background: ' + (S.online ? '#044D5E' : '#B9D3D9'),
+      toggleOnline: () => this.setState({ online: !S.online }),
+
+      isBroke: broke,
+      showRequest: showReq,
+      req: reqView,
+      accept: accept,
+      decline: () => this.setState({ hasReq: false, reqIdx: S.reqIdx + 1, toast: this.flash('Request declined') }),
+      declineProhibited: () => this.setState({ hasReq: false, reqIdx: S.reqIdx + 1, toast: this.flash('Declined for a prohibited item. Reported to TSKR, no strike.') }),
+      acceptLabel: broke ? 'Buy coins first' : 'Reply and send offer',
+      acceptStyle: 'flex: 1.4; height: 50px; border-radius: 16px 16px 16px 4px; border: 0; cursor: pointer; font-size: 15px; font-weight: 800; ' + (broke ? 'background: #E8590C; color: #FFFFFF' : 'background: #044D5E; color: #FFFFFF'),
+      showWaiting: !showReq && !S.job,
+      waitTitle: S.online ? 'Waiting for bookings…' : 'You’re offline',
+      waitSub: S.online ? 'New requests near you will pop up here.' : 'Go online to receive booking requests.',
+      canSimulate: S.online,
+      newRequest: () => this.setState({ hasReq: true }),
+
+      hasJob: !!S.job, noJob: !S.job,
+      job: S.job ? Object.assign({}, S.job, { initialText: this.peso(S.offerAmt || 0), client: (S.stage === 'chat' || S.stage === 'offered') ? maskName(S.job.client) : S.job.client, initials: initialsOf(S.job.client), priceText: this.peso(S.job.price), amountText: this.peso(amount), addrLine: S.job.isDelivery ? ((stage === 'working' || stage === 'done') ? 'TO: ' + S.job.to : 'FROM: ' + S.job.from) : S.job.address }) : {},
+      isChatStage: !!S.job && (stage === 'chat' || stage === 'offered'),
+      routeHint: S.job && S.job.isDelivery ? ' for the ' + S.job.tripKm + ' trip from pickup to drop-off' : '',
+      isCompose: stage === 'chat', isOffered: stage === 'offered',
+      isTransit: !!S.job && sIdx >= 0 && stage !== 'chat' && stage !== 'offered',
+      isOtp: stage === 'otp', notOtp: stage !== 'otp',
+      isInspect: stage === 'inspect', isProofStep: DL && stage === 'working', hasProof: !!S.proof,
+      proofStamp: 'Taken in TSKR \u00b7 ' + new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) + ' \u00b7 ' + new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' }) + ' \u00b7 Drop-off',
+      proofBtn: S.proof ? 'Retake photo' : 'Take proof photo',
+      takeProof: () => this.setState({ proof: true, toast: this.flash('Proof photo sent to the client') }),
+      showDrop: DL && (stage === 'working' || stage === 'done'),
+      notDrop: !(DL && (stage === 'working' || stage === 'done')),
+      inspectChecks: ['I opened and checked the items', 'Nothing prohibited or dangerous inside', 'It fits my motorcycle top box or compartment'].map((l, i) => { const on = !!(S.chk || [])[i]; return { label: l, aria: on ? 'true' : 'false', pick: () => this.setState({ chk: [0, 1, 2].map((j) => (j === i ? !on : !!(S.chk || [])[j])) }), box: 'width: 22px; height: 22px; flex: none; margin-top: 1px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 2px solid #044D5E; background: ' + (on ? '#044D5E' : '#FFFFFF') }; }),
+      itemsOkStyle: 'height: 52px; border: 0; border-radius: 16px 16px 16px 4px; font-size: 15px; font-weight: 800; cursor: pointer; background: ' + ((S.chk || []).filter(Boolean).length === 3 ? '#044D5E' : '#E4E7EC') + '; color: ' + ((S.chk || []).filter(Boolean).length === 3 ? '#FFFFFF' : '#98A2B3'),
+      itemsOk: () => { if ((S.chk || []).filter(Boolean).length < 3) { this.setState({ toast: this.flash('Tick all 3 checks first') }); return; } this.setState({ stage: 'final', toast: this.flash('Items checked. Confirm the final price.') }); },
+      declineItems: () => this.setState({ job: null, stage: 'chat', tab: 'home', reqIdx: S.reqIdx + 1, hasReq: false, jobsLog: [{ service: S.job.service, client: S.job.client, when: 'Today', amt: 0, status: 'Declined at pickup · prohibited item' }].concat(S.jobsLog), toast: this.flash('Delivery declined. No strike, no coins deducted. Reported to TSKR.') }),
+      isFinal: stage === 'final', isFinalSent: stage === 'finalSent', isReady: stage === 'ready',
+      showAdvance: stage === 'onway' || stage === 'working' || stage === 'done',
+      finalAmt: finalAmt, finalText: this.peso(finalAmt), finalReason: S.finalReason || '',
+      onFinalAmt: (e) => this.setState({ finalAmt: Math.max(0, parseInt(e.target.value || '0', 10) || 0) }),
+      onFinalReason: (e) => this.setState({ finalReason: e.target.value }),
+      finalLabel: finalAmt === amount ? 'Keep the initial price · ' + this.peso(finalAmt) : 'Send final price · ' + this.peso(finalAmt),
+      sendFinal: sendFinal, startJob: startJob,
+      clientAcceptsFinal: () => this.setState({ stage: 'ready', offerAmt: finalAmt, toast: this.flash('Client accepted the final price') }),
+      clientDeclinesFinal: () => this.setState({ job: null, stage: 'chat', tab: 'home', reqIdx: S.reqIdx + 1, hasReq: false, toast: this.flash('Booking cancelled. No coins were deducted.') }),
+      tmsgs: (S.tmsgs || []).map((m) => Object.assign({}, m, {
+        isText: !m.photo, isPhoto: !!m.photo,
+        bubble: 'max-width: 80%; padding: 10px 14px; font-size: 14px; line-height: 1.45; ' + (m.me ? 'align-self: flex-end; background: #044D5E; color: #FFFFFF; border-radius: 18px 18px 6px 18px' : 'align-self: flex-start; background: #FFFFFF; border: 1px solid #E4E7EC; border-radius: 18px 18px 18px 6px'),
+        photoWrap: 'width: 72%; padding: 6px; background: #FFFFFF; border: 1px solid #E4E7EC; box-sizing: border-box; ' + (m.me ? 'align-self: flex-end; border-radius: 18px 18px 6px 18px' : 'align-self: flex-start; border-radius: 18px 18px 18px 6px')
+      })),
+      tdraft: S.tdraft || '',
+      onTdraft: (e) => this.setState({ tdraft: e.target.value }),
+      sendTmsg: () => { const t = (this.state.tdraft || '').trim(); if (t) addTmsg({ me: true, text: t }, { tdraft: '' }); },
+      takePhoto: () => addTmsg({ me: true, photo: true, caption: 'Your photo', stamp: stampNow() }, { toast: this.flash('Photo taken with camera') }),
+      askPhotos: () => addTmsg({ me: true, text: 'Could you send photos of the area? Tap the camera button in the chat.' }),
+      offerAmt: amount,
+      onOfferAmt: (e) => this.setState({ offerAmt: Math.max(0, parseInt(e.target.value || '0', 10) || 0) }),
+      sendOffer: sendOffer,
+      sendLabel: broke ? 'Buy coins to send offers' : 'Send initial offer · ' + this.peso(amount),
+      clientAccepts: () => this.setState({ stage: 'onway', idPop: true, toast: this.flash('Client accepted your offer. Head out now.') }),
+      otpIn: S.otpIn || '', onOtp: (e) => this.setState({ otpIn: e.target.value.replace(/\D/g, '').slice(0, 4), otpErr: '' }),
+      otpErr: S.otpErr || '', hasOtpErr: !!S.otpErr,
+      confirmOtp: confirmOtp,
+      jobStatus: S.job ? (stage === 'chat' || stage === 'offered' ? 'CHATTING' : statusTitles[stage]) : '',
+      nextLabel: nextLabels[stage] || '',
+      etaText: etas[stage] || '',
+      pinStyle: 'position: absolute; left: ' + pinLeft + 'px; top: ' + pinTop + 'px; width: 36px; height: 36px; border-radius: 18px; border: 3px solid #FFFFFF; background: #044D5E; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: left 0.6s ease, top 0.6s ease',
+      progressStyle: 'height: 8px; border-radius: 4px; background: #6EDA60; transition: width 0.4s ease; width: ' + ((sIdx + 1) * 20) + '%',
+      advance: advance,
+      goJob: () => this.setState({ tab: 'job' }),
+
+      earnedText: this.peso(S.earned), jobsDone: S.done,
+      skillCount: S.skills.length,
+      skillsSub: extraCount ? '2 free + ' + extraCount + ' extra · ' + weekly + ' coins/week' : '2 free skills',
+      mySkills: mySkills,
+      addSel: S.addSel || '', addOther: S.addOther || '', addPrice: S.addPrice || '',
+      onAddSel: (e) => this.setState({ addSel: e.target.value, addErr: '' }),
+      onAddOther: (e) => this.setState({ addOther: e.target.value, addErr: '' }),
+      onAddPrice: (e) => this.setState({ addPrice: e.target.value.replace(/[^0-9]/g, ''), addErr: '' }),
+      isOther: S.addSel === '__other',
+      addErr: S.addErr || '', hasAddErr: !!S.addErr, addSkill: addSkill,
+      addCostNote: S.skills.length < 2 ? 'Free' : '+' + extra + ' coins/week',
+      addCostStyle: 'font-size: 11px; font-weight: 800; border-radius: 6px; padding: 3px 8px; ' + (S.skills.length < 2 ? 'background: #E6F1F3; color: #044D5E' : 'background: #6EDA60; color: #044D5E'),
+      radius: S.radius || 3, radiusText: (S.radius || 3) + ' km',
+      onRadius: (e) => this.setState({ radius: Math.min(10, Math.max(1, parseFloat(e.target.value) || 1)) }),
+      canAdd: S.skills.length < 5, atMax: S.skills.length >= 5,
+
+      history: history,
+      runWeekly: () => {
+        if (!weekly) { this.setState({ toast: this.flash('No extra skills, so no weekly charge') }); return; }
+        if (S.coins < weekly) { this.setState({ toast: this.flash('Not enough coins. Your extra skills are hidden until you buy coins.') }); return; }
+        this.setState({ coins: S.coins - weekly, history: this.log({ label: 'Weekly skill charge · ' + extraCount + ' extra skill' + (extraCount > 1 ? 's' : '') + ' \u00d7 ' + extra, amt: -weekly }), toast: this.flash(weekly + ' coins charged for ' + extraCount + ' extra skill' + (extraCount > 1 ? 's' : '')) });
+      },
+      showTopUp: S.topUpOpen,
+      openTopUp: () => this.setState({ topUpOpen: true }),
+      closeTopUp: () => this.setState({ topUpOpen: false }),
+      payOpts: payOpts,
+      topUp: () => this.setState({ topUpOpen: false, coins: S.coins + 1000, history: this.log({ label: 'Bought coins via ' + ({ gcash: 'GCash', maya: 'Maya', card: 'Card' })[S.pay] + ' · ₱1,000', amt: 1000 }), toast: this.flash('1,000 coins added') }),
+
+      toast: S.toast, hasToast: !!S.toast,
+      goWallet: () => this.setState({ tab: 'wallet' }),
+      goServices: () => this.setState({ tab: 'services' }),
+      nav: {
+        home: () => this.setState({ tab: 'home' }),
+        job: () => this.setState({ tab: 'job' }),
+        services: () => this.setState({ tab: 'services' }),
+        wallet: () => this.setState({ tab: 'wallet' }),
+        me: () => this.setState({ tab: 'me' })
+      },
+      navStyle: { home: navBtn(tab === 'home'), job: navBtn(tab === 'job'), services: navBtn(tab === 'services'), wallet: navBtn(tab === 'wallet'), me: navBtn(tab === 'me') }
+    };
+  }
+}
+</script>
+
+
+</body></html>
