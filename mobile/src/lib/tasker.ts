@@ -30,3 +30,6 @@ export async function uploadImage(bucket: string, folder: string, uri: string, n
 }
 
 export const coins = (n: number) => `${Math.round(n).toLocaleString('en-PH')} coins`;
+
+/** TEST BUILD: the demo client (Carla R.) used by "Simulate a new request". */
+export const DEMO_CLIENT_ID = 'a0b607da-b424-5eab-9553-1a32a7f8e1e6';

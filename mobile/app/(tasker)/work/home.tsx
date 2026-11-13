@@ -45,6 +45,11 @@ export default function WorkHome() {
     catch (e: any) { showToast(e.message); } finally { setBusy(''); }
   };
   const reply = (id: string) => router.push({ pathname: '/work/job/[id]', params: { id } });
+  const simulate = async () => {
+    setBusy('sim');
+    try { await rpc('demo_client_request'); showToast('Test request from Carla R. (demo client)'); await load(); }
+    catch (e: any) { showToast(e.message); } finally { setBusy(''); }
+  };
   const decline = (id: string) => Alert.alert('Decline this request?', 'No strike: you haven’t sent an offer yet.', [
     { text: 'Keep it', style: 'cancel' },
     { text: 'Decline', style: 'destructive', onPress: async () => { try { await rpc('tasker_decline', { p_booking: id, p_reason: 'not_available' }); load(); } catch (e: any) { showToast(e.message); } } },
@@ -144,6 +149,14 @@ export default function WorkHome() {
             </View>
           )}
 
+          {/* TEST BUILD (design: "Simulate a new request (demo)") */}
+          {ready && (
+            <PressScale onPress={simulate} style={st.demoBtn}>
+              <T w="extrabold" style={{ fontSize: 10, letterSpacing: 0.6, color: colors.warnText }}>TEST BUILD</T>
+              <T w="bold" style={{ fontSize: 14, color: colors.warnText }}>{busy === 'sim' ? 'Sending…' : '▶ Simulate a new request (demo client)'}</T>
+            </PressScale>
+          )}
+
           {/* active jobs */}
           {h.active.map((j) => (
             <PressScale key={j.id} onPress={() => reply(j.id)} style={[glassCard, st.row, { padding: 16, gap: 12, borderColor: colors.teal, borderWidth: 1.5 }]}>
@@ -201,6 +214,7 @@ const st = StyleSheet.create({
   alert: { padding: 14, gap: 6, borderColor: '#F3B8B2', borderWidth: 1.5 },
   smallBtn: { alignSelf: 'flex-start', height: 36, paddingHorizontal: 14, borderRadius: 12, borderWidth: 1.5, borderColor: colors.teal, justifyContent: 'center', backgroundColor: '#FFF', marginTop: 4 },
   repeat: { alignSelf: 'flex-start', backgroundColor: '#E9F8E6', borderRadius: 6, paddingVertical: 3, paddingHorizontal: 7 },
+  demoBtn: { borderRadius: 14, borderWidth: 1.5, borderColor: '#E0A96D', backgroundColor: colors.warnBg, padding: 12, alignItems: 'center', gap: 2 },
   priceBox: { backgroundColor: 'rgba(230,241,243,0.8)', borderRadius: 14, padding: 12 },
   ghost: { height: 48, borderRadius: 14, borderWidth: 1.5, borderColor: colors.teal, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
   solid: { height: 48, borderRadius: 14, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },

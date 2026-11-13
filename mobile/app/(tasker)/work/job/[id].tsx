@@ -9,11 +9,11 @@ import { Backdrop, GlossyButton, PressScale } from '../../../../src/components/g
 import { Chip, Ic, MiniAvatar, P, RoundButton, Sheet, TealGloss, Toast, glassCard } from '../../../../src/components/clientUi';
 import { peso, useClient } from '../../../../src/lib/client';
 import { addrLine } from '../../../../src/lib/places';
-import { STATUS_LABEL } from '../../../../src/lib/tasker';
+import { DEMO_CLIENT_ID, STATUS_LABEL } from '../../../../src/lib/tasker';
 import { rpc, supabase } from '../../../../src/lib/supabase';
 
 type Booking = {
-  id: string; code: string; status: string; is_delivery: boolean; items_checked: boolean; proof_of_delivery_path: string | null;
+  id: string; client_id: string; code: string; status: string; is_delivery: boolean; items_checked: boolean; proof_of_delivery_path: string | null;
   starting_total: number; initial_offer: number | null; final_price: number | null; is_repeat_client: boolean;
   client_name: string; client_initials: string; client_rating: number | null; address: any; dropoff_address: any;
   fee_coins_due: number; offer_accepted_at: string | null; when_type: string; scheduled_at: string | null;
@@ -299,6 +299,15 @@ export default function TaskerJob() {
           {['completed', 'cancelled', 'declined_by_tasker'].includes(b.status) && <GlossyButton label="Back to Home" onPress={() => router.replace('/work/home')} />}
         </ScrollView>
       )}
+      {/* TEST BUILD: the demo client answers (design: "Client accepts (demo)") */}
+      {b.client_id === DEMO_CLIENT_ID && (b.status === 'offer_sent' || b.status === 'final_price_sent') && (
+        <View style={[st.demo, { paddingBottom: 10 + Math.max(0, insets.bottom) }]}>
+          <T w="extrabold" style={{ fontSize: 10, letterSpacing: 0.6, color: colors.warnText }}>TEST BUILD · DEMO CLIENT</T>
+          <PressScale onPress={() => act('demo', async () => { const m = await rpc<string>('demo_client_act', { p_booking: b.id }); showToast(m); })} style={st.demoBtn}>
+            <T w="bold" style={{ fontSize: 14, color: colors.warnText }}>{busy === 'demo' ? 'Working…' : b.status === 'offer_sent' ? '▶ Client accepts your offer' : '▶ Client accepts the final price'}</T>
+          </PressScale>
+        </View>
+      )}
       <Sheet open={cancelOpen} onClose={() => setCancelOpen(false)} title="Why are you cancelling?">
         <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>Cancelling after the client accepted your offer may count as a strike, depending on the reason.</T>
         {CANCEL_REASONS.map(([k, l]) => (
@@ -338,5 +347,7 @@ const st = StyleSheet.create({
   iconBtn: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.tint },
   input: { flex: 1, height: 44, borderRadius: 14, borderWidth: 1.5, borderColor: colors.border, paddingHorizontal: 14, fontFamily: font.medium, fontSize: 15, color: colors.teal, backgroundColor: '#FFF' },
   pill: { height: 40, borderRadius: 999, borderWidth: 1.5, borderColor: colors.teal, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
+  demo: { paddingTop: 8, paddingHorizontal: 16, gap: 6, backgroundColor: colors.warnBg, borderTopWidth: 1, borderTopColor: '#F5D9B5' },
+  demoBtn: { height: 44, borderRadius: 12, borderWidth: 1.5, borderColor: '#E0A96D', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
   collect: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
 });
