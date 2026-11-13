@@ -1,0 +1,13 @@
+# secrets / local config
+.env
+.env.*
+!env.example
+# dependencies & builds
+node_modules/
+.expo/
+dist/
+web-build/
+ios/
+android/
+*.log
+.DS_Store
