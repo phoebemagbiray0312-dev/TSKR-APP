@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Linking, Platform, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
@@ -21,7 +22,7 @@ type Booking = {
   tasker_name: string; tasker_initials: string; tasker_photo: string | null; address: any; dropoff_address: any;
   items: { id: string; name: string; qty: number; unit_price: number }[];
 };
-type Msg = { id: string; sender_id: string | null; kind: string; body: string | null; amount: number | null; created_at: string };
+type Msg = { id: string; sender_id: string | null; kind: string; body: string | null; amount: number | null; photo_path?: string | null; created_at: string };
 
 const CHAT: Status[] = ['requested', 'chatting', 'offer_sent'];
 const DEMO_STEP: Partial<Record<Status, string>> = {
@@ -46,7 +47,7 @@ export default function BookingScreen() {
     try {
       const [bk, m] = await Promise.all([
         rpc<Booking>('get_booking', { p_booking: id }),
-        supabase.from('messages').select('id,sender_id,kind,body,amount,created_at').eq('booking_id', id).order('created_at'),
+        supabase.from('messages').select('id,sender_id,kind,body,amount,photo_path,created_at').eq('booking_id', id).order('created_at'),
       ]);
       setB(bk);
       setMsgs((m.data ?? []) as Msg[]);
@@ -167,6 +168,12 @@ export default function BookingScreen() {
                   </View>
                 );
               }
+              if (m.kind === 'photo' && m.photo_path) return (
+                <View key={m.id} style={[st.photoMsg, mine ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' }]}>
+                  <ChatPhoto path={m.photo_path} />
+                  <T w="semibold" style={{ fontSize: 11, color: colors.muted }}>Taken in TSKR · {new Date(m.created_at).toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}</T>
+                </View>
+              );
               if (m.kind === 'final_price') return <T key={m.id} w="semibold" style={st.system}>Final price sent: {peso(Number(m.amount))}{m.body ? ` · ${m.body}` : ''}</T>;
               return (
                 <View key={m.id} style={[st.bubble, mine ? st.mine : st.theirs]}>
@@ -195,7 +202,18 @@ export default function BookingScreen() {
           {!['completed', 'cancelled', 'declined_by_tasker'].includes(b.status) && (
             <View style={[st.inputRow, { paddingBottom: 10 + (demoLabel ? 0 : Math.max(0, insets.bottom)) }]}>
               <PressScale accessibilityLabel="Take a photo with the camera" style={st.iconBtn}
-                onPress={() => showToast('Camera photos come in the next build.')}>
+                onPress={() => act('photo', async () => {
+                  const perm = await ImagePicker.requestCameraPermissionsAsync();
+                  if (!perm.granted) throw new Error('Allow camera access in Settings to send photos.');
+                  const r = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.6 });
+                  if (r.canceled) return '';
+                  const path = `${b.id}/${Date.now()}.jpg`;
+                  const buf = await (await fetch(r.assets[0].uri)).arrayBuffer();
+                  const up = await supabase.storage.from('chat').upload(path, buf, { contentType: 'image/jpeg' });
+                  if (up.error) throw new Error(up.error.message);
+                  await rpc('send_photo', { p_booking: b.id, p_path: path });
+                  return '';
+                }, '')}>
                 <Ic size={22} w={1.8}><Path d="M4 8h3l2-3h6l2 3h3v11H4z" /><Circle cx={12} cy={13} r={3} /></Ic>
               </PressScale>
               <TextInput value={draft} onChangeText={setDraft} placeholder="Type a message…" placeholderTextColor="#98A2B3"
@@ -208,7 +226,7 @@ export default function BookingScreen() {
           )}
         </>
       ) : (
-        <Track b={b} first={first} agreed={agreed} busy={busy} act={act} onCancel={cancel} setFav={setFav} />
+        <Track b={b} first={first} agreed={agreed} busy={busy} act={act} onCancel={cancel} setFav={setFav} onChat={() => setView('chat')} />
       )}
 
       {/* TEST BUILD: lets the client move a demo tasker forward until the Tasker app exists */}
@@ -225,6 +243,12 @@ export default function BookingScreen() {
   );
 }
 
+function ChatPhoto({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => { supabase.storage.from('chat').createSignedUrl(path, 3600).then(({ data }) => setUrl(data?.signedUrl ?? null)); }, [path]);
+  return url ? <Image source={{ uri: url }} style={{ width: 220, height: 220, borderRadius: 16 }} /> : <View style={{ width: 220, height: 220, borderRadius: 16, backgroundColor: colors.tint }} />;
+}
+
 function quickReplies(b: Booking) {
   const names = b.items.map((i) => i.name).join(' ');
   if (b.is_delivery) return ['A small box of clothes, about 3 kg', 'Documents in an envelope', 'Please call the recipient on arrival'];
@@ -236,10 +260,27 @@ function quickReplies(b: Booking) {
 const STEPS = ['Offer accepted', 'On the way', 'Arrived', 'Final price', 'In progress', 'Completed'];
 const stepOf = (s: Status) => ({ offer_accepted: 0, on_the_way: 1, arrived: 2, final_price_sent: 3, ready: 3, in_progress: 4, completed: 5 } as Record<string, number>)[s] ?? 0;
 
-function Track({ b, first, agreed, busy, act, onCancel, setFav }: {
+function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
   b: Booking; first: string; agreed: number; busy: string; act: (l: string, fn: () => Promise<any>, ok?: string) => void;
-  onCancel: () => void; setFav: (id: string, on: boolean) => void;
+  onCancel: () => void; setFav: (id: string, on: boolean) => void; onChat: () => void;
 }) {
+  const live = ['offer_accepted', 'on_the_way', 'arrived', 'final_price_sent', 'ready', 'in_progress'].includes(b.status);
+  const sos = () => Alert.alert('Emergency?', 'We’ll alert the TSKR safety team right away with this booking and address. If you’re in danger, call 911 now.', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Call 911', onPress: () => Linking.openURL('tel:911') },
+    { text: 'Alert TSKR', style: 'destructive', onPress: () => act('sos', async () => {
+      const no = await rpc<string>('trigger_sos', { p_booking: b.id, p_lat: b.address?.lat ?? null, p_lng: b.address?.lng ?? null });
+      return `SOS sent · ${no}. Our safety team is contacting you now.`;
+    }) },
+  ]);
+  const shareTrip = () => Share.share({
+    message: `I booked ${b.tasker_name} on TSKR (${b.code}) for ${b.items.map((i) => i.name).join(', ')}. Status: ${b.status.replace(/_/g, ' ')}. Address: ${addrLine(b.address)}.`,
+  }).catch(() => {});
+  const qr = (b as any).tasker_qr as { path: string | null; wallet: string | null } | null;
+  const showQr = () => Alert.alert(`Pay ${first}`, qr?.path
+    ? `Scan ${first}’s ${qr.wallet?.toUpperCase() ?? 'payment'} QR from their profile, or pay cash. Amount: ${peso(agreed)}.`
+    : `${first} hasn’t uploaded a payment QR yet, so please pay ${peso(agreed)} in cash. TSKR doesn’t hold your money.`);
+
   const step = stepOf(b.status);
   const eta = b.eta_at ? Math.max(1, Math.round((new Date(b.eta_at).getTime() - Date.now()) / 60000)) : null;
   const cancelled = b.status === 'cancelled';
@@ -279,6 +320,21 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav }: {
         )}
       </Rise>
 
+      {live && (
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <PressScale outer={{ flex: 1 }} onPress={sos} style={[st.pillBtn, { borderColor: colors.error }]}>
+            <Ic d={P.shield} size={16} color={colors.error} w={2.2} /><T w="extrabold" style={{ fontSize: 13, color: colors.error }}>SOS</T>
+          </PressScale>
+          <PressScale outer={{ flex: 2 }} onPress={shareTrip} style={st.pillBtn}>
+            <Ic d={P.share} size={16} w={2.2} /><T w="bold" style={{ fontSize: 13 }}>Share my booking</T>
+          </PressScale>
+        </View>
+      )}
+      {b.status === 'completed' && (
+        <PressScale onPress={showQr} style={[st.pillBtn, { alignSelf: 'stretch' }]}>
+          <T w="bold" style={{ fontSize: 14 }}>Show {first}’s payment QR</T>
+        </PressScale>
+      )}
       {D && b.dropoff_address && (
         <View style={st.card}>
           <T style={{ fontSize: 13 }}><T w="extrabold" style={{ fontSize: 12 }}>FROM  </T>{addrLine(b.address)}</T>
@@ -388,6 +444,18 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav }: {
         </View>
       )}
 
+      <View style={[st.card, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+        <MiniAvatar initials={b.tasker_initials} color={colors.teal} size={44} r={14} />
+        <View style={{ flex: 1 }}>
+          <T w="extrabold" style={{ fontSize: 15 }}>{b.tasker_name}</T>
+          <T style={{ fontSize: 12, color: colors.muted }}>Your tasker</T>
+        </View>
+        <RoundButton label="Chat with tasker" size={44} onPress={onChat}><Ic d="M4 5h16v11H8l-4 4z" size={20} w={1.9} /></RoundButton>
+        <RoundButton label="Call tasker" size={44} onPress={() => Alert.alert('In-app calls', 'Calls inside TSKR (no phone numbers shared) come with the calling service. For now, use Chat.', [{ text: 'Open chat', onPress: onChat }, { text: 'OK' }])}>
+          <Ic d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" size={20} w={1.9} />
+        </RoundButton>
+      </View>
+
       <View style={[st.card, { gap: 8 }]}>
         <T w="extrabold" style={{ fontSize: 17 }}>Booking summary</T>
         {b.items.map((it) => (
@@ -457,6 +525,8 @@ const st = StyleSheet.create({
   tagChip: { borderWidth: 1.5, borderColor: colors.teal, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 12 },
   tagOn: { backgroundColor: colors.teal },
   textarea: { minHeight: 84, borderRadius: 14, borderWidth: 1.5, borderColor: colors.border, padding: 12, fontFamily: font.medium, fontSize: 14, color: colors.teal, backgroundColor: '#FFF', textAlignVertical: 'top' },
+  pillBtn: { height: 44, borderRadius: 999, borderWidth: 1.5, borderColor: colors.teal, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.8)' },
+  photoMsg: { gap: 4, padding: 4, borderRadius: 18, backgroundColor: '#FFF' },
   dot: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: '#D0D5DD', backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center' },
   dotOn: { backgroundColor: colors.teal, borderColor: colors.teal },
   lineV: { width: 2, height: 18, backgroundColor: '#D0D5DD' },

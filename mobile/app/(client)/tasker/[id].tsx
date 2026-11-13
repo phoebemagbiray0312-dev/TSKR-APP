@@ -6,7 +6,11 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { bubble, colors } from '../../../src/theme';
 import { T } from '../../../src/components/ui';
 import { PressScale, Rise } from '../../../src/components/glass';
-import { CAT_ICON, Ic, MiniAvatar, P, RoundButton, StarIc, TealGloss, Toast } from '../../../src/components/clientUi';
+import { CAT_ICON, Chip, Ic, MiniAvatar, P, RoundButton, Sheet, StarIc, TealGloss, Toast } from '../../../src/components/clientUi';
+import { ErrorText } from '../../../src/components/ui';
+import { GlossyButton } from '../../../src/components/glass';
+import { TextInput } from 'react-native';
+import { font } from '../../../src/theme';
 import { Service, TaskerFull, durText, etaText, firstName, peso, useClient } from '../../../src/lib/client';
 import { coverPhoto, workPhotos } from '../../../src/lib/demoPhotos';
 import { rpc } from '../../../src/lib/supabase';
@@ -22,6 +26,23 @@ export default function TaskerProfile() {
   const [gal, setGal] = useState(0);
   const [svcY, setSvcY] = useState(0);
   const scroll = React.useRef<ScrollView>(null);
+  // report / block (design: SHEETS › report)
+  const [repOpen, setRepOpen] = useState(false);
+  const [reasons, setReasons] = useState<string[]>([]);
+  const [repText, setRepText] = useState('');
+  const [block, setBlock] = useState(false);
+  const [repErr, setRepErr] = useState('');
+  const [repBusy, setRepBusy] = useState(false);
+  const sendReport = async () => {
+    if (!reasons.length) { setRepErr('Pick at least one reason.'); return; }
+    setRepBusy(true); setRepErr('');
+    try {
+      const no = await rpc<string>('report_user', { p_reported: id, p_booking: null, p_reasons: reasons, p_body: repText.trim() || null, p_block: block });
+      setRepOpen(false); setReasons([]); setRepText('');
+      showToast(block ? `Report ${no} sent. You won’t see this tasker again.` : `Report ${no} sent. Our team will look into it.`);
+      if (block) setTimeout(() => router.back(), 1200);
+    } catch (e: any) { setRepErr(e.message); } finally { setRepBusy(false); }
+  };
 
   useEffect(() => {
     rpc<TaskerFull>('get_tasker', { p_tasker: id, p_lat: address.lat, p_lng: address.lng })
@@ -226,7 +247,7 @@ export default function TaskerProfile() {
               <View style={st.mapPin}><MiniAvatar initials={t.initials} color={t.color} size={30} r={15} /></View>
             </View>
             <T style={{ fontSize: 14, color: colors.body }}>{t.area} · up to {t.radius_km} km</T>
-            <PressScale onPress={() => showToast('Report and block come in the next build. For now, email support from Account.')}
+            <PressScale onPress={() => setRepOpen(true)}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, marginTop: 10, alignSelf: 'flex-start' }}>
               <Ic d={P.flag} color={colors.error} w={2} />
               <T w="bold" style={{ color: colors.error, fontSize: 14 }}>Report or block this tasker</T>
@@ -257,6 +278,24 @@ export default function TaskerProfile() {
           </>
         )}
       </View>
+      <Sheet open={repOpen} onClose={() => setRepOpen(false)} title="Report or block">
+        <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>Reports are private. {first} won’t know who reported them.</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {['Fake or wrong profile', 'Asked to deal outside TSKR', 'Offers a banned service', 'Inappropriate photos or words', 'Other'].map((r) => (
+            <Chip key={r} label={r} on={reasons.includes(r)} onPress={() => { setRepErr(''); setReasons(reasons.includes(r) ? reasons.filter((x) => x !== r) : [...reasons, r]); }} />
+          ))}
+        </View>
+        <TextInput value={repText} onChangeText={setRepText} multiline placeholder="Anything else we should know? (optional)" placeholderTextColor="#98A2B3"
+          accessibilityLabel="Details" style={{ minHeight: 84, borderRadius: 14, borderWidth: 1.5, borderColor: colors.border, padding: 12, fontFamily: font.medium, fontSize: 14, color: colors.teal, textAlignVertical: 'top' }} />
+        <PressScale accessibilityRole="checkbox" accessibilityState={{ checked: block }} onPress={() => setBlock(!block)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: block ? colors.teal : '#98A2B3', backgroundColor: block ? colors.teal : '#FFF', alignItems: 'center', justifyContent: 'center' }}>
+            {block && <Ic d={P.check} size={14} color="#FFF" w={3} />}
+          </View>
+          <T w="semibold" style={{ fontSize: 14, flex: 1 }}>Also block {first}. You won’t see each other on TSKR.</T>
+        </PressScale>
+        <ErrorText>{repErr}</ErrorText>
+        <GlossyButton label="Send report" onPress={sendReport} loading={repBusy} />
+      </Sheet>
       <Toast text={toast} top={insets.top + 16} left={72} />
     </View>
   );

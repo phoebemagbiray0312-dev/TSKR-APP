@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, Image, Modal, Pressable, ScrollView, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { usePathname, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -287,3 +287,23 @@ export const glassCard = {
   borderTopLeftRadius: 22, borderTopRightRadius: 22, borderBottomRightRadius: 22, borderBottomLeftRadius: 6,
   backgroundColor: 'rgba(255,255,255,0.62)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.85)',
 } as const;
+
+/** Bottom sheet (design: SHEETS) — dimmed backdrop, white sheet with a grab handle. */
+export function Sheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(4,30,38,0.45)' }} onPress={onClose} accessibilityLabel="Close" />
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '88%', backgroundColor: '#FFF', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 10 }}>
+        <View style={{ alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: '#D0D5DD', marginBottom: 6 }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 6 }}>
+          <T w="extrabold" style={{ fontSize: 20, flex: 1 }}>{title}</T>
+          <RoundButton d="M6 6l12 12M18 6 6 18" label="Close" size={36} glass={false} onPress={onClose} />
+        </View>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 6, paddingBottom: 20 + insets.bottom, gap: 12 }}>
+          {children}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}

@@ -5,16 +5,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { bubble, colors, font } from '../../src/theme';
 import { T } from '../../src/components/ui';
-import { Backdrop, PressScale, Rise } from '../../src/components/glass';
+import { Backdrop, GlossyButton, PressScale, Rise } from '../../src/components/glass';
 import {
-  CAT_ICON, Chip, GreenFill, HeaderFill, HeaderLogo, Ic, MiniAvatar, P, SearchIc, StarIc, TealGloss, Toast, VerifiedIc,
+  CAT_ICON, Chip, GreenFill, Sheet, HeaderFill, HeaderLogo, Ic, MiniAvatar, P, SearchIc, StarIc, TealGloss, Toast, VerifiedIc,
 } from '../../src/components/clientUi';
 import { CATS, TaskerCard, catIdOf, catLabel, durText, etaText, peso, useClient } from '../../src/lib/client';
 import { coverPhoto } from '../../src/lib/demoPhotos';
 import { AddressSheet } from '../../src/components/AddressSheet';
 import { rpc } from '../../src/lib/supabase';
 
-type Sort = 'recommended' | 'top_rated' | 'nearest';
+type Sort = 'recommended' | 'top_rated' | 'nearest' | 'lowest_price';
 type Result = { blocked: boolean; items: TaskerCard[] };
 
 const greeting = () => {
@@ -35,6 +35,12 @@ export default function Home() {
   const [sort, setSort] = useState<Sort>('recommended');
   const [proOnly, setProOnly] = useState(false);
   const [favOnly, setFavOnly] = useState(false);
+  // Filters sheet
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [maxKm, setMaxKm] = useState(6);
+  const [minRating, setMinRating] = useState(0);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
+  const activeFilters = (maxKm < 6 ? 1 : 0) + (minRating > 0 ? 1 : 0) + (maxPrice ? 1 : 0);
 
   const [all, setAll] = useState<TaskerCard[]>([]);
   const [list, setList] = useState<TaskerCard[] | null>(null);
@@ -60,10 +66,11 @@ export default function Home() {
     rpc<Result>('discover_taskers', {
       p_lat: address.lat, p_lng: address.lng, p_query: q || null, p_category: CATS.find((c) => c.id === cat)?.db ?? null,
       p_available_now: availNow, p_multi_skill: proOnly, p_favorites: favOnly, p_sort: sort,
+      p_max_km: maxKm, p_min_rating: minRating, p_max_price: maxPrice,
     }).then((r) => { if (live) { setList(r.items); setBlocked(r.blocked); } })
       .catch((e) => live && setErr(e.message));
     return () => { live = false; };
-  }, [address.lat, address.lng, q, cat, availNow, sort, proOnly, favOnly, tick]);
+  }, [address.lat, address.lng, q, cat, availNow, sort, proOnly, favOnly, maxKm, minRating, maxPrice, tick]);
 
   const isFav = (t: TaskerCard) => favs[t.id] ?? t.favorite;
   const open = (t: { id: string }) => router.push({ pathname: '/tasker/[id]', params: { id: t.id } });
@@ -169,9 +176,10 @@ export default function Home() {
         <Rise i={4}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled"
             style={{ marginHorizontal: -16, marginBottom: -8 }} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-            <PressScale accessibilityLabel="Filters" style={[st.filterBtn, st.glass]}
-              onPress={() => showToast('More filters (price, distance, rating) come in the next build.')}>
-              <Ic><Path d={P.filters} /><Path d="M16 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM10 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" /></Ic>
+            <PressScale accessibilityLabel="Filters" style={[st.filterBtn, activeFilters ? st.catOn : st.glass]}
+              onPress={() => setFiltersOpen(true)}>
+              <Ic color={activeFilters ? '#FFF' : colors.teal}><Path d={P.filters} /><Path d="M16 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM10 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" /></Ic>
+              {activeFilters > 0 && <View style={st.filterCount}><T w="extrabold" style={{ fontSize: 10 }}>{activeFilters}</T></View>}
             </PressScale>
             <Chip label="Available now" on={availNow} onPress={() => setAvailNow(!availNow)} />
             <Chip label="Top rated" on={sort === 'top_rated'} onPress={() => setSort(sort === 'top_rated' ? 'recommended' : 'top_rated')} />
@@ -310,6 +318,31 @@ export default function Home() {
           <T w="extrabold" style={{ color: '#FFF', fontSize: 15 }}>{peso(subtotal)}</T>
         </PressScale>
       )}
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
+        <T w="bold" style={{ fontSize: 15 }}>Sort by</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {([['recommended', 'Recommended'], ['top_rated', 'Top rated'], ['nearest', 'Nearest'], ['lowest_price', 'Lowest price']] as [Sort, string][])
+            .map(([k, l]) => <Chip key={k} label={l} on={sort === k} onPress={() => setSort(k)} />)}
+        </View>
+        <T w="bold" style={{ fontSize: 15 }}>Distance</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {[1, 3, 6].map((k) => <Chip key={k} label={k === 6 ? 'Any (up to 6 km)' : `Within ${k} km`} on={maxKm === k} onPress={() => setMaxKm(k)} />)}
+        </View>
+        <T w="bold" style={{ fontSize: 15 }}>Rating</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {[0, 4, 4.5, 4.8].map((k) => <Chip key={k} label={k ? `${k}★ and up` : 'Any'} on={minRating === k} onPress={() => setMinRating(k)} />)}
+        </View>
+        <T w="bold" style={{ fontSize: 15 }}>Starting price</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {[null, 500, 1000, 2000].map((k) => <Chip key={String(k)} label={k ? `Up to ${peso(k)}` : 'Any'} on={maxPrice === k} onPress={() => setMaxPrice(k)} />)}
+        </View>
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
+          <PressScale outer={{ flex: 1 }} style={st.resetBtn} onPress={() => { setSort('recommended'); setMaxKm(6); setMinRating(0); setMaxPrice(null); }}>
+            <T w="bold" style={{ fontSize: 15 }}>Reset</T>
+          </PressScale>
+          <View style={{ flex: 1.6 }}><GlossyButton label={`Show ${list?.length ?? 0} taskers`} onPress={() => setFiltersOpen(false)} /></View>
+        </View>
+      </Sheet>
       <AddressSheet open={addrOpen} onClose={() => setAddrOpen(false)} addresses={addresses} selectedId={selected?.id}
         onPick={(a) => selectAddress(a.id)} />
       <Toast text={toast} top={insets.top + 10} />
@@ -373,7 +406,9 @@ const st = StyleSheet.create({
   tileTag: { position: 'absolute', bottom: 10, left: 10, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8, overflow: 'hidden' },
   zero: { padding: 18, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden' },
   zeroIcon: { width: 52, height: 52, borderRadius: 16, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  filterBtn: { width: 52, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  filterBtn: { width: 52, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
+  filterCount: { position: 'absolute', top: 4, right: 8, minWidth: 16, height: 16, borderRadius: 8, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' },
+  resetBtn: { height: 52, borderRadius: 16, borderWidth: 1.5, borderColor: colors.teal, alignItems: 'center', justifyContent: 'center' },
   note: { borderRadius: 18, padding: 22, alignItems: 'center' },
   noteText: { fontSize: 14, color: colors.muted, textAlign: 'center', lineHeight: 21 },
   cover: {

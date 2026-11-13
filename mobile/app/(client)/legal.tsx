@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ScrollView, View } from 'react-native';
+import { Alert, Modal, ScrollView, Share, View } from 'react-native';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../src/theme';
 import { T } from '../../src/components/ui';
 import { Backdrop, PressScale } from '../../src/components/glass';
 import { Ic, P, RoundButton, SubHeader, Toast, glassCard } from '../../src/components/clientUi';
 import { useClient } from '../../src/lib/client';
-import { supabase } from '../../src/lib/supabase';
+import { rpc, supabase } from '../../src/lib/supabase';
 
 type Doc = { id: string; doc_type: string; role: string; version: string; title: string; sections: { h: string; p: string }[] };
-type Consent = { id: string; consent_type: string; version: string; created_at: string };
+type Consent = { id: string; consent_type: string; version: string; accepted_at: string };
 const NAME: Record<string, string> = { terms: 'Terms of Service', privacy: 'Privacy Policy', id_consent: 'ID and face-check consent' };
 
 /** Design: LEGAL AND PRIVACY — read current documents and see what you agreed to. */
@@ -22,10 +23,35 @@ export default function Legal() {
 
   useEffect(() => {
     supabase.from('policy_documents').select('*').eq('is_current', true).order('role').then(({ data }) => setDocs((data ?? []) as Doc[]));
-    supabase.from('consents').select('id,consent_type,version,created_at').order('created_at', { ascending: false }).then(({ data }) => setConsents((data ?? []) as Consent[]));
+    supabase.from('consents').select('id,consent_type,version,accepted_at').order('accepted_at', { ascending: false }).then(({ data }) => setConsents((data ?? []) as Consent[]));
   }, []);
 
-  const later = (what: string) => () => showToast(`${what}: ask us in the Help center for now. Self-service comes in the next build.`);
+  const download = async () => {
+    try {
+      const data = await rpc<object>('export_my_data');
+      await Share.share({ title: 'My TSKR data', message: JSON.stringify(data, null, 2) });
+    } catch (e: any) { showToast(e.message); }
+  };
+  const close = (mode: 'deactivated' | 'deleted') => Alert.alert(
+    mode === 'deleted' ? 'Delete your account?' : 'Deactivate your account?',
+    mode === 'deleted'
+      ? 'Your profile is removed and you’re signed out. Booking, payment, chat and report records are kept for 5 years as required by law.'
+      : 'Your profile is hidden and you’re signed out. Sign in again anytime to reactivate.',
+    [
+      { text: 'Keep my account', style: 'cancel' },
+      { text: mode === 'deleted' ? 'Delete' : 'Deactivate', style: 'destructive', onPress: async () => {
+        try {
+          await rpc('close_account', { p_mode: mode, p_reason: 'user_request' });
+          await supabase.auth.signOut();
+          router.replace('/(auth)/welcome');
+        } catch (e: any) { showToast(e.message); }
+      } },
+    ]);
+  const actions: [string, string, () => void][] = [
+    ['Download a copy of my data', colors.teal, download],
+    ['Deactivate account', colors.teal, () => close('deactivated')],
+    ['Delete account', colors.error, () => close('deleted')],
+  ];
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,7 +78,7 @@ export default function Legal() {
             <View key={c.id} style={[{ padding: 16, flexDirection: 'row', alignItems: 'center', gap: 10 }, i > 0 && { borderTopWidth: 1, borderTopColor: 'rgba(4,77,94,0.08)' }]}>
               <View style={{ flex: 1 }}>
                 <T w="bold" style={{ fontSize: 14 }}>{NAME[c.consent_type] ?? c.consent_type} v{c.version}</T>
-                <T style={{ fontSize: 12, color: colors.muted }}>Agreed {new Date(c.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</T>
+                <T style={{ fontSize: 12, color: colors.muted }}>Agreed {new Date(c.accepted_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</T>
               </View>
               <View style={{ backgroundColor: '#E9F8E6', borderRadius: 6, paddingVertical: 3, paddingHorizontal: 7 }}><T w="extrabold" style={{ fontSize: 10 }}>ACTIVE</T></View>
             </View>
@@ -62,8 +88,8 @@ export default function Legal() {
 
         <T w="extrabold" style={{ fontSize: 17, marginTop: 6 }}>Your data</T>
         <View style={[glassCard, { overflow: 'hidden' }]}>
-          {[['Download a copy of my data', colors.teal], ['Deactivate account', colors.teal], ['Delete account', colors.error]].map(([l, c], i) => (
-            <PressScale key={l} onPress={later(l)} style={[{ padding: 16 }, i > 0 && { borderTopWidth: 1, borderTopColor: 'rgba(4,77,94,0.08)' }]}>
+          {actions.map(([l, c, fn], i) => (
+            <PressScale key={l} onPress={fn} style={[{ padding: 16 }, i > 0 && { borderTopWidth: 1, borderTopColor: 'rgba(4,77,94,0.08)' }]}>
               <T w="bold" style={{ fontSize: 15, color: c }}>{l}</T>
             </PressScale>
           ))}

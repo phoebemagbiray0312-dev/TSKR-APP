@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { bubble, colors } from '../../src/theme';
 import { ErrorText, T } from '../../src/components/ui';
 import { Backdrop, GlossyButton, PressScale, Rise } from '../../src/components/glass';
 import { Chip, Ic, MiniAvatar, P, RoundButton, Toast } from '../../src/components/clientUi';
+import { PlusSheet, Plan, usePlan } from '../../src/components/PlusSheet';
 import { AddressSheet } from '../../src/components/AddressSheet';
 import { durText, firstName, peso, useClient } from '../../src/lib/client';
 import { SavedAddress, addrLine, addrName } from '../../src/lib/places';
@@ -29,6 +30,22 @@ export default function Cart() {
   const [ack, setAck] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const { plan, reload: reloadPlan } = usePlan();
+  const [plusOpen, setPlusOpen] = useState<null | 'schedule' | 'limit'>(null);
+  const isPlus = plan?.plan === 'plus';
+  const [when, setWhen] = useState<'now' | 'tomorrow' | 'pick'>('now');
+  const [dIdx, setDIdx] = useState(1);
+  const [tSel, setTSel] = useState('9:00 AM');
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); return d; });
+  const TIMES = ['8:00 AM', '9:00 AM', '10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
+  const scheduledAt = () => {
+    if (when === 'now') return null;
+    const d = new Date(days[when === 'tomorrow' ? 1 : dIdx]);
+    const [hm, ap] = (when === 'tomorrow' ? '9:00 AM' : tSel).split(' ');
+    const [h, m] = hm.split(':').map(Number);
+    d.setHours((h % 12) + (ap === 'PM' ? 12 : 0), m, 0, 0);
+    return d;
+  };
   const t = cart.tasker;
   const lines = Object.values(cart.lines);
   const delivery = lines.some((l) => l.delivery);
@@ -39,15 +56,19 @@ export default function Cart() {
     if (!selected) { setSheet('from'); showToast('Add your address first'); return; }
     if (delivery && !drop) { setSheet('to'); showToast('Add the drop-off address (TO) first'); return; }
     if (delivery && !ack) { setErr('Please confirm your items are not on the prohibited list.'); return; }
+    const at = scheduledAt();
+    if (at && at.getTime() < Date.now() + 30 * 60000) { setErr('Pick a time at least 30 minutes from now.'); return; }
     setBusy(true);
     try {
       const id = await rpc<string>('create_booking', {
         p_tasker: t.id, p_items: lines.map((l) => ({ tasker_skill_id: l.id, qty: l.qty })), p_address_id: selected.id,
-        p_dropoff_address_id: delivery ? drop!.id : null, p_when_type: 'now', p_delivery_ack: delivery && ack,
+        p_dropoff_address_id: delivery ? drop!.id : null, p_when_type: when === 'now' ? 'now' : 'scheduled',
+        p_scheduled_at: scheduledAt()?.toISOString() ?? null, p_delivery_ack: delivery && ack,
       });
       clearCart();
       router.replace({ pathname: '/booking/[id]', params: { id } });
     } catch (e: any) {
+      if (e.message === 'free_limit' || e.message === 'needs_plus') setPlusOpen(e.message === 'free_limit' ? 'limit' : 'schedule');
       setErr(BOOKING_ERRORS[e.message] ?? e.message);
     } finally { setBusy(false); }
   };
@@ -110,10 +131,30 @@ export default function Cart() {
             <Rise i={1} style={[st.card, { padding: 16, gap: 10 }]}>
               <T w="extrabold" style={st.h2}>When?</T>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                <Chip label="Now (ASAP)" on onPress={() => {}} />
-                <Chip label="Tomorrow · PLUS" onPress={() => showToast('Scheduling for later is a TSKR Plus feature. Plus comes in the next build.')} />
-                <Chip label="Pick a time · PLUS" onPress={() => showToast('Scheduling for later is a TSKR Plus feature. Plus comes in the next build.')} />
+                <Chip label="Now (ASAP)" on={when === 'now'} onPress={() => setWhen('now')} />
+                <Chip label={`Tomorrow, 9:00 AM${isPlus ? '' : ' · PLUS'}`} on={when === 'tomorrow'} onPress={() => (isPlus ? setWhen('tomorrow') : setPlusOpen('schedule'))} />
+                <Chip label={`Pick a time${isPlus ? '' : ' · PLUS'}`} on={when === 'pick'} onPress={() => (isPlus ? setWhen('pick') : setPlusOpen('schedule'))} />
               </View>
+              {when === 'pick' && (
+                <>
+                  <T w="semibold" style={{ fontSize: 13 }}>Date</T>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                    {days.map((d, i) => (
+                      <PressScale key={i} onPress={() => setDIdx(i)} style={[st.day, i === dIdx && st.dayOn]}>
+                        <T w="bold" style={{ fontSize: 12, color: i === dIdx ? '#FFF' : colors.teal }}>{i === 0 ? 'Today' : i === 1 ? 'Tmrw' : d.toLocaleDateString('en-PH', { weekday: 'short' })}</T>
+                        <T w="extrabold" style={{ fontSize: 17, color: i === dIdx ? '#FFF' : colors.teal }}>{d.getDate()}</T>
+                      </PressScale>
+                    ))}
+                  </ScrollView>
+                  <T w="semibold" style={{ fontSize: 13 }}>Time</T>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {TIMES.map((tm) => <Chip key={tm} label={tm} on={tSel === tm} onPress={() => setTSel(tm)} />)}
+                  </View>
+                </>
+              )}
+              {!isPlus && plan && (
+                <T style={{ fontSize: 12, color: colors.muted }}>Free plan: 1 booking a day, Now (ASAP) only.{plan.today_count > 0 ? ' You’ve used today’s booking.' : ''}</T>
+              )}
             </Rise>
 
             {delivery ? (
@@ -165,6 +206,8 @@ export default function Cart() {
         note={sheet === 'to' ? 'Where your tasker drops off the items.' : undefined}
         selectedId={sheet === 'to' ? drop?.id : selected?.id} exclude={sheet === 'to' ? selected?.id : null}
         onPick={(a) => (sheet === 'to' ? setDrop(a) : selectAddress(a.id))} />
+      <PlusSheet open={!!plusOpen} why={plusOpen} plan={plan} onClose={() => setPlusOpen(null)}
+        onUpgraded={async () => { await reloadPlan(); setErr(''); showToast('TSKR Plus is on. You can schedule now.'); }} />
       <Toast text={toast} top={insets.top + 10} />
     </View>
   );
@@ -189,5 +232,7 @@ const st = StyleSheet.create({
   tag: { backgroundColor: colors.teal, borderRadius: 6, paddingVertical: 3, paddingHorizontal: 6, marginTop: 2 },
   box: { width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: '#98A2B3', alignItems: 'center', justifyContent: 'center' },
   boxOn: { backgroundColor: colors.teal, borderColor: colors.teal },
+  day: { width: 56, height: 62, borderRadius: 14, borderWidth: 1.5, borderColor: colors.borderSoft, backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  dayOn: { backgroundColor: colors.teal, borderColor: colors.teal },
   bar: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingTop: 12, paddingHorizontal: 16, backgroundColor: 'rgba(255,255,255,0.9)', borderTopWidth: 1, borderTopColor: colors.borderSoft },
 });
