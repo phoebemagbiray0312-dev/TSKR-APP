@@ -3,10 +3,8 @@ import { Pressable, StyleProp, StyleSheet, Text, TextInputProps, TextProps, Text
 import { bubble, colors, font } from '../theme';
 import { GlassInput, GlossyButton } from './glass';
 
-type W = 'regular' | 'medium' | 'semibold' | 'bold' | 'extrabold';
-export function T({ w = 'regular', style, ...p }: TextProps & { w?: W }) {
-  return <Text {...p} style={[{ fontFamily: font[w], color: colors.text }, style]} />;
-}
+import { T } from './text';
+export { T };
 
 export function H1({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
   return <T w="extrabold" style={[{ fontSize: 26, lineHeight: 32 }, style]}>{children}</T>;

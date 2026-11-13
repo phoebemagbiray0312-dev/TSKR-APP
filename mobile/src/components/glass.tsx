@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import Svg, { Defs, Ellipse, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { bubble, colors, font } from '../theme';
-import { T } from './ui';
+import { T } from './text';
 
 /*
  * The design's "premium layer": colour blobs behind frosted, see-through cards, glossy buttons,
