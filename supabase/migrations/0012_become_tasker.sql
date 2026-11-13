@@ -72,14 +72,14 @@ begin
     raise exception 'Design your TSKR office first.'; end if;
 
   norm := regexp_replace(upper(coalesce(p.first_name,'') || coalesce(p.last_name,'')), '[^A-Z]', '', 'g');
-  if p_id1_ocr->>'name' is null or p_id2_ocr->>'name' is null then fl := fl || 'ocr_pending';
+  if p_id1_ocr->>'name' is null or p_id2_ocr->>'name' is null then fl := array_append(fl, 'ocr_pending');
   else
-    if regexp_replace(upper(p_id1_ocr->>'name'), '[^A-Z]', '', 'g') <> norm then fl := fl || 'id1_name_mismatch'; end if;
-    if regexp_replace(upper(p_id2_ocr->>'name'), '[^A-Z]', '', 'g') <> norm then fl := fl || 'id2_name_mismatch'; end if;
-    if (p_id1_ocr->>'birthdate') is distinct from (p_id2_ocr->>'birthdate') then fl := fl || 'birthday_mismatch'; end if;
+    if regexp_replace(upper(p_id1_ocr->>'name'), '[^A-Z]', '', 'g') <> norm then fl := array_append(fl, 'id1_name_mismatch'); end if;
+    if regexp_replace(upper(p_id2_ocr->>'name'), '[^A-Z]', '', 'g') <> norm then fl := array_append(fl, 'id2_name_mismatch'); end if;
+    if (p_id1_ocr->>'birthdate') is distinct from (p_id2_ocr->>'birthdate') then fl := array_append(fl, 'birthday_mismatch'); end if;
   end if;
-  if p_face_score is null then fl := fl || 'face_check_pending';
-  elsif p_face_score < coalesce((public.cfg('face_match_threshold') #>> '{}')::numeric, 0.8) then fl := fl || 'face_mismatch'; end if;
+  if p_face_score is null then fl := array_append(fl, 'face_check_pending');
+  elsif p_face_score < coalesce((public.cfg('face_match_threshold') #>> '{}')::numeric, 0.8) then fl := array_append(fl, 'face_mismatch'); end if;
   st := case when cardinality(fl) > 0 then 'flagged' else 'submitted' end;
 
   insert into public.tasker_verifications(user_id, id1_type, id1_image_path, id1_ocr, id2_type, id2_image_path, id2_ocr,
