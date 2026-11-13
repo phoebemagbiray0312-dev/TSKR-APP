@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { rpc } from './supabase';
+import { rpc, supabase } from './supabase';
+import { SavedAddress, addrName } from './places';
 
 // ---------- data shapes returned by discover_taskers / get_tasker ----------
 export type Service = { id: string; name: string; desc: string | null; price: number; dur: number | null; delivery?: boolean };
@@ -36,12 +37,16 @@ export const catLabel = (db: string) => CATS.find((c) => c.db === db)?.label ?? 
 export const catIdOf = (db?: string) => CATS.find((c) => c.db === db)?.id ?? 'repairs';
 
 // ---------- shared client state: address, cart, toast ----------
-export type Address = { label: string; lat: number; lng: number };
+export type Address = { label: string; lat: number; lng: number; id?: string };
 export type CartLine = Service & { qty: number };
 export type Cart = { tasker: { id: string; name: string; color: string; initials: string; photo: string | null } | null; lines: Record<string, CartLine> };
 
 type Ctx = {
   address: Address;
+  addresses: SavedAddress[];
+  selected: SavedAddress | null;
+  selectAddress: (id: string) => void;
+  reloadAddresses: () => Promise<SavedAddress[]>;
   cart: Cart;
   cartCount: number;
   subtotal: number;
@@ -55,11 +60,24 @@ type Ctx = {
 };
 const C = createContext<Ctx | null>(null);
 
-// Until saved addresses are built (part 2), the client is placed in Mandaluyong like the design.
-const DEFAULT_ADDRESS: Address = { label: 'Home · Mandaluyong', lat: 14.5794, lng: 121.0359 };
+// Before the client saves an address, Home browses around Mandaluyong (design default).
+const DEFAULT_ADDRESS: Address = { label: 'Set your address', lat: 14.5794, lng: 121.0359 };
 
 export function ClientProvider({ children }: { children: React.ReactNode }) {
-  const [address] = useState<Address>(DEFAULT_ADDRESS);
+  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
+  const [selId, setSelId] = useState<string | null>(null);
+  const reloadAddresses = useCallback(async () => {
+    const { data } = await supabase.from('addresses').select('*').order('is_default', { ascending: false }).order('created_at');
+    const list = (data ?? []) as SavedAddress[];
+    setAddresses(list);
+    setSelId((cur) => (cur && list.some((a) => a.id === cur) ? cur : list[0]?.id ?? null));
+    return list;
+  }, []);
+  React.useEffect(() => { reloadAddresses(); }, []);
+  const selected = addresses.find((a) => a.id === selId) ?? null;
+  const address: Address = selected
+    ? { id: selected.id, label: `${addrName(selected)} · ${selected.city}`, lat: selected.lat, lng: selected.lng }
+    : DEFAULT_ADDRESS;
   const [cart, setCart] = useState<Cart>({ tasker: null, lines: {} });
   const [toast, setToast] = useState('');
   const [favs, setFavs] = useState<Record<string, boolean>>({});
@@ -97,11 +115,12 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
 
   const lines = Object.values(cart.lines);
   const value = useMemo<Ctx>(() => ({
-    address, cart, toast, showToast, addToCart, favs, setFav, toggleFav,
+    address, addresses, selected, selectAddress: setSelId, reloadAddresses,
+    cart, toast, showToast, addToCart, favs, setFav, toggleFav,
     cartCount: lines.reduce((n, l) => n + l.qty, 0),
     subtotal: lines.reduce((n, l) => n + l.qty * l.price, 0),
     clearCart: () => setCart({ tasker: null, lines: {} }),
-  }), [address, cart, toast, favs]);
+  }), [addresses, selId, cart, toast, favs]);
   return <C.Provider value={value}>{children}</C.Provider>;
 }
 

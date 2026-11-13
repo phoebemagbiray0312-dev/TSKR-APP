@@ -11,6 +11,7 @@ import {
 } from '../../src/components/clientUi';
 import { CATS, TaskerCard, catIdOf, catLabel, durText, etaText, peso, useClient } from '../../src/lib/client';
 import { coverPhoto } from '../../src/lib/demoPhotos';
+import { AddressSheet } from '../../src/components/AddressSheet';
 import { rpc } from '../../src/lib/supabase';
 
 type Sort = 'recommended' | 'top_rated' | 'nearest';
@@ -23,7 +24,8 @@ const greeting = () => {
 
 export default function Home() {
   const insets = useSafeAreaInsets();
-  const { address, favs, toggleFav, cartCount, subtotal, toast, showToast } = useClient();
+  const { address, addresses, selected, selectAddress, favs, toggleFav, cartCount, subtotal, toast, showToast } = useClient();
+  const [addrOpen, setAddrOpen] = useState(false);
 
   // filters (design: category tiles, search, chips)
   const [query, setQuery] = useState('');
@@ -49,7 +51,7 @@ export default function Home() {
   // everyone nearby: feeds Featured services and Top service providers
   useEffect(() => {
     rpc<Result>('discover_taskers', { p_lat: address.lat, p_lng: address.lng }).then((r) => setAll(r.items)).catch(() => {});
-  }, [address, tick]);
+  }, [address.lat, address.lng, tick]);
 
   // the filtered list
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function Home() {
     }).then((r) => { if (live) { setList(r.items); setBlocked(r.blocked); } })
       .catch((e) => live && setErr(e.message));
     return () => { live = false; };
-  }, [address, q, cat, availNow, sort, proOnly, favOnly, tick]);
+  }, [address.lat, address.lng, q, cat, availNow, sort, proOnly, favOnly, tick]);
 
   const isFav = (t: TaskerCard) => favs[t.id] ?? t.favorite;
   const open = (t: { id: string }) => router.push({ pathname: '/tasker/[id]', params: { id: t.id } });
@@ -280,7 +282,7 @@ export default function Home() {
               <View style={st.bellDot} />
             </PressScale>
           </View>
-          <PressScale onPress={() => showToast('Saved addresses come in the next build.')} style={[st.row, { gap: 8, alignSelf: 'flex-start' }]}>
+          <PressScale accessibilityLabel="Change address" onPress={() => (addresses.length ? setAddrOpen(true) : router.push('/address-form'))} style={[st.row, { gap: 8, alignSelf: 'flex-start' }]}>
             <Ic size={18} color={colors.green} w={2.2}><Path d={P.pin} /><Path d="M12 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" /></Ic>
             <T w="semibold" style={{ color: '#FFF', fontSize: 14 }}>{address.label}</T>
             <Ic d={P.chevDown} size={16} color="#FFF" w={2.4} />
@@ -308,6 +310,8 @@ export default function Home() {
           <T w="extrabold" style={{ color: '#FFF', fontSize: 15 }}>{peso(subtotal)}</T>
         </PressScale>
       )}
+      <AddressSheet open={addrOpen} onClose={() => setAddrOpen(false)} addresses={addresses} selectedId={selected?.id}
+        onPick={(a) => selectAddress(a.id)} />
       <Toast text={toast} top={insets.top + 10} />
     </View>
   );
