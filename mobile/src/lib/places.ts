@@ -41,3 +41,15 @@ export type SavedAddress = {
 export const addrName = (a: SavedAddress) =>
   a.label === 'other' ? a.custom_label || 'Other' : a.label === 'partner' ? 'Partner' : a.label[0].toUpperCase() + a.label.slice(1);
 export const addrLine = (a: SavedAddress) => [a.unit, a.street, a.barangay, a.city].filter(Boolean).join(', ');
+
+const km = (a: number, b: number, c: number, d: number) => {
+  const r = (x: number) => (x * Math.PI) / 180;
+  const h = Math.sin(r(c - a) / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(r(d - b) / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(h));
+};
+/** Nearest open city to a map pin, or null when the pin is outside TSKR's areas (more than 20 km from any). */
+export function nearestOpenCity(lat: number, lng: number) {
+  let best: (typeof CITIES)[number] | null = null; let bestKm = Infinity;
+  for (const c of CITIES) { const d = km(lat, lng, c.lat, c.lng); if (d < bestKm) { bestKm = d; best = c; } }
+  return bestKm <= 20 ? best : null;
+}

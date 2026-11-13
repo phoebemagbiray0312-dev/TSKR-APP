@@ -7,10 +7,42 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/logo-mark.png",
-    "splash": { "image": "./assets/logo-stacked.png", "resizeMode": "contain", "backgroundColor": "#044D5E" },
-    "ios": { "bundleIdentifier": "com.undercharger.tskr", "supportsTablet": false },
-    "android": { "package": "com.undercharger.tskr", "adaptiveIcon": { "foregroundImage": "./assets/logo-mark.png", "backgroundColor": "#044D5E" } },
-    "plugins": ["expo-router", "expo-font", "expo-web-browser"],
-    "experiments": { "typedRoutes": false }
+    "splash": {
+      "image": "./assets/logo-stacked.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#044D5E"
+    },
+    "ios": {
+      "bundleIdentifier": "com.undercharger.tskr",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.undercharger.tskr",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-mark.png",
+        "backgroundColor": "#044D5E"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "TSKR uses your location to place your address pin and find taskers near you."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "TSKR uses the camera for your ID, selfie and job photos.",
+          "photosPermission": "TSKR uses your photos for your office gallery."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
   }
 }

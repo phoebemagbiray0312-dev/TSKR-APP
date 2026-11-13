@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Dimensions, Image, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { Circle, Path } from 'react-native-svg';
+import MapView, { Circle as MapCircle } from 'react-native-maps';
 import { bubble, colors } from '../../../src/theme';
 import { T } from '../../../src/components/ui';
 import { PressScale, Rise } from '../../../src/components/glass';
@@ -237,13 +238,13 @@ export default function TaskerProfile() {
           <View style={[st.pad, { gap: 10 }]}>
             <T w="extrabold" style={st.h2}>Service area</T>
             <View style={st.map}>
-              <Svg width="100%" height="100%" viewBox="0 0 350 170" preserveAspectRatio="xMidYMid slice">
-                <Rect width="350" height="170" fill="#F2F0EB" />
-                <Path d="M0 120 C80 100 140 140 350 90" stroke="#FFFFFF" strokeWidth={10} fill="none" />
-                <Path d="M60 0 L120 170 M240 0 L210 170 M0 50 L350 70" stroke="#FFFFFF" strokeWidth={6} fill="none" />
-                <Path d="M0 150 C100 140 200 165 350 140" stroke="#CFE3E7" strokeWidth={14} fill="none" />
-                <Circle cx="175" cy="85" r="70" fill="rgba(4,77,94,0.08)" stroke="#044D5E" strokeWidth={1.5} strokeDasharray="5 5" />
-              </Svg>
+              {t.area_lat != null ? (
+                <MapView style={StyleSheet.absoluteFill} pointerEvents="none" scrollEnabled={false} zoomEnabled={false} showsPointsOfInterest={false}
+                  initialRegion={{ latitude: Number(t.area_lat), longitude: Number(t.area_lng), latitudeDelta: Number(t.radius_km) * 0.024, longitudeDelta: Number(t.radius_km) * 0.024 }}>
+                  <MapCircle center={{ latitude: Number(t.area_lat), longitude: Number(t.area_lng) }} radius={Number(t.radius_km) * 1000}
+                    strokeColor="rgba(4,77,94,0.8)" strokeWidth={2} lineDashPattern={[6, 6]} fillColor="rgba(4,77,94,0.10)" />
+                </MapView>
+              ) : null}
               <View style={st.mapPin}><MiniAvatar initials={t.initials} color={t.color} size={30} r={15} /></View>
             </View>
             <T style={{ fontSize: 14, color: colors.body }}>{t.area} · up to {t.radius_km} km</T>

@@ -11,7 +11,7 @@ export type TaskerCard = {
 };
 export type Review = { name: string; initials: string; rating: number; text: string | null; tags: string[]; at: string };
 export type TaskerFull = Omit<TaskerCard, 'reviews' | 'cats' | 'min_price' | 'pro' | 'available_now'> & {
-  bio: string | null; reviews_count: number; online: boolean; radius_km: number; portfolio: string[]; reviews: Review[];
+  bio: string | null; reviews_count: number; online: boolean; radius_km: number; area_lat: number | null; area_lng: number | null; portfolio: string[]; reviews: Review[];
 };
 
 // ---------- formatting ----------
