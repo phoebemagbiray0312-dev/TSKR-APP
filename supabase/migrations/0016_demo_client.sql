@@ -69,3 +69,21 @@ end $$;
 
 revoke execute on function public.demo_client_request() from public, anon;
 revoke execute on function public.demo_client_act(uuid) from public, anon;
+
+-- TEST BUILD: a demo tasker "drives" toward the client so the live map moves (demo mode + demo taskers only).
+create or replace function public.demo_tasker_ping(p_booking uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare b public.bookings; tp public.tasker_profiles; last record; tlat float8; tlng float8; nlat float8; nlng float8;
+begin
+  if not coalesce((public.cfg('otp_demo_mode') #>> '{}')::boolean, false) then return; end if;
+  select * into b from public.bookings where id = p_booking;
+  if b.id is null or b.client_id <> auth.uid() or b.status <> 'on_the_way' then return; end if;
+  if not exists (select 1 from public.profiles where id = b.tasker_id and is_demo) then return; end if;
+  select * into tp from public.tasker_profiles where user_id = b.tasker_id;
+  tlat := (b.address->>'lat')::float8; tlng := (b.address->>'lng')::float8;
+  select lat, lng into last from public.location_pings where booking_id = b.id order by created_at desc limit 1;
+  if last is null then nlat := tp.base_lat; nlng := tp.base_lng;
+  else nlat := last.lat + (tlat - last.lat) * 0.25; nlng := last.lng + (tlng - last.lng) * 0.25; end if;
+  insert into public.location_pings(booking_id, user_id, lat, lng) values (b.id, b.tasker_id, nlat, nlng);
+end $$;
+revoke execute on function public.demo_tasker_ping(uuid) from public, anon;

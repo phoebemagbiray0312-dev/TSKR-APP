@@ -10,6 +10,7 @@ import { Chip, Ic, MiniAvatar, P, RoundButton, Sheet, TealGloss, Toast, glassCar
 import { peso, useClient } from '../../../../src/lib/client';
 import { addrLine } from '../../../../src/lib/places';
 import { DEMO_CLIENT_ID, STATUS_LABEL } from '../../../../src/lib/tasker';
+import { LiveMap } from '../../../../src/components/LiveMap';
 import { rpc, supabase } from '../../../../src/lib/supabase';
 
 type Booking = {
@@ -59,7 +60,7 @@ export default function TaskerJob() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setMe(data.user?.id ?? null));
     load();
-    const ch = supabase.channel(`tjob-${id}`)
+    const ch = supabase.channel(`tjob-${id}-${Date.now()}-${Math.random()}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bookings', filter: `id=eq.${id}` }, () => load())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `booking_id=eq.${id}` },
         (p) => setMsgs((cur) => (cur.some((x) => x.id === (p.new as Msg).id) ? cur : [...cur, p.new as Msg])))
@@ -182,6 +183,11 @@ export default function TaskerJob() {
         </>
       ) : (
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 + insets.bottom }}>
+          {['offer_accepted', 'on_the_way', 'arrived', 'final_price_sent', 'ready', 'in_progress'].includes(b.status) && b.address?.lat != null && (
+            <LiveMap bookingId={b.id} mode="tasker" initials="" active
+              dest={b.is_delivery && b.status === 'in_progress' && b.dropoff_address ? { lat: b.dropoff_address.lat, lng: b.dropoff_address.lng } : { lat: b.address.lat, lng: b.address.lng }}
+              destLabel={b.is_delivery && b.status === 'in_progress' ? 'Drop-off' : `${first}’s address`} />
+          )}
           <View style={[glassCard, { padding: 16, gap: 6 }]}>
             <T w="semibold" style={{ fontSize: 12, color: colors.muted }}>Status</T>
             <T w="extrabold" style={{ fontSize: 20 }}>{STATUS_LABEL[b.status]}</T>
@@ -190,7 +196,7 @@ export default function TaskerJob() {
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
               <PressScale outer={{ flex: 1 }} style={st.pill} onPress={() => setView('chat')}><T w="bold" style={{ fontSize: 13 }}>Chat</T></PressScale>
               <PressScale outer={{ flex: 1 }} style={st.pill} onPress={() => Alert.alert('In-app calls', 'Calls inside TSKR come with the calling service. For now, use Chat.')}><T w="bold" style={{ fontSize: 13 }}>Call</T></PressScale>
-              <PressScale outer={{ flex: 1 }} style={st.pill} onPress={() => Linking.openURL(`http://maps.apple.com/?daddr=${b.address?.lat},${b.address?.lng}`)}><T w="bold" style={{ fontSize: 13 }}>Navigate</T></PressScale>
+              <PressScale outer={{ flex: 1 }} style={st.pill} onPress={() => Linking.openURL(`https://waze.com/ul?ll=${b.address?.lat},${b.address?.lng}&navigate=yes`)}><T w="bold" style={{ fontSize: 13 }}>Navigate</T></PressScale>
             </View>
           </View>
 

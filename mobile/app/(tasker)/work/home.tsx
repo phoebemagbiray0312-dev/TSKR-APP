@@ -23,7 +23,7 @@ export default function WorkHome() {
   useFocusEffect(useCallback(() => { load(); }, []));
   // new requests arrive live
   useEffect(() => {
-    const ch = supabase.channel('tasker-home').on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => load()).subscribe();
+    const ch = supabase.channel(`tasker-home-${Date.now()}-${Math.random()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => load()).subscribe();
     return () => { supabase.removeChannel(ch); };
   }, []);
 

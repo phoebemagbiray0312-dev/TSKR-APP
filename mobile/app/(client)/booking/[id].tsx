@@ -10,6 +10,7 @@ import { Backdrop, FillSvg, GlossyButton, PressScale, Rise } from '../../../src/
 import { Ic, MiniAvatar, P, RoundButton, TealGloss, Toast } from '../../../src/components/clientUi';
 import { firstName, peso, useClient } from '../../../src/lib/client';
 import { portraitPhoto } from '../../../src/lib/demoPhotos';
+import { LiveMap } from '../../../src/components/LiveMap';
 import { addrLine } from '../../../src/lib/places';
 import { rpc, supabase } from '../../../src/lib/supabase';
 
@@ -58,7 +59,7 @@ export default function BookingScreen() {
     supabase.auth.getUser().then(({ data }) => setMe(data.user?.id ?? null));
     load();
     // live updates: booking status + new messages (Supabase Realtime)
-    const ch = supabase.channel(`booking-${id}`)
+    const ch = supabase.channel(`booking-${id}-${Date.now()}-${Math.random()}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bookings', filter: `id=eq.${id}` }, () => load())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `booking_id=eq.${id}` },
         (p) => setMsgs((cur) => (cur.some((x) => x.id === (p.new as Msg).id) ? cur : [...cur, p.new as Msg])))
@@ -294,7 +295,6 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
       [D ? 'On the way to drop-off' : 'In progress', D ? `${first} picked up your items.` : `${first} started the job.`],
       [D ? 'Delivered' : 'Completed', `All done! Pay ${peso(agreed)} to ${first} and rate them.`],
     ] as [string, string][])[step];
-  const pins = [[18, 78], [45, 50], [80, 18], [80, 18], [80, 18], [80, 18]][step];
 
   // review
   const [rating, setRating] = useState(0);
@@ -306,19 +306,11 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 140 }}>
-      <Rise i={0} style={st.map}>
-        <FillSvg viewBox="0 0 100 100" preserveAspectRatio="none">
-          <Rect width="100" height="100" fill="#EEF3EF" />
-          <Path d="M0 70 C30 60 50 80 100 45" stroke="#FFF" strokeWidth={5} fill="none" />
-          <Path d="M20 0 L35 100 M75 0 L65 100" stroke="#FFF" strokeWidth={3} fill="none" />
-          <Path d="M18 78 Q45 50 80 18" stroke={colors.teal} strokeWidth={1.2} strokeDasharray="3 2" fill="none" />
-        </FillSvg>
-        <View style={[st.homePin, { left: '78%', top: '12%' }]}><Ic d={P.navHome} size={16} color="#FFF" w={2.2} /></View>
-        {!cancelled && step < 5 && <View style={[st.taskerPin, { left: `${pins[0] - 5}%`, top: `${pins[1] - 8}%` }]}><T w="extrabold" style={{ color: '#FFF', fontSize: 11 }}>{b.tasker_initials}</T></View>}
-        {!cancelled && (
-          <View style={st.live}><View style={st.liveDot} /><T w="bold" style={{ fontSize: 12 }}>LIVE · {['Leaving soon', eta ? `Arriving in ${eta} min` : 'On the way', 'Arrived', 'On site', 'Working', 'Done'][step]}</T></View>
-        )}
-      </Rise>
+      {!cancelled && b.address?.lat != null && (
+        <LiveMap bookingId={b.id} mode="client" initials={b.tasker_initials} active={step < 5} demoDrive={(b as any).tasker_is_demo && b.status === 'on_the_way'}
+          dest={D && step >= 4 && b.dropoff_address ? { lat: b.dropoff_address.lat, lng: b.dropoff_address.lng } : { lat: b.address.lat, lng: b.address.lng }}
+          destLabel={D && step >= 4 ? 'Drop-off' : 'Your address'} />
+      )}
 
       {live && (
         <View style={{ flexDirection: 'row', gap: 8 }}>
