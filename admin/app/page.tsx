@@ -77,6 +77,7 @@ function Login({ onDone }: { onDone: () => void }) {
   const [err, setErr] = useState('');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const go = async () => {
     setErr(''); setMsg(''); setBusy(true);
     try {
@@ -99,8 +100,13 @@ function Login({ onDone }: { onDone: () => void }) {
         <div className="row"><img src="/logo.png" alt="tskr" style={{ height: 30, filter: 'brightness(0.3)' }} /><span className="badge">ADMIN</span></div>
         <h2>{mode === 'in' ? 'Sign in' : 'Create an admin login'}</h2>
         <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />
-        <input className="input" type="password" placeholder="Password" value={pw} onChange={(e) => setPw(e.target.value)}
-          autoComplete={mode === 'in' ? 'current-password' : 'new-password'} onKeyDown={(e) => e.key === 'Enter' && go()} />
+        <div className="pw">
+          <input className="input" type={showPw ? 'text' : 'password'} placeholder="Password" value={pw} onChange={(e) => setPw(e.target.value)}
+            autoComplete={mode === 'in' ? 'current-password' : 'new-password'} onKeyDown={(e) => e.key === 'Enter' && go()} />
+          <button type="button" className="eye" onClick={() => setShowPw(!showPw)} aria-label={showPw ? 'Hide password' : 'Show password'}>
+            {showPw ? 'Hide' : 'Show'}
+          </button>
+        </div>
         {err && <div className="err">{err}</div>}
         {msg && <div className="note">{msg}</div>}
         <button className="btn primary" disabled={busy || !email || !pw} onClick={go}>{busy ? 'Please wait…' : mode === 'in' ? 'Sign in' : 'Create login'}</button>
