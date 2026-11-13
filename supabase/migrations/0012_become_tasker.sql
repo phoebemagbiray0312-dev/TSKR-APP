@@ -85,7 +85,7 @@ begin
   insert into public.tasker_verifications(user_id, id1_type, id1_image_path, id1_ocr, id2_type, id2_image_path, id2_ocr,
                                           selfie_path, face_match_score, flags, status, submitted_at)
   values (uid, p_id1_type, p_id1_path, p_id1_ocr, p_id2_type, p_id2_path, p_id2_ocr, p_selfie_path, p_face_score, fl, st, now());
-  update public.profiles set tasker_status = 'pending', signup_role = 'tasker' where id = uid;
+  update public.profiles set tasker_status = 'pending' where id = uid;   -- signup_role stays: a client who applies is still a client
   perform public.notify(uid, 'tasker_submitted', 'Application submitted', 'We''ll review your documents within 24–48 hours.');
   return st;
 end $$;
