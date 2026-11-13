@@ -87,7 +87,7 @@ function Login({ onDone }: { onDone: () => void }) {
         onDone();
       } else {
         if (pw.length < 10) throw new Error('Use at least 10 characters for the password.');
-        const { data, error } = await supabase.auth.signUp({ email, password: pw, options: { data: { full_name: 'TSKR Admin' } } });
+        const { data, error } = await supabase.auth.signUp({ email, password: pw, options: { data: { full_name: 'TSKR Admin' }, emailRedirectTo: window.location.origin } });
         if (error) throw error;
         if (data.session) onDone();
         else setMsg('Login created. Ask the TSKR owner to confirm it and give it admin access, then sign in.');
