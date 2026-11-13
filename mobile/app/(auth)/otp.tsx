@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { StepHeader } from '../../src/components/StepHeader';
+import { GlassScreen, StepHeader } from '../../src/components/StepHeader';
 import { CodeInput, ErrorText, H1, IconTile, LinkButton, PrimaryButton, s, Sub, T } from '../../src/components/ui';
+import { Rise } from '../../src/components/glass';
 import { ChatIcon } from '../../src/components/icons';
 import { colors } from '../../src/theme';
 import { rpc } from '../../src/lib/supabase';
@@ -35,21 +36,23 @@ export default function SmsOtp() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.white }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <GlassScreen>
       <StepHeader step={5} />
       <View style={s.screen}>
-        <IconTile><ChatIcon /></IconTile>
-        <H1>Enter the SMS code</H1>
-        <Sub>
-          Sent to <T w="bold" style={{ color: colors.teal, fontSize: 14 }}>{maskPhone(phone)}</T>.
-          {demo === '1' ? ' (Demo code: 135790)' : ''}
-        </Sub>
-        <CodeInput value={code} onChangeText={(v) => { setCode(digits(v).slice(0, 6)); setErr(null); }} accessibilityLabel="SMS one-time code" autoFocus />
+        <Rise i={0}><IconTile><ChatIcon /></IconTile></Rise>
+        <Rise i={1}><H1>Enter the SMS code</H1></Rise>
+        <Rise i={2}>
+          <Sub>
+            Sent to <T w="bold" style={{ color: colors.teal, fontSize: 14 }}>{maskPhone(phone)}</T>.
+            {demo === '1' ? ' (Demo code: 135790)' : ''}
+          </Sub>
+        </Rise>
+        <Rise i={3}><CodeInput value={code} onChangeText={(v) => { setCode(digits(v).slice(0, 6)); setErr(null); }} accessibilityLabel="SMS one-time code" autoFocus /></Rise>
         <ErrorText>{err}</ErrorText>
         {info && !err && <T w="semibold" style={{ fontSize: 13, color: colors.muted }}>{info}</T>}
-        <PrimaryButton label="Verify number" onPress={verify} loading={busy} />
+        <Rise i={4}><PrimaryButton label="Verify number" onPress={verify} loading={busy} /></Rise>
         <LinkButton label={cd.left > 0 ? `Resend code in ${cd.left}s` : 'Resend code'} disabled={cd.left > 0} onPress={resend} />
       </View>
-    </KeyboardAvoidingView>
+    </GlassScreen>
   );
 }

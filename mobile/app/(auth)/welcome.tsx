@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
+import { BlurView } from 'expo-blur';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { bubble, colors } from '../../src/theme';
 import { T, ErrorText } from '../../src/components/ui';
 import { CheckIcon, HomeIcon, WrenchIcon } from '../../src/components/icons';
 import { PolicyReader } from '../../src/components/PolicyReader';
+import { Logo } from '../../src/components/Logo';
+import { EASE, GlassView, PressScale } from '../../src/components/glass';
 import { Role, DEMO_AUTH } from '../../src/lib/supabase';
 import { clearPendingConsent, loadPolicies, PolicyDoc, savePendingConsent, flushPendingConsent } from '../../src/lib/signup';
 import { signInWithGoogle } from '../../src/lib/auth';
@@ -25,7 +29,9 @@ export default function Welcome() {
   const [agreeErr, setAgreeErr] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const sheetIn = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => { Animated.timing(sheetIn, { toValue: 1, duration: 480, easing: EASE, useNativeDriver: true }).start(); }, []);
   useEffect(() => { loadPolicies(role).then(setDocs).catch((e) => setErr(e.message)); }, [role]);
 
   // switching the role card clears any earlier acceptance (Guide §2)
@@ -67,45 +73,60 @@ export default function Welcome() {
       <Image source={require('../../assets/logo-mark.png')} accessibilityElementsHidden
         style={{ position: 'absolute', width: 440, height: 290, left: 10, top: 250, opacity: 0.12 }} resizeMode="contain" />
       <View style={{ flex: 1, justifyContent: 'center', gap: 18, paddingHorizontal: 28, paddingTop: insets.top }}>
-        <Image source={require('../../assets/logo-stacked.png')} accessibilityLabel="tskr" style={{ height: 124, width: 124 * 0.83 }} resizeMode="contain" />
+        <Logo height={124} />
         <T w="extrabold" style={{ fontSize: 32, lineHeight: 38, color: colors.white }}>
           {h.a}{'\n'}<T w="extrabold" style={{ fontSize: 32, color: colors.green }}>{h.b}</T>
         </T>
         <T style={{ fontSize: 15, lineHeight: 24, color: colors.heroSub }}>{h.sub}</T>
       </View>
 
-      <View style={[st.sheet, { paddingBottom: 30 + insets.bottom }]}>
-        <T w="extrabold" style={{ fontSize: 15 }}>How will you use TSKR?</T>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <RoleCard on={role === 'client'} onPress={() => pick('client')} title="Book a service" sub="Find a trusted tasker near you"
-            icon={(c) => <HomeIcon color={c} />} />
-          <RoleCard on={role === 'tasker'} onPress={() => pick('tasker')} title="I want to earn" sub="Offer my skills as a tasker"
-            icon={(c) => <WrenchIcon color={c} />} />
-        </View>
-
-        {/* Guide §2.3: stays disabled until both documents are accepted (tapping it explains why) */}
-        <Pressable onPress={google} accessibilityRole="button" accessibilityState={{ disabled: !agree }}
-          style={[st.google, { opacity: busy ? 0.6 : agree ? 1 : 0.5 }]}>
-          <View style={st.g}><T w="extrabold" style={{ fontSize: 15 }}>G</T></View>
-          <T w="bold" style={{ fontSize: 16 }}>Continue with Google</T>
-        </Pressable>
-
-        <Pressable onPress={toggleAgree} accessibilityRole="checkbox" accessibilityState={{ checked: agree }}
-          style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 2 }}>
-          <View style={[st.box, { borderColor: agreeErr ? colors.error : colors.teal, backgroundColor: agree ? colors.teal : colors.white }]}>
-            {agree && <CheckIcon />}
+      {/* frosted sheet that slides up (design: tskr-sheet) */}
+      <Animated.View style={[st.sheet, { transform: [{ translateY: sheetIn.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }]}>
+        <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.62)' }]} />
+        <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
+          <Defs>
+            <LinearGradient id="sheetGloss" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.9" />
+              <Stop offset="0.3" stopColor="#FFFFFF" stopOpacity="0" />
+            </LinearGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#sheetGloss)" />
+        </Svg>
+        <View style={{ paddingTop: 24, paddingHorizontal: 24, paddingBottom: 30 + insets.bottom, gap: 12 }}>
+          <T w="extrabold" style={{ fontSize: 15 }}>How will you use TSKR?</T>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <RoleCard on={role === 'client'} onPress={() => pick('client')} title="Book a service" sub="Find a trusted tasker near you"
+              icon={(c) => <HomeIcon color={c} />} />
+            <RoleCard on={role === 'tasker'} onPress={() => pick('tasker')} title="I want to earn" sub="Offer my skills as a tasker"
+              icon={(c) => <WrenchIcon color={c} />} />
           </View>
-          <T style={{ flex: 1, fontSize: 12, lineHeight: 18, color: colors.muted }}>
-            I have read and agree to TSKR’s <T w="bold" style={st.u}>{roleWord} Terms of Service</T> and{' '}
-            <T w="bold" style={st.u}>{roleWord} Privacy Policy</T>.
+
+          {/* Guide §2.3: works only after both documents are accepted (tapping it explains why) */}
+          <PressScale onPress={google} accessibilityState={{ disabled: !agree }} style={{ opacity: busy ? 0.6 : agree ? 1 : 0.5 }}>
+            <GlassView radius={[18, 6]} style={st.google}>
+              <View style={st.g}><T w="extrabold" style={{ fontSize: 15 }}>G</T></View>
+              <T w="bold" style={{ fontSize: 16 }}>Continue with Google</T>
+            </GlassView>
+          </PressScale>
+
+          <Pressable onPress={toggleAgree} accessibilityRole="checkbox" accessibilityState={{ checked: agree }}
+            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 2 }}>
+            <View style={[st.box, { borderColor: agreeErr ? colors.error : colors.teal, backgroundColor: agree ? colors.teal : 'rgba(255,255,255,0.7)' }]}>
+              {agree && <CheckIcon />}
+            </View>
+            <T style={{ flex: 1, fontSize: 12, lineHeight: 18, color: colors.muted }}>
+              I have read and agree to TSKR’s <T w="bold" style={st.u}>{roleWord} Terms of Service</T> and{' '}
+              <T w="bold" style={st.u}>{roleWord} Privacy Policy</T>.
+            </T>
+          </Pressable>
+          <T style={{ fontSize: 11, lineHeight: 15, color: colors.muted, marginTop: -4 }}>
+            {agree ? 'You read and accepted both documents.' : 'Tap the box to read both documents. You can agree after scrolling to the end of each.'}
           </T>
-        </Pressable>
-        <T style={{ fontSize: 11, lineHeight: 15, color: colors.muted, marginTop: -4 }}>
-          {agree ? 'You read and accepted both documents.' : 'Tap the box to read both documents. You can agree after scrolling to the end of each.'}
-        </T>
-        {agreeErr && <ErrorText>Please agree to the Terms and Privacy Policy to continue.</ErrorText>}
-        <ErrorText>{err}</ErrorText>
-      </View>
+          {agreeErr && <ErrorText>Please agree to the Terms and Privacy Policy to continue.</ErrorText>}
+          <ErrorText>{err}</ErrorText>
+        </View>
+      </Animated.View>
 
       <PolicyReader
         visible={!!reading}
@@ -121,21 +142,32 @@ export default function Welcome() {
 function RoleCard({ on, onPress, title, sub, icon }: {
   on: boolean; onPress: () => void; title: string; sub: string; icon: (color: string) => React.ReactNode;
 }) {
-  return (
-    <Pressable onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: on }}
-      style={[st.card, { borderColor: on ? colors.teal : colors.borderSoft, backgroundColor: on ? colors.tint : colors.white }]}>
+  const body = (
+    <>
       <View style={[st.cardIcon, { backgroundColor: on ? colors.teal : colors.tint }]}>{icon(on ? colors.green : colors.teal)}</View>
       <T w="extrabold" style={{ fontSize: 15 }}>{title}</T>
       <T style={{ fontSize: 12, lineHeight: 17, color: colors.muted }}>{sub}</T>
-    </Pressable>
+    </>
+  );
+  return (
+    <View style={{ flex: 1 }}>
+      <PressScale onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: on }}>
+        {on ? (
+          <View style={[st.card, { borderColor: colors.teal, backgroundColor: colors.tint }]}>{body}</View>
+        ) : (
+          <GlassView radius={[20, 6]} style={st.cardGlass}>{body}</GlassView>
+        )}
+      </PressScale>
+    </View>
   );
 }
 
 const st = StyleSheet.create({
-  sheet: { backgroundColor: colors.white, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 24, paddingHorizontal: 24, gap: 12 },
-  card: { flex: 1, alignItems: 'flex-start', gap: 6, padding: 14, borderWidth: 2, ...bubble(20, 6) },
+  sheet: { borderTopLeftRadius: 28, borderTopRightRadius: 28, overflow: 'hidden' },
+  card: { alignItems: 'flex-start', gap: 6, padding: 14, borderWidth: 2, ...bubble(20, 6) },
+  cardGlass: { alignItems: 'flex-start', gap: 6, padding: 16 },
   cardIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', ...bubble(14, 4) },
-  google: { height: 56, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.white, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, ...bubble(18, 6) },
+  google: { height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 },
   g: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.tint, alignItems: 'center', justifyContent: 'center' },
   box: { width: 22, height: 22, marginTop: 1, borderRadius: 6, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   u: { fontSize: 12, textDecorationLine: 'underline', color: colors.teal },
