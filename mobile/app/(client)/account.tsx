@@ -1,0 +1,61 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { bubble, colors } from '../../src/theme';
+import { T } from '../../src/components/ui';
+import { Backdrop, PressScale, Rise } from '../../src/components/glass';
+import { Ic, MiniAvatar, P } from '../../src/components/clientUi';
+import { useClient } from '../../src/lib/client';
+import { Profile, getMyProfile, supabase } from '../../src/lib/supabase';
+
+/** Account tab: profile and links. Plan, rewards, addresses and settings arrive in client part 3. */
+export default function Account() {
+  const insets = useSafeAreaInsets();
+  const { showToast } = useClient();
+  const [p, setP] = useState<Profile | null>(null);
+  useEffect(() => { getMyProfile().then(setP).catch(() => {}); }, []);
+  const name = [p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'Your account';
+  const initials = ((p?.first_name?.[0] ?? '') + (p?.last_name?.[0] ?? '')).toUpperCase() || 'ME';
+  const soon = (what: string) => () => showToast(`${what} comes in the next build.`);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Backdrop />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top + 20, paddingHorizontal: 16, paddingBottom: 130, gap: 16 }}>
+        <Rise i={0} style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <MiniAvatar initials={initials} color={colors.teal} size={60} r={20} />
+          <View style={{ flex: 1 }}>
+            <T w="extrabold" style={{ fontSize: 22 }}>{name}</T>
+            <T w="semibold" style={{ fontSize: 13, color: colors.muted }}>Client{p?.email ? ` · ${p.email}` : ''}</T>
+          </View>
+        </Rise>
+        <Rise i={1} style={st.card}>
+          {[
+            ['Favorite taskers', soon('Favorite taskers')],
+            ['Saved addresses', soon('Saved addresses')],
+            ['Notifications', soon('Notifications')],
+            ['Help center and reports', soon('Help center')],
+            ['Legal and privacy', soon('Legal and privacy')],
+          ].map(([label, fn], i) => (
+            <PressScale key={label as string} onPress={fn as () => void} style={[st.row, i > 0 && st.rowDiv]}>
+              <T w="bold" style={{ fontSize: 15, flex: 1 }}>{label as string}</T>
+              <Ic d={P.chevRight} size={18} color={colors.muted} />
+            </PressScale>
+          ))}
+        </Rise>
+        <Rise i={2}>
+          <PressScale onPress={async () => { await supabase.auth.signOut(); router.replace('/(auth)/welcome'); }} style={[st.card, st.row]}>
+            <T w="bold" style={{ fontSize: 15, color: colors.error }}>Sign out</T>
+          </PressScale>
+        </Rise>
+      </ScrollView>
+    </View>
+  );
+}
+
+const st = StyleSheet.create({
+  card: { ...bubble(22, 6), backgroundColor: 'rgba(255,255,255,0.55)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.85)', overflow: 'hidden' },
+  row: { minHeight: 56, paddingHorizontal: 18, flexDirection: 'row', alignItems: 'center' },
+  rowDiv: { borderTopWidth: 1, borderTopColor: 'rgba(4,77,94,0.08)' },
+});

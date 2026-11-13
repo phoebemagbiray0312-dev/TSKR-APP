@@ -107,14 +107,14 @@ export function GlassView({ children, style, radius = [20, 6] }: {
 }
 
 // ---------- press feedback: everything tappable shrinks a little ----------
-export function PressScale({ onPress, disabled, style, children, accessibilityLabel, accessibilityRole = 'button', accessibilityState }: {
-  onPress?: () => void; disabled?: boolean; style?: StyleProp<ViewStyle>; children: React.ReactNode;
+export function PressScale({ onPress, disabled, style, outer, children, accessibilityLabel, accessibilityRole = 'button', accessibilityState }: {
+  onPress?: () => void; disabled?: boolean; style?: StyleProp<ViewStyle>; outer?: StyleProp<ViewStyle>; children: React.ReactNode;
   accessibilityLabel?: string; accessibilityRole?: 'button' | 'checkbox' | 'radio'; accessibilityState?: object;
 }) {
   const sc = useRef(new Animated.Value(1)).current;
   const to = (v: number) => Animated.timing(sc, { toValue: v, duration: 200, easing: EASE, useNativeDriver: true }).start();
   return (
-    <Pressable onPress={disabled ? undefined : onPress} onPressIn={() => to(0.965)} onPressOut={() => to(1)}
+    <Pressable style={outer} onPress={disabled ? undefined : onPress} onPressIn={() => to(0.965)} onPressOut={() => to(1)}
       accessibilityLabel={accessibilityLabel} accessibilityRole={accessibilityRole} accessibilityState={accessibilityState}>
       <Animated.View style={[style, { transform: [{ scale: sc }] }]}>{children}</Animated.View>
     </Pressable>
