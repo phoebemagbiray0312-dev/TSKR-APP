@@ -3,6 +3,7 @@ import { Animated, Image, Modal, Pressable, ScrollView, StyleProp, StyleSheet, V
 import Svg, { Circle, Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { usePathname, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 import { bubble, colors } from '../theme';
 import { EASE, PressScale } from './glass';
 import { T } from './ui';
@@ -78,11 +79,23 @@ export const SearchIc = ({ size = 20, color = '#5B6472' }) => (
 );
 
 // ---------- glossy fills (design "gloss layer") ----------
+/** Absolute-fill box that measures itself, so gradients drawn inside always cover the whole area. */
+function MeasuredFill({ r = 0, children }: { r?: number; children: (w: number, h: number) => React.ReactNode }) {
+  const [size, setSize] = React.useState({ w: 0, h: 0 });
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: r, overflow: 'hidden' }]}
+      onLayout={(e) => { const { width, height } = e.nativeEvent.layout; if (width !== size.w || height !== size.h) setSize({ w: width, h: height }); }}>
+      {size.w > 0 && size.h > 0 ? children(size.w, size.h) : null}
+    </View>
+  );
+}
+
 let gid = 0;
 export function TealGloss({ r = 0 }: { r?: number }) {
   const id = useRef(`tg${++gid}`).current;
   return (
-    <Svg style={[StyleSheet.absoluteFill, { borderRadius: r }]} width="100%" height="100%">
+    <MeasuredFill r={r}>{(w, h) => (
+    <Svg width={w} height={h}>
       <Defs>
         <LinearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
           <Stop offset="0" stopColor="#0E7C95" /><Stop offset="0.7" stopColor="#044D5E" />
@@ -95,12 +108,14 @@ export function TealGloss({ r = 0 }: { r?: number }) {
       <Rect width="100%" height="100%" fill={`url(#${id}a)`} />
       <Rect width="100%" height="100%" fill={`url(#${id}b)`} />
     </Svg>
+    )}</MeasuredFill>
   );
 }
 export function GreenFill() {
   const id = useRef(`gf${++gid}`).current;
   return (
-    <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+    <MeasuredFill r={0}>{(w, h) => (
+    <Svg width={w} height={h}>
       <Defs>
         <LinearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1"><Stop offset="0" stopColor="#93EA86" /><Stop offset="1" stopColor="#5FCF51" /></LinearGradient>
         <LinearGradient id={`${id}b`} x1="0" y1="0" x2="0" y2="1">
@@ -111,13 +126,15 @@ export function GreenFill() {
       <Rect width="100%" height="100%" fill={`url(#${id}a)`} />
       <Rect width="100%" height="100%" fill={`url(#${id}b)`} />
     </Svg>
+    )}</MeasuredFill>
   );
 }
 /** The curved teal header: deep gradient with a soft green glow in the top-right corner. */
 export function HeaderFill() {
   const id = useRef(`hf${++gid}`).current;
   return (
-    <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+    <MeasuredFill r={0}>{(w, h) => (
+    <Svg width={w} height={h}>
       <Defs>
         <LinearGradient id={`${id}a`} x1="0" y1="0" x2="0.6" y2="1">
           <Stop offset="0" stopColor="#0B6F86" /><Stop offset="0.55" stopColor="#044D5E" /><Stop offset="1" stopColor="#03404E" />
@@ -133,6 +150,7 @@ export function HeaderFill() {
       <Rect width="100%" height="100%" fill={`url(#${id}b)`} />
       <Rect width="100%" height="100%" fill={`url(#${id}c)`} />
     </Svg>
+    )}</MeasuredFill>
   );
 }
 
@@ -243,6 +261,8 @@ export function BottomNav() {
   return (
     <Animated.View style={[s.nav, { bottom: Math.max(14, insets.bottom), opacity: rise,
       transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>
+      {/* frosted glass: blur what scrolls underneath so text behind the nav doesn't show through */}
+      <BlurView intensity={40} tint="light" style={[StyleSheet.absoluteFill, { borderRadius: 999, overflow: 'hidden' }]} />
       {item('home', 'Home', <Ic d={P.navHome} size={22} color={c('home')} />, '/home')}
       {item('bookings', 'Bookings', <Ic size={22} color={c('bookings')}><Rect x={3} y={4} width={18} height={17} rx={3} /><Path d={P.navCal} /></Ic>, '/bookings')}
       {item('account', 'Account', <Ic size={22} color={c('account')}><Circle cx={12} cy={8} r={4} /><Path d={P.navUser} /></Ic>, '/account')}
@@ -266,7 +286,7 @@ export const s = StyleSheet.create({
   toastCheck: { width: 26, height: 26, borderRadius: 13, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' },
   nav: {
     position: 'absolute', left: 16, right: 16, height: 68, borderRadius: 999, padding: 6, flexDirection: 'row', gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgba(255,255,255,0.55)', overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)',
     shadowColor: '#044D5E', shadowOpacity: 0.3, shadowRadius: 20, shadowOffset: { width: 0, height: 14 }, elevation: 10,
   },
   navBtn: { flex: 1, height: 56, borderRadius: 999, alignItems: 'center', justifyContent: 'center', gap: 2, overflow: 'hidden' },
