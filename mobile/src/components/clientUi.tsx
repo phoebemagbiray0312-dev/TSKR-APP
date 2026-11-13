@@ -272,3 +272,18 @@ export const s = StyleSheet.create({
   navBtn: { flex: 1, height: 56, borderRadius: 999, alignItems: 'center', justifyContent: 'center', gap: 2, overflow: 'hidden' },
   card: { ...bubble(20, 6) },
 });
+
+/** Back button + title used by the Account sub-screens. */
+export function SubHeader({ title, onBack }: { title: string; onBack?: () => void }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: insets.top + 12, paddingHorizontal: 16, paddingBottom: 6 }}>
+      <RoundButton d={P.back} label="Back" onPress={onBack ?? (() => (router.canGoBack() ? router.back() : router.replace('/account')))} />
+      <T w="extrabold" style={{ fontSize: 22, flex: 1 }} numberOfLines={1}>{title}</T>
+    </View>
+  );
+}
+export const glassCard = {
+  borderTopLeftRadius: 22, borderTopRightRadius: 22, borderBottomRightRadius: 22, borderBottomLeftRadius: 6,
+  backgroundColor: 'rgba(255,255,255,0.62)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.85)',
+} as const;

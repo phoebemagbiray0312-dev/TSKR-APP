@@ -80,7 +80,7 @@ export default function Bookings() {
                 <PressScale style={st.smallBtn} onPress={() => router.push({ pathname: '/tasker/[id]', params: { id: r.tasker_id } })}>
                   <T w="bold" style={{ fontSize: 13 }}>Rebook</T>
                 </PressScale>
-                <PressScale style={st.smallBtn} onPress={() => showToast('Report a problem comes in the next build.')}>
+                <PressScale style={st.smallBtn} onPress={() => router.push('/help')}>
                   <T w="bold" style={{ fontSize: 13 }}>Report a problem</T>
                 </PressScale>
               </View>

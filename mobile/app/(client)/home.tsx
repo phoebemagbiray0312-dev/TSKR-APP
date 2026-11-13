@@ -277,7 +277,7 @@ export default function Home() {
           style={{ gap: 14, opacity: fade, transform: [{ translateY: drift }] }}>
           <View style={st.rowBetween}>
             <HeaderLogo />
-            <PressScale accessibilityLabel="Notifications" style={st.bell} onPress={() => showToast('Notifications come in the next build.')}>
+            <PressScale accessibilityLabel="Notifications" style={st.bell} onPress={() => router.push('/notifications')}>
               <Ic d={P.bell} color="#FFF" />
               <View style={st.bellDot} />
             </PressScale>

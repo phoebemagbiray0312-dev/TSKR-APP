@@ -5,19 +5,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { bubble, colors } from '../../src/theme';
 import { T } from '../../src/components/ui';
 import { Backdrop, PressScale, Rise } from '../../src/components/glass';
-import { Ic, MiniAvatar, P } from '../../src/components/clientUi';
+import { Ic, MiniAvatar, P, Toast } from '../../src/components/clientUi';
 import { useClient } from '../../src/lib/client';
 import { Profile, getMyProfile, supabase } from '../../src/lib/supabase';
 
 /** Account tab: profile and links. Plan, rewards, addresses and settings arrive in client part 3. */
 export default function Account() {
   const insets = useSafeAreaInsets();
-  const { showToast } = useClient();
+  const { toast } = useClient();
   const [p, setP] = useState<Profile | null>(null);
   useEffect(() => { getMyProfile().then(setP).catch(() => {}); }, []);
   const name = [p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'Your account';
   const initials = ((p?.first_name?.[0] ?? '') + (p?.last_name?.[0] ?? '')).toUpperCase() || 'ME';
-  const soon = (what: string) => () => showToast(`${what} comes in the next build.`);
+  const go = (path: string) => () => router.push(path as any);
 
   return (
     <View style={{ flex: 1 }}>
@@ -32,11 +32,11 @@ export default function Account() {
         </Rise>
         <Rise i={1} style={st.card}>
           {[
-            ['Favorite taskers', soon('Favorite taskers')],
-            ['Saved addresses', soon('Saved addresses')],
-            ['Notifications', soon('Notifications')],
-            ['Help center and reports', soon('Help center')],
-            ['Legal and privacy', soon('Legal and privacy')],
+            ['Favorite taskers', go('/favorites')],
+            ['Saved addresses', go('/addresses')],
+            ['Notifications', go('/notifications')],
+            ['Help center and reports', go('/help')],
+            ['Legal and privacy', go('/legal')],
           ].map(([label, fn], i) => (
             <PressScale key={label as string} onPress={fn as () => void} style={[st.row, i > 0 && st.rowDiv]}>
               <T w="bold" style={{ fontSize: 15, flex: 1 }}>{label as string}</T>
@@ -50,6 +50,7 @@ export default function Account() {
           </PressScale>
         </Rise>
       </ScrollView>
+      <Toast text={toast} top={insets.top + 10} />
     </View>
   );
 }
