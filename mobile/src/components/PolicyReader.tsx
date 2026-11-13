@@ -3,6 +3,7 @@ import { Animated, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, S
 import { BlurView } from 'expo-blur';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FillSvg } from './glass';
 import { bubble, colors } from '../theme';
 import { CloseIcon } from './icons';
 import { T } from './ui';
@@ -55,7 +56,7 @@ export function PolicyReader({ visible, doc, step, onAgree, onClose }: {
             transform: [{ translateY: up.interpolate({ inputRange: [0, 1], outputRange: [800, 0] }) }] }}>
           <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
           <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.86)' }]} />
-          <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
+          <FillSvg>
             <Defs>
               <LinearGradient id="docGloss" x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.9" />
@@ -63,7 +64,7 @@ export function PolicyReader({ visible, doc, step, onAgree, onClose }: {
               </LinearGradient>
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#docGloss)" />
-          </Svg>
+          </FillSvg>
 
           <View style={{ paddingTop: 18, paddingHorizontal: 20, paddingBottom: 12, gap: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.85)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

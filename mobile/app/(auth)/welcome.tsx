@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FillSvg } from '../../src/components/glass';
 import { bubble, colors } from '../../src/theme';
 import { T, ErrorText } from '../../src/components/ui';
 import { CheckIcon, HomeIcon, WrenchIcon } from '../../src/components/icons';
@@ -84,7 +85,7 @@ export default function Welcome() {
       <Animated.View style={[st.sheet, { transform: [{ translateY: sheetIn.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }]}>
         <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.62)' }]} />
-        <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
+        <FillSvg>
           <Defs>
             <LinearGradient id="sheetGloss" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.9" />
@@ -92,7 +93,7 @@ export default function Welcome() {
             </LinearGradient>
           </Defs>
           <Rect x="0" y="0" width="100%" height="100%" fill="url(#sheetGloss)" />
-        </Svg>
+        </FillSvg>
         <View style={{ paddingTop: 24, paddingHorizontal: 24, paddingBottom: 30 + insets.bottom, gap: 12 }}>
           <T w="extrabold" style={{ fontSize: 15 }}>How will you use TSKR?</T>
           <View style={{ flexDirection: 'row', gap: 10 }}>

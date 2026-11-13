@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { bubble, colors, font } from '../../../src/theme';
 import { T } from '../../../src/components/ui';
-import { Backdrop, GlossyButton, PressScale, Rise } from '../../../src/components/glass';
+import { Backdrop, FillSvg, GlossyButton, PressScale, Rise } from '../../../src/components/glass';
 import { Ic, MiniAvatar, P, RoundButton, TealGloss, Toast } from '../../../src/components/clientUi';
 import { firstName, peso, useClient } from '../../../src/lib/client';
 import { portraitPhoto } from '../../../src/lib/demoPhotos';
@@ -307,12 +307,12 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
   return (
     <ScrollView contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 140 }}>
       <Rise i={0} style={st.map}>
-        <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <FillSvg viewBox="0 0 100 100" preserveAspectRatio="none">
           <Rect width="100" height="100" fill="#EEF3EF" />
           <Path d="M0 70 C30 60 50 80 100 45" stroke="#FFF" strokeWidth={5} fill="none" />
           <Path d="M20 0 L35 100 M75 0 L65 100" stroke="#FFF" strokeWidth={3} fill="none" />
           <Path d="M18 78 Q45 50 80 18" stroke={colors.teal} strokeWidth={1.2} strokeDasharray="3 2" fill="none" />
-        </Svg>
+        </FillSvg>
         <View style={[st.homePin, { left: '78%', top: '12%' }]}><Ic d={P.navHome} size={16} color="#FFF" w={2.2} /></View>
         {!cancelled && step < 5 && <View style={[st.taskerPin, { left: `${pins[0] - 5}%`, top: `${pins[1] - 8}%` }]}><T w="extrabold" style={{ color: '#FFF', fontSize: 11 }}>{b.tasker_initials}</T></View>}
         {!cancelled && (

@@ -52,12 +52,24 @@ function Blob({ w, h, spots, style, to, scale, dur }: {
   );
 }
 
+
+/** Svg that fills its parent at the parent's measured size (percent sizes can render before layout and get cut off). */
+export function FillSvg({ children, viewBox, preserveAspectRatio }: { children: React.ReactNode; viewBox?: string; preserveAspectRatio?: string }) {
+  const [sz, setSz] = useState({ w: 0, h: 0 });
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}
+      onLayout={(e) => { const { width, height } = e.nativeEvent.layout; if (width !== sz.w || height !== sz.h) setSz({ w: width, h: height }); }}>
+      {sz.w > 0 && sz.h > 0 ? <Svg width={sz.w} height={sz.h} viewBox={viewBox} preserveAspectRatio={preserveAspectRatio}>{children}</Svg> : null}
+    </View>
+  );
+}
+
 /** Full-screen glass background for the light screens. */
 export function Backdrop() {
   const id = useId('bd');
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
-      <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+      <FillSvg>
         <Defs>
           <LinearGradient id={id} x1="0.2" y1="0" x2="0.8" y2="1">
             <Stop offset="0" stopColor="#DDF3EE" />
@@ -66,7 +78,7 @@ export function Backdrop() {
           </LinearGradient>
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />
-      </Svg>
+      </FillSvg>
       <Blob w={520} h={900} style={{ left: -170, top: -60 }} to={{ x: 60, y: 40 }} scale={1.08} dur={18000} spots={[
         { x: 156, y: 162, rx: 156, ry: 162, color: '#6EDA60', o: 0.85 },
         { x: 374, y: 468, rx: 146, ry: 432, color: '#18A0BE', o: 0.7 },
@@ -89,7 +101,7 @@ export function GlassView({ children, style, radius = [20, 6] }: {
   return (
     <View style={[s.glassShadow, bubble(radius[0], radius[1]), style]}>
       <View style={[StyleSheet.absoluteFill, bubble(radius[0], radius[1]), { overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.30)' }]}>
-        <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+        <FillSvg>
           <Defs>
             <LinearGradient id={id} x1="0" y1="0" x2="1" y2="1">
               <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.45" />
@@ -98,7 +110,7 @@ export function GlassView({ children, style, radius = [20, 6] }: {
             </LinearGradient>
           </Defs>
           <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />
-        </Svg>
+        </FillSvg>
       </View>
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, bubble(radius[0], radius[1]), { borderWidth: 1, borderColor: 'rgba(255,255,255,0.7)' }]} />
       {children}
@@ -139,7 +151,7 @@ export function GlossyButton({ label, onPress, loading, disabled, style }: {
         style={[{ height: 56, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, bubble(18, 6),
           disabled && { backgroundColor: colors.disabledBg }]}>
         {!disabled && (
-          <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+          <FillSvg>
             <Defs>
               <LinearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
                 <Stop offset="0" stopColor="#0E7C95" />
@@ -154,7 +166,7 @@ export function GlossyButton({ label, onPress, loading, disabled, style }: {
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id}a)`} />
             <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id}b)`} />
-          </Svg>
+          </FillSvg>
         )}
         {!disabled && w > 0 && (
           <Animated.View pointerEvents="none" style={{
@@ -174,7 +186,7 @@ export function GreenGloss({ size = 84, r = [30, 10] as [number, number], childr
   const id = useId('gg');
   return (
     <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, bubble(r[0], r[1]), s.greenShadow]}>
-      <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+      <FillSvg>
         <Defs>
           <LinearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor="#93EA86" />
@@ -189,7 +201,7 @@ export function GreenGloss({ size = 84, r = [30, 10] as [number, number], childr
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id}a)`} />
         <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id}b)`} />
-      </Svg>
+      </FillSvg>
       {children}
     </View>
   );
