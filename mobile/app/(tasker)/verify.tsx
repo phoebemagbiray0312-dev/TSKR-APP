@@ -83,7 +83,7 @@ export default function BecomeTasker() {
   };
   useEffect(() => {
     refresh().then((a) => {
-      if (a.tasker_status === 'active') return router.replace('/home');
+      if (a.tasker_status === 'active') return router.replace('/work/home');
       if (a.tasker_status === 'pending') return setStep('done');
       setStep(a.has_office ? (a.id_consent ? 'id1-type' : 'consent') : 'intro');
     }).catch((e) => { setErr(e.message); setStep('intro'); });

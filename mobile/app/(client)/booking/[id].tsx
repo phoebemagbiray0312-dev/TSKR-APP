@@ -88,7 +88,7 @@ export default function BookingScreen() {
   const photo = revealed ? portraitPhoto(b.tasker_photo) : undefined;
   const offerAmt = b.initial_offer ?? b.starting_total;
   const agreed = b.final_price ?? offerAmt;
-  const demoLabel = DEMO_STEP[b.status];
+  const demoLabel = (b as any).tasker_is_demo ? DEMO_STEP[b.status] : undefined;
   const sub = {
     requested: 'Waiting for a reply', chatting: 'Chatting', offer_sent: 'Sent you an offer', offer_accepted: 'Offer accepted',
     on_the_way: 'On the way', arrived: 'Arrived', final_price_sent: 'Sent the final price', ready: 'Ready to start',

@@ -18,7 +18,7 @@ export default function Index() {
         const next = nextSignupRoute(p);
         if (next !== '/(auth)/done') return router.replace(next);
         // taskers who aren't approved yet continue Become a Tasker; everyone else lands on Home
-        if (p.signup_role === 'tasker' && p.tasker_status !== 'active') return router.replace('/(tasker)/verify');
+        if (p.signup_role === 'tasker') return router.replace(p.tasker_status === 'active' ? '/work/home' : '/(tasker)/verify');
         router.replace('/(client)/home');
       } catch {
         router.replace('/(auth)/welcome');

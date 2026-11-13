@@ -51,6 +51,15 @@ export default function Account() {
           )}
         </Rise>
         <Rise i={2} style={st.card}>
+          <PressScale onPress={() => router.push((p?.is_tasker && p.tasker_status === 'active' ? '/work/home' : '/(tasker)/verify') as any)} style={st.row}>
+            <View style={{ flex: 1 }}>
+              <T w="bold" style={{ fontSize: 15 }}>{p?.is_tasker && p.tasker_status === 'active' ? 'Switch to Tasker' : p?.tasker_status === 'pending' ? 'Tasker application · under review' : 'Become a Tasker'}</T>
+              <T style={{ fontSize: 12, color: colors.muted }}>{p?.is_tasker && p.tasker_status === 'active' ? 'Get job requests and earn' : 'Earn with your skills. Get verified first.'}</T>
+            </View>
+            <Ic d={P.chevRight} size={18} color={colors.muted} />
+          </PressScale>
+        </Rise>
+        <Rise i={3} style={st.card}>
           {[
             ['Favorite taskers', go('/favorites')],
             ['Saved addresses', go('/addresses')],
@@ -64,7 +73,7 @@ export default function Account() {
             </PressScale>
           ))}
         </Rise>
-        <Rise i={3}>
+        <Rise i={4}>
           <PressScale onPress={async () => { await supabase.auth.signOut(); router.replace('/(auth)/welcome'); }} style={[st.card, st.row]}>
             <T w="bold" style={{ fontSize: 15, color: colors.error }}>Sign out</T>
           </PressScale>
