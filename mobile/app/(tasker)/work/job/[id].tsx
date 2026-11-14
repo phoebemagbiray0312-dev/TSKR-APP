@@ -12,6 +12,7 @@ import { addrLine } from '../../../../src/lib/places';
 import { DEMO_CLIENT_ID, STATUS_LABEL } from '../../../../src/lib/tasker';
 import { LiveMap } from '../../../../src/components/LiveMap';
 import { rpc, supabase } from '../../../../src/lib/supabase';
+import * as Location from 'expo-location';
 
 type Booking = {
   id: string; client_id: string; code: string; status: string; is_delivery: boolean; items_checked: boolean; proof_of_delivery_path: string | null;
@@ -19,9 +20,12 @@ type Booking = {
   client_name: string; client_initials: string; client_rating: number | null; address: any; dropoff_address: any;
   fee_coins_due: number; offer_accepted_at: string | null; when_type: string; scheduled_at: string | null;
   items: { id: string; name: string; qty: number; unit_price: number }[];
+  eta_at: string | null; cancel_fee: { id: string; amount: number; status: string; reference: string | null } | null;
 };
 type Msg = { id: string; sender_id: string | null; kind: string; body: string | null; amount: number | null; photo_path?: string | null; created_at: string };
 const CHAT = ['requested', 'chatting', 'offer_sent'];
+const LIVE = ['offer_accepted', 'on_the_way', 'arrived', 'final_price_sent', 'ready', 'in_progress'];
+const REPORT_REASONS = ['Rude or threatening', 'Asked for my number or to pay outside TSKR', 'Unsafe place', 'Asked for a prohibited service', 'Didn’t pay', 'Fake booking', 'Other'];
 const CANCEL_REASONS: [string, string][] = [['emergency', 'Personal emergency'], ['client_absent', 'Client isn’t there'], ['unsafe', 'I feel unsafe'], ['client_asked', 'Client asked me to cancel'], ['other', 'Other reason']];
 
 /** Design: tasker JOB — chat and offer, then on the way, arrival code, final price, start, complete. */
@@ -43,6 +47,10 @@ export default function TaskerJob() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [rated, setRated] = useState(false);
+  const [repOpen, setRepOpen] = useState(false);
+  const [repReasons, setRepReasons] = useState<string[]>([]);
+  const [repText, setRepText] = useState('');
+  const [repBlock, setRepBlock] = useState(false);
   const chatRef = useRef<ScrollView>(null);
 
   const load = useCallback(async () => {
@@ -99,6 +107,28 @@ export default function TaskerJob() {
         { text: 'Cancel job', style: 'destructive', onPress: () => { setCancelOpen(false); act('cancel', () => rpc('cancel_booking', { p_booking: b.id, p_reason: r }), 'Job cancelled'); } }]);
     } catch (e: any) { showToast(e.message); }
   };
+
+  const sos = () => Alert.alert('Emergency?', `We’ll alert the TSKR safety team right away with this booking and your location. If you’re in danger, call 911 now.`, [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Call 911', onPress: () => Linking.openURL('tel:911') },
+    { text: 'Alert TSKR', style: 'destructive', onPress: () => act('sos', async () => {
+      let lat = b.address?.lat ?? null; let lng = b.address?.lng ?? null;
+      try {
+        const perm = await Location.getForegroundPermissionsAsync();
+        if (perm.granted) { const p = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }); lat = p.coords.latitude; lng = p.coords.longitude; }
+      } catch { /* use the booking address */ }
+      const no = await rpc<string>('trigger_sos', { p_booking: b.id, p_lat: lat, p_lng: lng });
+      showToast(`SOS sent · ${no}. Our safety team is contacting you now.`);
+    }) },
+  ]);
+  const report = () => act('report', async () => {
+    if (!repReasons.length) throw new Error('Choose at least one reason.');
+    const no = await rpc<string>('report_user', { p_reported: b.client_id, p_booking: b.id, p_reasons: repReasons, p_body: repText.trim() || null, p_block: repBlock });
+    setRepOpen(false); setRepReasons([]); setRepText('');
+    showToast(repBlock ? `Report ${no} sent. ${first} can’t book you again.` : `Report ${no} sent. Our team will look into it.`);
+  });
+  const eta = b.eta_at ? Math.max(0, Math.round((new Date(b.eta_at).getTime() - Date.now()) / 60000)) : null;
+  const fee = b.cancel_fee;
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -200,6 +230,25 @@ export default function TaskerJob() {
             </View>
           </View>
 
+          {LIVE.includes(b.status) && (
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <PressScale outer={{ flex: 1 }} onPress={sos} style={[st.pill, { borderColor: colors.error, flexDirection: 'row', gap: 6 }]}>
+                <Ic d={P.shield} size={16} color={colors.error} w={2.2} /><T w="extrabold" style={{ fontSize: 13, color: colors.error }}>SOS</T>
+              </PressScale>
+              <PressScale outer={{ flex: 2 }} onPress={() => setRepOpen(true)} style={st.pill}><T w="bold" style={{ fontSize: 13 }}>Report or block {first}</T></PressScale>
+            </View>
+          )}
+
+          {b.status === 'on_the_way' && (
+            <View style={[glassCard, { padding: 16, gap: 10 }]}>
+              <T w="extrabold" style={{ fontSize: 17 }}>Running late?</T>
+              <T style={{ fontSize: 13, color: colors.body }}>{eta != null ? `${first} sees you arriving in about ${eta} min.` : `Tell ${first} when you’ll arrive.`} Update it if that changes.</T>
+              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+                {[5, 10, 15, 30].map((m) => <Chip key={m} label={`${m} min`} onPress={() => act('eta', () => rpc('update_eta', { p_booking: b.id, p_eta_minutes: m }), `${first} now sees ${m} min`)} />)}
+              </View>
+            </View>
+          )}
+
           {b.status === 'on_the_way' && (
             <View style={[glassCard, { padding: 16, gap: 10 }]}>
               <T w="extrabold" style={{ fontSize: 17 }}>Enter the client’s arrival code</T>
@@ -292,6 +341,29 @@ export default function TaskerJob() {
             </View>
           )}
 
+          {fee && (
+            <View style={[glassCard, { padding: 16, gap: 10 }]}>
+              <T w="extrabold" style={{ fontSize: 17 }}>Cancellation fee · {peso(Number(fee.amount))}</T>
+              {fee.status === 'unpaid' && <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>{first} cancelled while you were on the way. They’ll pay {peso(Number(fee.amount))} to your QR and send you the reference number.</T>}
+              {fee.status === 'submitted' && (
+                <>
+                  <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>{first} says they paid. Reference: <T w="extrabold" style={{ fontSize: 13 }}>{fee.reference}</T>. Check your e-wallet or bank app, then confirm.</T>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <PressScale outer={{ flex: 1 }} style={st.ghost} onPress={() => Alert.alert('Not received?', `${first} will be asked to check the reference, and our team will look into it.`, [{ text: 'Back', style: 'cancel' },
+                      { text: 'Not received', style: 'destructive', onPress: () => act('fee', () => rpc('answer_fee', { p_fee: fee.id, p_received: false }), 'Our team will look into it') }])}>
+                      <T w="bold" style={{ fontSize: 14, color: colors.error }}>Not received</T>
+                    </PressScale>
+                    <PressScale outer={{ flex: 1.4 }} style={st.solid} onPress={() => act('fee', () => rpc('answer_fee', { p_fee: fee.id, p_received: true }), 'Thanks! Fee confirmed.')}>
+                      <TealGloss /><T w="extrabold" style={{ fontSize: 14, color: '#FFF' }}>I received it</T>
+                    </PressScale>
+                  </View>
+                </>
+              )}
+              {fee.status === 'received' && <T style={{ fontSize: 13, color: colors.body }}>You confirmed you received it.</T>}
+              {fee.status === 'not_received' && <T style={{ fontSize: 13, color: colors.body }}>You said you didn’t receive it. Our team is looking into it.</T>}
+            </View>
+          )}
+
           <View style={[glassCard, st.collect]}>
             <T w="semibold" style={{ fontSize: 14 }}>Collect from client · cash or your QR</T>
             <T w="extrabold" style={{ fontSize: 16 }}>{peso(amount)}</T>
@@ -300,6 +372,11 @@ export default function TaskerJob() {
           {['offer_accepted', 'on_the_way', 'arrived', 'final_price_sent', 'ready'].includes(b.status) && (
             <PressScale onPress={() => setCancelOpen(true)} style={{ alignSelf: 'center', padding: 12 }}>
               <T w="bold" style={{ fontSize: 14, color: colors.error }}>Cancel job</T>
+            </PressScale>
+          )}
+          {['completed', 'cancelled'].includes(b.status) && (
+            <PressScale onPress={() => setRepOpen(true)} style={{ alignSelf: 'center', padding: 10 }}>
+              <T w="bold" style={{ fontSize: 14, color: colors.muted }}>Report or block {first}</T>
             </PressScale>
           )}
           {['completed', 'cancelled', 'declined_by_tasker'].includes(b.status) && <GlossyButton label="Back to Home" onPress={() => router.replace('/work/home')} />}
@@ -319,6 +396,19 @@ export default function TaskerJob() {
         {CANCEL_REASONS.map(([k, l]) => (
           <PressScale key={k} onPress={() => cancel(k)} style={[glassCard, { padding: 14, backgroundColor: '#FFF', borderColor: colors.borderSoft }]}><T w="bold" style={{ fontSize: 15 }}>{l}</T></PressScale>
         ))}
+      </Sheet>
+      <Sheet open={repOpen} onClose={() => setRepOpen(false)} title={`Report ${first}`}>
+        <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>Our safety team reviews every report. {first} won’t see who reported them.</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {REPORT_REASONS.map((r) => <Chip key={r} label={r} on={repReasons.includes(r)} onPress={() => setRepReasons((c) => (c.includes(r) ? c.filter((x) => x !== r) : [...c, r]))} />)}
+        </View>
+        <TextInput value={repText} onChangeText={setRepText} placeholder="What happened? (optional)" placeholderTextColor="#98A2B3" multiline
+          accessibilityLabel="Details" style={[st.input, { flex: 0, height: 96, paddingTop: 12, textAlignVertical: 'top' }]} />
+        <PressScale onPress={() => setRepBlock(!repBlock)} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }} accessibilityRole="checkbox" accessibilityState={{ checked: repBlock }}>
+          <View style={[st.check, repBlock && { backgroundColor: colors.teal, borderColor: colors.teal }]}>{repBlock && <Ic d={P.check} size={14} color="#FFF" w={3} />}</View>
+          <T w="semibold" style={{ fontSize: 14, flex: 1 }}>Also block {first} so they can’t book me again</T>
+        </PressScale>
+        <GlossyButton label="Send report" loading={busy === 'report'} onPress={report} />
       </Sheet>
       <Toast text={toast} top={insets.top + 10} />
     </KeyboardAvoidingView>
@@ -355,5 +445,6 @@ const st = StyleSheet.create({
   pill: { height: 40, borderRadius: 999, borderWidth: 1.5, borderColor: colors.teal, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
   demo: { paddingTop: 8, paddingHorizontal: 16, gap: 6, backgroundColor: colors.warnBg, borderTopWidth: 1, borderTopColor: '#F5D9B5' },
   demoBtn: { height: 44, borderRadius: 12, borderWidth: 1.5, borderColor: '#E0A96D', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
+  check: { width: 24, height: 24, borderRadius: 7, borderWidth: 1.5, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
   collect: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
 });

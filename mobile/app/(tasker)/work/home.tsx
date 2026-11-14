@@ -18,8 +18,16 @@ export default function WorkHome() {
   const [h, setH] = useState<TaskerHome | null>(null);
   const [busy, setBusy] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [fees, setFees] = useState<{ id: string; booking_id: string; amount_php: number; reference_no: string }[]>([]);
 
-  const load = useCallback(async () => { try { setH(await loadTaskerHome()); } catch (e: any) { showToast(e.message); } }, []);
+  const load = useCallback(async () => {
+    try {
+      setH(await loadTaskerHome());
+      const { data: u } = await supabase.auth.getUser();
+      const { data } = await supabase.from('cancellation_fees').select('id,booking_id,amount_php,reference_no').eq('tasker_id', u.user!.id).eq('status', 'submitted');
+      setFees((data ?? []) as any);
+    } catch (e: any) { showToast(e.message); }
+  }, []);
   useFocusEffect(useCallback(() => { load(); }, []));
   // new requests arrive live
   useEffect(() => {
@@ -119,6 +127,14 @@ export default function WorkHome() {
               <PressScale onPress={() => router.replace('/work/wallet')} style={st.smallBtn}><T w="bold" style={{ fontSize: 13 }}>Buy coins</T></PressScale>
             </View>
           )}
+
+          {fees.map((f) => (
+            <PressScale key={f.id} onPress={() => reply(f.booking_id)} style={[glassCard, st.alert, { borderColor: colors.green }]}>
+              <T w="extrabold" style={{ fontSize: 15 }}>Cancellation fee sent to you · {peso(Number(f.amount_php))}</T>
+              <T style={{ fontSize: 13, color: colors.body }}>Reference {f.reference_no}. Check your e-wallet, then confirm you received it.</T>
+              <T w="bold" style={{ fontSize: 13 }}>Confirm →</T>
+            </PressScale>
+          ))}
 
           {/* new requests */}
           {h.requests.map((r, i) => (

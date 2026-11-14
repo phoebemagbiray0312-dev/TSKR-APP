@@ -11,6 +11,7 @@ import { Ic, MiniAvatar, P, RoundButton, TealGloss, Toast } from '../../../src/c
 import { firstName, peso, useClient } from '../../../src/lib/client';
 import { portraitPhoto } from '../../../src/lib/demoPhotos';
 import { LiveMap } from '../../../src/components/LiveMap';
+import { QrSheet, TaskerQr } from '../../../src/components/QrSheet';
 import { addrLine } from '../../../src/lib/places';
 import { rpc, supabase } from '../../../src/lib/supabase';
 
@@ -277,10 +278,11 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
   const shareTrip = () => Share.share({
     message: `I booked ${b.tasker_name} on TSKR (${b.code}) for ${b.items.map((i) => i.name).join(', ')}. Status: ${b.status.replace(/_/g, ' ')}. Address: ${addrLine(b.address)}.`,
   }).catch(() => {});
-  const qr = (b as any).tasker_qr as { path: string | null; wallet: string | null } | null;
-  const showQr = () => Alert.alert(`Pay ${first}`, qr?.path
-    ? `Scan ${first}’s ${qr.wallet?.toUpperCase() ?? 'payment'} QR from their profile, or pay cash. Amount: ${peso(agreed)}.`
-    : `${first} hasn’t uploaded a payment QR yet, so please pay ${peso(agreed)} in cash. TSKR doesn’t hold your money.`);
+  const qr = (b as any).tasker_qr as TaskerQr;
+  const fee = (b as any).cancel_fee as { id: string; amount: number; status: string; reference: string | null } | null;
+  const [qrOpen, setQrOpen] = useState(false);
+  const [feeOpen, setFeeOpen] = useState(false);
+  const showQr = () => setQrOpen(true);
 
   const step = stepOf(b.status);
   const eta = b.eta_at ? Math.max(1, Math.round((new Date(b.eta_at).getTime() - Date.now()) / 60000)) : null;
@@ -326,6 +328,16 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
         <PressScale onPress={showQr} style={[st.pillBtn, { alignSelf: 'stretch' }]}>
           <T w="bold" style={{ fontSize: 14 }}>Show {first}’s payment QR</T>
         </PressScale>
+      )}
+      {fee && (
+        <View style={[st.card, { gap: 8, borderColor: fee.status === 'received' ? colors.borderSoft : '#F5D9B5', backgroundColor: fee.status === 'received' ? '#FFF' : colors.warnBg }]}>
+          <T w="extrabold" style={{ fontSize: 16 }}>Cancellation fee · {peso(Number(fee.amount))}</T>
+          {fee.status === 'unpaid' && <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>{first} was already on the way, so a {peso(Number(fee.amount))} fee goes to {first}. Pay it to {first}’s QR, then send the reference number. You can book again once it’s sent.</T>}
+          {fee.status === 'submitted' && <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Reference {fee.reference} sent. Waiting for {first} to confirm they received it.</T>}
+          {fee.status === 'not_received' && <T style={{ fontSize: 13, color: colors.error, lineHeight: 19 }}>{first} says they didn’t receive reference {fee.reference}. Check your receipt and send the correct reference. Our team is also looking into it.</T>}
+          {fee.status === 'received' && <T style={{ fontSize: 13, color: colors.body }}>Paid. {first} confirmed they received it. Thank you!</T>}
+          {(fee.status === 'unpaid' || fee.status === 'not_received') && <GlossyButton label={`Pay ${peso(Number(fee.amount))} to ${first}`} onPress={() => setFeeOpen(true)} />}
+        </View>
       )}
       {D && b.dropoff_address && (
         <View style={st.card}>
@@ -472,6 +484,10 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
       {(b.status === 'completed' || cancelled) && (
         <GlossyButton label="Done" onPress={() => router.replace('/home')} />
       )}
+      <QrSheet open={qrOpen} onClose={() => setQrOpen(false)} title={`Pay ${first}`} first={first} amount={peso(agreed)} qr={qr} />
+      {fee && <QrSheet open={feeOpen} onClose={() => setFeeOpen(false)} title="Pay the cancellation fee" first={first} amount={peso(Number(fee.amount))} qr={qr}
+        note={`After paying, type the reference number from your receipt so ${first} can confirm.`}
+        onReference={async (ref) => { await rpc('submit_fee_reference', { p_fee: fee.id, p_reference: ref }); setFeeOpen(false); act('fee', async () => {}, 'Reference sent'); }} />}
     </ScrollView>
   );
 }
