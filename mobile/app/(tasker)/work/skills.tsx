@@ -16,7 +16,7 @@ type Cat = { id: number; name: string };
 type Skill = { id: number; name: string; category_id: number; needs_license: boolean };
 type Mine = { id: string; skill_id: number | null; custom_name: string | null; base_fee: number; duration_min: number | null; status: string; slot: number; skills: { name: string } | null };
 
-/** Design: tasker SKILLS — skills with starting prices (2 free, up to 5), plus the service area map. */
+/** Design: tasker SKILLS — skills with starting prices (2 free, up to 7), plus the service area map. */
 export default function Skills() {
   const insets = useSafeAreaInsets();
   const { toast, showToast } = useClient();
@@ -120,7 +120,7 @@ export default function Skills() {
       <Backdrop />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: insets.top + 20, paddingHorizontal: 16, paddingBottom: 130, gap: 12 }}>
         <T w="extrabold" style={{ fontSize: 26 }}>My skills</T>
-        <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Each skill has its own starting price. Your first 2 skills are free. Each extra skill costs 100 coins per week, up to 5 skills.</T>
+        <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Each skill has its own starting price. Your first 2 skills are free. Each extra skill costs 100 coins per week, up to 5 extra skills (7 in total). The first week is deducted as soon as you add it.</T>
         {extras > 0 && <View style={[glassCard, st.rowB, { padding: 14 }]}><T w="semibold" style={{ fontSize: 14 }}>Weekly skill charge</T><T w="extrabold" style={{ fontSize: 14 }}>{extras * 100} coins</T></View>}
 
         {mine.map((k, i) => (

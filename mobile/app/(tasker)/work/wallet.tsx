@@ -7,6 +7,8 @@ import { T } from '../../../src/components/ui';
 import { Backdrop, GlossyButton, PressScale } from '../../../src/components/glass';
 import { Chip, HeaderFill, Sheet, Toast, glassCard } from '../../../src/components/clientUi';
 import { useClient } from '../../../src/lib/client';
+import { CoinPackSheet } from '../../../src/components/CoinPackSheet';
+import { Alert } from 'react-native';
 import { rpc, supabase } from '../../../src/lib/supabase';
 
 type W = { balance: number; booking_fee: number; repeat_fee: number; delivery_fee: number; extra_skills: number; low: boolean; out: boolean };
@@ -19,8 +21,6 @@ export default function Wallet() {
   const [w, setW] = useState<W | null>(null);
   const [hist, setHist] = useState<L[]>([]);
   const [buy, setBuy] = useState(false);
-  const [method, setMethod] = useState('gcash');
-  const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const load = useCallback(async () => {
     try {
@@ -31,11 +31,10 @@ export default function Wallet() {
   }, []);
   useFocusEffect(useCallback(() => { load(); }, []));
 
-  const pay = async () => {
-    setBusy(true);
-    try { const bal = await rpc<number>('buy_coins_demo', { p_method: method }); setBuy(false); showToast(`Paid. Balance: ${bal.toLocaleString('en-PH')} coins`); load(); }
-    catch (e: any) { showToast(e.message); } finally { setBusy(false); }
-  };
+  const drain = () => Alert.alert('Use up coins?', 'Test build only: your balance goes to 0 and you go offline, so you can see the “out of coins” screens.', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Use up coins', style: 'destructive', onPress: async () => { try { await rpc('demo_use_up_coins'); showToast('Coins used up (test)'); load(); } catch (e: any) { showToast(e.message); } } },
+  ]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -47,11 +46,12 @@ export default function Wallet() {
           <T w="semibold" style={{ color: colors.heroSub, fontSize: 14 }}>Coin balance</T>
           <T w="extrabold" style={{ color: '#FFF', fontSize: 40 }}>{w ? w.balance.toLocaleString('en-PH') : '—'}</T>
           <T style={{ color: colors.heroSub, fontSize: 12, lineHeight: 18 }}>
-            1 coin = ₱1 · Booking fee {w?.booking_fee ?? 300} (repeat client {w?.repeat_fee ?? 100}) · Extra skill 100/week
+            Booking fee {w?.booking_fee ?? 300} (repeat client {w?.repeat_fee ?? 100}) · Extra skill 100/week
           </T>
           <PressScale onPress={() => setBuy(true)} style={{ marginTop: 8, height: 46, borderRadius: 14, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' }}>
-            <T w="extrabold" style={{ fontSize: 15 }}>Buy 1,000 coins · ₱1,000</T>
+            <T w="extrabold" style={{ fontSize: 15 }}>Buy coins</T>
           </PressScale>
+          {w?.out && <T w="semibold" style={{ color: '#FFF', fontSize: 13, marginTop: 4 }}>You can’t receive bookings until you buy coins. Bigger packs come with bonus coins.</T>}
         </View>
         <View style={{ paddingHorizontal: 16, gap: 10 }}>
           <T w="extrabold" style={{ fontSize: 18 }}>History</T>
@@ -69,19 +69,10 @@ export default function Wallet() {
           </View>
         </View>
       </ScrollView>
-      <Sheet open={buy} onClose={() => setBuy(false)} title="Buy coins">
-        <View style={[glassCard, { flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: colors.tint }]}>
-          <T w="extrabold" style={{ fontSize: 16 }}>1,000 coins</T><T w="extrabold" style={{ fontSize: 16 }}>₱1,000</T>
-        </View>
-        <T w="semibold" style={{ fontSize: 13 }}>Pay with</T>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {[['gcash', 'GCash'], ['maya', 'Maya'], ['card', 'Card']].map(([k, l]) => <Chip key={k} label={l} on={method === k} onPress={() => setMethod(k)} />)}
-        </View>
-        <View style={{ borderRadius: 12, padding: 10, backgroundColor: colors.warnBg }}>
-          <T w="semibold" style={{ fontSize: 12, color: colors.warnText }}>TEST BUILD: no real payment is taken. Coins are added right away.</T>
-        </View>
-        <GlossyButton label="Pay ₱1,000" onPress={pay} loading={busy} />
-      </Sheet>
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 104, alignItems: 'center' }} pointerEvents="box-none">
+        {!!w && w.balance > 0 && <PressScale onPress={drain} style={{ padding: 8 }}><T w="bold" style={{ fontSize: 12, color: colors.muted }}>Use up coins (demo)</T></PressScale>}
+      </View>
+      <CoinPackSheet open={buy} onClose={() => setBuy(false)} onDone={(bal) => { setBuy(false); showToast(`Paid. Balance: ${bal.toLocaleString('en-PH')} coins`); load(); }} />
       <Toast text={toast} top={insets.top + 10} />
     </View>
   );

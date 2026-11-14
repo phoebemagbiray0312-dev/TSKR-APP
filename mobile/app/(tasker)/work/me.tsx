@@ -11,7 +11,7 @@ import { peso, useClient } from '../../../src/lib/client';
 import { TaskerHome, loadTaskerHome, uploadImage } from '../../../src/lib/tasker';
 import { rpc, supabase } from '../../../src/lib/supabase';
 
-type TP = { nickname: string | null; bio: string | null; photo_path: string | null; qr_wallet_type: string | null; qr_account_name: string | null; qr_status: string; payment_qr_path: string | null };
+type TP = { nickname: string | null; bio: string | null; title: string | null; years_experience: number | null; photo_path: string | null; qr_wallet_type: string | null; qr_account_name: string | null; qr_status: string; payment_qr_path: string | null };
 
 /** Design: tasker ME — switch mode, my office, payment QR, account. */
 export default function Me() {
@@ -29,6 +29,8 @@ export default function Me() {
   const [editing, setEditing] = useState(false);
   const [nick, setNick] = useState('');
   const [about, setAbout] = useState('');
+  const [jt, setJt] = useState('');
+  const [yrs, setYrs] = useState('');
   const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [office, setOffice] = useState<{ id: string; path: string; taken: string; url: string | null }[]>([]);
   const [top, setTop] = useState<any>(null);
@@ -46,7 +48,7 @@ export default function Me() {
   const load = useCallback(async () => {
     const home = await loadTaskerHome(); setH(home);
     const { data: u } = await supabase.auth.getUser();
-    const { data } = await supabase.from('tasker_profiles').select('nickname,bio,photo_path,qr_wallet_type,qr_account_name,qr_status,payment_qr_path').eq('user_id', u.user!.id).maybeSingle();
+    const { data } = await supabase.from('tasker_profiles').select('nickname,bio,title,years_experience,photo_path,qr_wallet_type,qr_account_name,qr_status,payment_qr_path').eq('user_id', u.user!.id).maybeSingle();
     const t = data as TP | null; setTp(t);
     setAcct((a) => a || t?.qr_account_name || home.full_name);
     if (t?.qr_wallet_type) setWallet(t.qr_wallet_type);
@@ -71,7 +73,7 @@ export default function Me() {
     setEmName((v) => v || pr.data?.emergency_contact_name || ''); setEmPhone((v) => v || pr.data?.emergency_contact_phone || '');
   }, []);
 
-  const startEdit = () => { setNick(tp?.nickname ?? ''); setAbout(tp?.bio ?? ''); setNewPhoto(null); setOffErr(''); setEditing(true); };
+  const startEdit = () => { setNick(tp?.nickname ?? ''); setAbout(tp?.bio ?? ''); setJt(tp?.title ?? ''); setYrs(tp?.years_experience ? String(tp.years_experience) : ''); setNewPhoto(null); setOffErr(''); setEditing(true); };
   const takeSelfie = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) { setOffErr('Allow camera access in Settings to take your photo.'); return; }
@@ -99,12 +101,16 @@ export default function Me() {
   const saveOffice = async () => {
     setOffErr('');
     if (!nick.trim()) { setOffErr('Add a nickname.'); return; }
+    const t = jt.trim();
+    if (t && (/\d{3,}/.test(t) || /(https?:\/\/|www\.|\.com\b|facebook|viber|whatsapp|telegram|@[a-z])/i.test(t))) { setOffErr('No numbers or contact details in your job title.'); return; }
+    if (t && /doctor|doktor|nurse|therap|dentist|lawyer|attorney|abogado|notar|pharmacist|engineer|architect|psycholog/i.test(t)) { setOffErr('Job titles for licensed professions aren’t allowed on TSKR.'); return; }
     setOffBusy(true);
     try {
       const { data: u } = await supabase.auth.getUser(); const uid = u.user!.id;
       const photo = newPhoto ? await uploadImage('tasker-media', uid, newPhoto, 'profile') : tp?.photo_path;
       if (!photo) throw new Error('Add a profile photo to continue.');
       await rpc('save_tasker_office', { p_nickname: nick.trim(), p_about: about.trim(), p_photo_path: photo, p_office_paths: [] });
+      await rpc('save_tasker_title', { p_title: jt.trim(), p_years: yrs ? Number(yrs) : null });
       setEditing(false); showToast('My office saved'); load();
     } catch (e: any) { setOffErr(e.message); } finally { setOffBusy(false); }
   };
@@ -176,6 +182,7 @@ export default function Me() {
             </PressScale>
             <View style={{ flex: 1 }}>
               {editing ? <T w="bold" style={{ fontSize: 13 }} onPress={takeSelfie}>{newPhoto ? '✓ New photo · retake' : 'Retake photo (camera)'}</T> : <T w="extrabold" style={{ fontSize: 16 }}>{tp?.nickname ?? h?.short_name}</T>}
+              {!editing && (tp?.title ? <T w="semibold" style={{ fontSize: 13 }}>{tp.title}{tp.years_experience ? ` · ${tp.years_experience} ${tp.years_experience === 1 ? 'yr' : 'yrs'}` : ''}</T> : null)}
               <T style={{ fontSize: 13, color: colors.muted }}>{h?.full_name} · {h?.area_label ?? 'No service area yet'}</T>
             </View>
           </View>
@@ -183,6 +190,15 @@ export default function Me() {
             <>
               <T w="semibold" style={{ fontSize: 13 }}>Nickname</T>
               <TextInput value={nick} onChangeText={setNick} maxLength={20} placeholder="e.g. Kuya Jun" placeholderTextColor="#98A2B3" accessibilityLabel="Nickname" style={st.input} />
+              <T w="semibold" style={{ fontSize: 13 }}>Job title · {jt.length}/40</T>
+              <TextInput value={jt} onChangeText={(v) => setJt(v.slice(0, 40))} placeholder="e.g. Aircon technician" placeholderTextColor="#98A2B3" accessibilityLabel="Job title" style={st.input} />
+              <T style={{ fontSize: 12, color: colors.muted }}>Shown under your nickname. Keep it to the work you actually do, in English.</T>
+              <T w="semibold" style={{ fontSize: 13 }}>Years of experience <T style={{ fontSize: 12, color: colors.muted }}>(optional)</T></T>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <TextInput value={yrs} onChangeText={(v) => { const n = parseInt(v.replace(/\D/g, ''), 10); setYrs(n > 0 ? String(Math.min(n, 60)) : ''); }} keyboardType="number-pad" placeholder="8" placeholderTextColor="#98A2B3" accessibilityLabel="Years of experience" style={[st.input, { width: 80 }]} />
+                <T style={{ fontSize: 14, color: colors.body }}>years doing this work</T>
+              </View>
+              <T style={{ fontSize: 12, color: colors.muted }}>Shown next to your job title, like “Aircon technician · 8 yrs”. Leave blank to hide it.</T>
               <T w="semibold" style={{ fontSize: 13 }}>About · {about.length}/300</T>
               <TextInput value={about} onChangeText={setAbout} maxLength={300} multiline placeholder="Your experience, tools, what you’re good at" placeholderTextColor="#98A2B3"
                 accessibilityLabel="About" style={[st.input, { height: 110, paddingTop: 12, textAlignVertical: 'top' }]} />

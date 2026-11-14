@@ -13,6 +13,7 @@ export type TaskerHome = {
   week: { count: number; target: number; free_next: boolean; week_total: number; streak: number; streak_weeks: number; streak_bonus: number };
   schedule: { id: string; status: string; start: string; end: string; buffer_min: number; client: string; area: string; service: string }[];
   availability: { days: number[]; from: string; to: string } | null;
+  demand: { count: number; skill: string | null } | null; title: string | null; years: number | null;
 };
 export const hm = (iso: string) => new Date(iso).toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
 

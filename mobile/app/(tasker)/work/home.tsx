@@ -6,7 +6,8 @@ import { Circle, Path } from 'react-native-svg';
 import { colors } from '../../../src/theme';
 import { T } from '../../../src/components/ui';
 import { Backdrop, PressScale, Rise } from '../../../src/components/glass';
-import { HeaderFill, HeaderLogo, Ic, P, StarIc, TealGloss, Toast, glassCard } from '../../../src/components/clientUi';
+import { HeaderFill, HeaderLogo, Ic, P, Sheet, StarIc, TealGloss, Toast, glassCard } from '../../../src/components/clientUi';
+import { CoinPackSheet } from '../../../src/components/CoinPackSheet';
 import { peso, useClient } from '../../../src/lib/client';
 import { STATUS_LABEL, TaskerHome, coins, hm, loadTaskerHome } from '../../../src/lib/tasker';
 import { rpc, supabase } from '../../../src/lib/supabase';
@@ -18,6 +19,8 @@ export default function WorkHome() {
   const [h, setH] = useState<TaskerHome | null>(null);
   const [busy, setBusy] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [brokeSeen, setBrokeSeen] = useState(false);
   const [fees, setFees] = useState<{ id: string; booking_id: string; amount_php: number; reference_no: string }[]>([]);
 
   const load = useCallback(async () => {
@@ -88,7 +91,7 @@ export default function WorkHome() {
           <View style={[st.row, { marginTop: 14 }]}>
             <View style={{ flex: 1 }}>
               <T w="extrabold" style={{ color: '#FFF', fontSize: 20 }}>{h.short_name}</T>
-              <T style={{ color: colors.heroSub, fontSize: 13 }}>{h.nickname ? `“${h.nickname}” · ` : ''}{h.area_label ?? 'Set your service area'}</T>
+              <T style={{ color: colors.heroSub, fontSize: 13 }}>{h.title ? `${h.title}${h.years ? ` · ${h.years} ${h.years === 1 ? 'yr' : 'yrs'}` : ''}` : (h.nickname ? `“${h.nickname}” · ${h.area_label ?? ''}` : h.area_label ?? 'Set your service area')}</T>
             </View>
             <PressScale onPress={() => router.replace('/work/wallet')} accessibilityLabel="Coin balance" style={st.coinBtn}>
               <Ic size={16} color={colors.teal} w={2.2}><Circle cx={12} cy={12} r={8} /><Path d="M12 8v8" /></Ic>
@@ -117,14 +120,14 @@ export default function WorkHome() {
           {broke && (
             <View style={[glassCard, st.alert]}>
               <T w="extrabold" style={{ fontSize: 15, color: colors.error }}>You’re out of coins</T>
-              <T style={{ fontSize: 13, color: colors.body }}>You can’t receive bookings until you buy coins. ₱1,000 gets you 1,000 coins.</T>
-              <PressScale onPress={() => router.replace('/work/wallet')} style={st.smallBtn}><T w="bold" style={{ fontSize: 13 }}>Buy coins</T></PressScale>
+              <T style={{ fontSize: 13, color: colors.body }}>You can’t receive bookings until you buy coins. Bigger packs come with bonus coins.</T>
+              <PressScale onPress={() => setBuyOpen(true)} style={st.smallBtn}><T w="bold" style={{ fontSize: 13 }}>Buy coins</T></PressScale>
             </View>
           )}
           {low && (
             <View style={[glassCard, st.alert, { borderColor: '#F5D9B5' }]}>
               <T w="bold" style={{ fontSize: 14 }}>Low on coins · {coins(h.coins)} left</T>
-              <PressScale onPress={() => router.replace('/work/wallet')} style={st.smallBtn}><T w="bold" style={{ fontSize: 13 }}>Buy coins</T></PressScale>
+              <PressScale onPress={() => setBuyOpen(true)} style={st.smallBtn}><T w="bold" style={{ fontSize: 13 }}>Buy coins</T></PressScale>
             </View>
           )}
 
@@ -160,13 +163,13 @@ export default function WorkHome() {
           ))}
           {h.requests.length === 0 && ready && (
             <View style={[glassCard, { padding: 18, gap: 4 }]}>
-              <T w="extrabold" style={{ fontSize: 16 }}>{h.online ? 'Waiting for requests…' : 'You’re offline'}</T>
-              <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>{h.online ? 'New booking requests near you show up here right away.' : 'Tap Offline at the top to go online and start getting requests.'}</T>
+              <T w="extrabold" style={{ fontSize: 16 }}>{broke ? 'Requests paused: no coins' : h.online ? 'Waiting for requests…' : 'You’re offline'}</T>
+              <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>{broke ? 'You won’t get request notifications until you buy coins. Clients are sent to other taskers.' : h.online ? 'New booking requests near you show up here right away.' : 'Tap Offline at the top to go online and start getting requests.'}</T>
             </View>
           )}
 
           {/* TEST BUILD (design: "Simulate a new request (demo)") */}
-          {ready && (
+          {ready && !broke && (
             <PressScale onPress={simulate} style={st.demoBtn}>
               <T w="extrabold" style={{ fontSize: 10, letterSpacing: 0.6, color: colors.warnText }}>TEST BUILD</T>
               <T w="bold" style={{ fontSize: 14, color: colors.warnText }}>{busy === 'sim' ? 'Sending…' : '▶ Simulate a new request (demo client)'}</T>
@@ -246,6 +249,20 @@ export default function WorkHome() {
           </PressScale>
         </View>
       </ScrollView>
+      <Sheet open={broke && ready && !brokeSeen && !buyOpen} onClose={() => setBrokeSeen(true)} title="You’re out of coins">
+        <T style={{ fontSize: 14, color: colors.body, lineHeight: 20 }}>Buy coins to get job requests again.</T>
+        {!!h.demand?.count && (
+          <View style={[glassCard, { padding: 14, gap: 4, backgroundColor: colors.tint }]}>
+            <T w="extrabold" style={{ fontSize: 15 }}>{h.demand.count} {h.demand.count === 1 ? 'client' : 'clients'} near you asked for {h.demand.skill ?? 'your skills'} this week.</T>
+            <T style={{ fontSize: 12, color: colors.muted, lineHeight: 17 }}>Based on actual requests near you in the past 7 days. Future requests aren’t guaranteed.</T>
+          </View>
+        )}
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <PressScale outer={{ flex: 1 }} onPress={() => setBrokeSeen(true)} style={st.ghost}><T w="bold" style={{ fontSize: 14 }}>Later</T></PressScale>
+          <PressScale outer={{ flex: 1.6 }} onPress={() => { setBrokeSeen(true); setBuyOpen(true); }} style={st.solid}><TealGloss /><T w="extrabold" style={{ fontSize: 14, color: '#FFF' }}>Buy coins</T></PressScale>
+        </View>
+      </Sheet>
+      <CoinPackSheet open={buyOpen} onClose={() => setBuyOpen(false)} onDone={(bal) => { setBuyOpen(false); showToast(`Paid. Balance: ${bal.toLocaleString('en-PH')} coins`); load(); }} />
       <Toast text={toast} top={insets.top + 10} />
     </View>
   );
