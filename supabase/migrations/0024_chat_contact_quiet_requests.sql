@@ -35,7 +35,7 @@ begin
   d := regexp_replace(d, '\m(six|anim)\M', '6', 'g');      d := regexp_replace(d, '\m(seven|pito)\M', '7', 'g');
   d := regexp_replace(d, '\m(eight|walo)\M', '8', 'g');    d := regexp_replace(d, '\m(nine|siyam)\M', '9', 'g');
   d := regexp_replace(d, '[\s\-\.\(\)/_*]', '', 'g');
-  return d ~ '(\+?63|0)9[0-9]{9}' or d ~ '(^|[^0-9])9[0-9]{9}([^0-9]|$)' or d ~ '[0-9]{11,}';
+  return d ~ '(\+?63|0)9[0-9]{9}' or d ~ '(^|[^0-9])9[0-9]{9}([^0-9]|$)' or regexp_replace(t, '[\-\.\(\)/_*]', '', 'g') ~ '[0-9]{11,}';
 end $$;
 
 create or replace function public.account_suspended_until(p_user uuid) returns timestamptz
