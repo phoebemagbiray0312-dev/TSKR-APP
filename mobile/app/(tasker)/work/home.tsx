@@ -139,11 +139,26 @@ export default function WorkHome() {
             </PressScale>
           ))}
 
-          {/* new requests */}
+          {/* Design: account suspended for sharing contact numbers */}
+          {!!h.suspended_until && (
+            <View style={[glassCard, { padding: 16, gap: 4, backgroundColor: '#FDECEC', borderColor: '#F5B5B5' }]}>
+              <T w="extrabold" style={{ fontSize: 15, color: colors.error }}>Account suspended</T>
+              <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>You tried to share a contact number in chat after a warning. You can’t go online or get requests until {new Date(h.suspended_until).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.</T>
+            </View>
+          )}
+          {/* Design: requests paused while delivering */}
+          {h.delivering && (
+            <View style={[glassCard, { padding: 16, gap: 4, backgroundColor: colors.tint }]}>
+              <T w="extrabold" style={{ fontSize: 15 }}>Delivering · new requests paused</T>
+              <T style={{ fontSize: 13, color: colors.muted, lineHeight: 19 }}>New requests are paused until you deliver, so you’re not looking at your phone on the road.</T>
+            </View>
+          )}
+
+          {/* new requests (design: QUIET REQUEST · MUTED WHILE YOU WORK when on a job) */}
           {h.requests.map((r, i) => (
-            <Rise key={r.id} i={i} style={[glassCard, { padding: 16, gap: 10, borderColor: colors.green, borderWidth: 1.5 }]}>
+            <Rise key={r.id} i={i} style={[glassCard, { padding: 16, gap: 10, borderColor: h.busy ? 'rgba(4,77,94,0.18)' : colors.green, borderWidth: 1.5 }]}>
               <View style={st.row}>
-                <T w="extrabold" style={{ fontSize: 11, letterSpacing: 0.8, color: '#2E7D32' }}>NEW BOOKING REQUEST</T>
+                <T w="extrabold" style={{ fontSize: 11, letterSpacing: 0.8, color: h.busy ? colors.muted : '#2E7D32' }}>{h.busy ? 'QUIET REQUEST · MUTED WHILE YOU WORK' : 'NEW BOOKING REQUEST'}</T>
                 <T w="bold" style={{ fontSize: 12 }}>{r.when_type === 'now' ? 'Now (ASAP)' : new Date(r.scheduled_at!).toLocaleString('en-PH', { weekday: 'short', hour: 'numeric', minute: '2-digit' })}</T>
               </View>
               {r.repeat && <View style={st.repeat}><T w="extrabold" style={{ fontSize: 10 }}>REPEAT CLIENT · ONLY {h.repeat_fee} COINS</T></View>}
@@ -151,6 +166,7 @@ export default function WorkHome() {
                 <T w="extrabold" style={{ fontSize: 17 }}>{r.service}</T>
                 <T style={{ fontSize: 13, color: colors.muted }}>{r.client} · {r.area}{r.km != null ? ` · ${r.km} km` : ''}</T>
               </View>
+              {h.busy && <T style={{ fontSize: 12, color: colors.muted, lineHeight: 17 }}>Reply after this job. It stays open for 15 minutes before going to another tasker.</T>}
               <View style={[st.row, st.priceBox]}>
                 <View><T style={{ fontSize: 12, color: colors.muted }}>Your starting price</T><T w="extrabold" style={{ fontSize: 16 }}>{peso(Number(r.total))}</T></View>
                 <View style={{ alignItems: 'flex-end' }}><T style={{ fontSize: 12, color: colors.muted }}>Fee when you start</T><T w="extrabold" style={{ fontSize: 16 }}>{r.repeat ? h.repeat_fee : h.fee} coins</T></View>

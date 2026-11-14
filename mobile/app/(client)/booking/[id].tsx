@@ -14,6 +14,7 @@ import { LiveMap } from '../../../src/components/LiveMap';
 import { QrSheet, TaskerQr } from '../../../src/components/QrSheet';
 import { addrLine } from '../../../src/lib/places';
 import { rpc, supabase } from '../../../src/lib/supabase';
+import { ChatBlock, ContactWarnSheet, sendChat } from '../../../src/components/ContactWarnSheet';
 
 type Status = 'requested' | 'chatting' | 'offer_sent' | 'offer_accepted' | 'on_the_way' | 'arrived' | 'final_price_sent'
   | 'ready' | 'in_progress' | 'completed' | 'cancelled' | 'declined_by_tasker';
@@ -43,6 +44,7 @@ export default function BookingScreen() {
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState('');
   const [err, setErr] = useState('');
+  const [block, setBlock] = useState<ChatBlock>(null);
   const chatRef = useRef<ScrollView>(null);
 
   const load = useCallback(async () => {
@@ -101,7 +103,7 @@ export default function BookingScreen() {
     const tx = text.trim();
     if (!tx) return;
     setDraft('');
-    act('send', () => rpc('send_message', { p_booking: b.id, p_body: tx }), '');
+    act('send', async () => { const r = await sendChat(b.id, tx); if (r) { setDraft(tx); setBlock(r); } }, '');
   };
   const cancel = async () => {
     try {
@@ -241,6 +243,7 @@ export default function BookingScreen() {
         </View>
       )}
       <Toast text={toast} top={insets.top + 10} />
+      <ContactWarnSheet block={block} onClose={() => setBlock(null)} />
     </KeyboardAvoidingView>
   );
 }

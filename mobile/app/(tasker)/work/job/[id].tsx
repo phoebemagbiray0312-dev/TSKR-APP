@@ -13,6 +13,7 @@ import { DEMO_CLIENT_ID, STATUS_LABEL } from '../../../../src/lib/tasker';
 import { LiveMap } from '../../../../src/components/LiveMap';
 import { rpc, supabase } from '../../../../src/lib/supabase';
 import * as Location from 'expo-location';
+import { ChatBlock, ContactWarnSheet, sendChat } from '../../../../src/components/ContactWarnSheet';
 
 type Booking = {
   id: string; client_id: string; code: string; status: string; is_delivery: boolean; items_checked: boolean; proof_of_delivery_path: string | null;
@@ -52,6 +53,10 @@ export default function TaskerJob() {
   const [repText, setRepText] = useState('');
   const [repBlock, setRepBlock] = useState(false);
   const chatRef = useRef<ScrollView>(null);
+  const [block, setBlock] = useState<ChatBlock>(null);
+  const [idCheck, setIdCheck] = useState(false);
+  const idShown = useRef(false);
+  const [ec, setEc] = useState<{ name: string | null; phone: string | null }>({ name: null, phone: null });
 
   const load = useCallback(async () => {
     try {
@@ -66,7 +71,13 @@ export default function TaskerJob() {
   }, [id]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setMe(data.user?.id ?? null));
+    supabase.auth.getUser().then(async ({ data }) => {
+      setMe(data.user?.id ?? null);
+      if (data.user) {
+        const { data: pr } = await supabase.from('profiles').select('emergency_contact_name,emergency_contact_phone').eq('id', data.user.id).maybeSingle();
+        setEc({ name: pr?.emergency_contact_name ?? null, phone: pr?.emergency_contact_phone ?? null });
+      }
+    });
     load();
     const ch = supabase.channel(`tjob-${id}-${Date.now()}-${Math.random()}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bookings', filter: `id=eq.${id}` }, () => load())
@@ -76,6 +87,8 @@ export default function TaskerJob() {
     return () => { supabase.removeChannel(ch); };
   }, [id]);
   useEffect(() => { if (b) setView(CHAT.includes(b.status) ? 'chat' : 'job'); }, [b?.status]);
+  // Design: "Check your client's ID when you arrive" — once, right after arrival is confirmed.
+  useEffect(() => { if (b?.status === 'arrived' && !idShown.current) { idShown.current = true; setIdCheck(true); } }, [b?.status]);
 
   const act = async (label: string, fn: () => Promise<any>, ok?: string) => {
     setBusy(label);
@@ -86,7 +99,10 @@ export default function TaskerJob() {
   if (!b) return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Backdrop /><ActivityIndicator color={colors.teal} /></View>;
   const first = b.client_name.split(' ')[0];
   const amount = Number(b.final_price ?? b.initial_offer ?? b.starting_total);
-  const send = (tx: string) => { const t = tx.trim(); if (!t) return; setDraft(''); act('send', () => rpc('send_message', { p_booking: b.id, p_body: t })); };
+  const send = (tx: string) => {
+    const t = tx.trim(); if (!t) return; setDraft('');
+    act('send', async () => { const r = await sendChat(b.id, t); if (r) { setDraft(t); setBlock(r); } });
+  };
   const photo = () => act('photo', async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) throw new Error('Allow camera access in Settings to send photos.');
@@ -108,15 +124,28 @@ export default function TaskerJob() {
     } catch (e: any) { showToast(e.message); }
   };
 
+  const here = async () => {
+    let lat = b.address?.lat ?? null; let lng = b.address?.lng ?? null;
+    try {
+      const perm = await Location.getForegroundPermissionsAsync();
+      if (perm.granted) { const p = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }); lat = p.coords.latitude; lng = p.coords.longitude; }
+    } catch { /* use the booking address */ }
+    return { lat, lng };
+  };
+  // Design: "Send my location to emergency contact" — opens a text to them with a map link and the job details.
+  const textContact = async () => {
+    if (!ec.phone) { Alert.alert('No emergency contact', 'Add one in Me › Emergency contact.', [{ text: 'OK' }, { text: 'Open Me', onPress: () => router.push('/work/me') }]); return; }
+    const { lat, lng } = await here();
+    const map = lat != null ? `https://maps.google.com/?q=${lat},${lng}` : addrLine(b.address);
+    const body = `TSKR SOS: I may need help. I'm at a job (${b.code}) for ${b.client_name}, ${addrLine(b.address)}. My location: ${map}`;
+    Linking.openURL(`sms:${ec.phone}${Platform.OS === 'ios' ? '&' : '?'}body=${encodeURIComponent(body)}`);
+  };
   const sos = () => Alert.alert('Emergency?', `We’ll alert the TSKR safety team right away with this booking and your location. If you’re in danger, call 911 now.`, [
     { text: 'Cancel', style: 'cancel' },
     { text: 'Call 911', onPress: () => Linking.openURL('tel:911') },
+    { text: ec.name ? `Send my location to ${ec.name}` : 'Send my location to emergency contact', onPress: textContact },
     { text: 'Alert TSKR', style: 'destructive', onPress: () => act('sos', async () => {
-      let lat = b.address?.lat ?? null; let lng = b.address?.lng ?? null;
-      try {
-        const perm = await Location.getForegroundPermissionsAsync();
-        if (perm.granted) { const p = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }); lat = p.coords.latitude; lng = p.coords.longitude; }
-      } catch { /* use the booking address */ }
+      const { lat, lng } = await here();
       const no = await rpc<string>('trigger_sos', { p_booking: b.id, p_lat: lat, p_lng: lng });
       showToast(`SOS sent · ${no}. Our safety team is contacting you now.`);
     }) },
@@ -412,6 +441,26 @@ export default function TaskerJob() {
         <GlossyButton label="Send report" loading={busy === 'report'} onPress={report} />
       </Sheet>
       <Toast text={toast} top={insets.top + 10} />
+      <ContactWarnSheet block={block} onClose={() => setBlock(null)} />
+      <Sheet open={idCheck} onClose={() => setIdCheck(false)} title="Check your client’s ID when you arrive">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: colors.tint }}>
+          <MiniAvatar initials={b.client_initials} color={colors.teal} size={48} r={15} />
+          <View style={{ flex: 1 }}>
+            <T w="semibold" style={{ fontSize: 12, color: colors.muted }}>Your client</T>
+            <T w="extrabold" style={{ fontSize: 18 }}>{b.client_name}</T>
+            <T style={{ fontSize: 12, color: colors.muted }}>{b.code} · {addrLine(b.address)}</T>
+          </View>
+        </View>
+        <T style={{ fontSize: 14, color: colors.body, lineHeight: 21 }}>You may ask to see {first}’s ID. The name should say <T w="bold">{b.client_name}</T>.</T>
+        <View style={{ borderRadius: 14, padding: 12, backgroundColor: colors.warnBg }}>
+          <T w="semibold" style={{ fontSize: 13, color: colors.warnText, lineHeight: 19 }}>Name doesn’t match or something feels off? Don’t proceed. Use SOS or report it right away.</T>
+        </View>
+        <GlossyButton label="Name matches · continue" onPress={() => setIdCheck(false)} />
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <PressScale outer={{ flex: 1 }} style={st.pill} onPress={() => { setIdCheck(false); setRepOpen(true); }}><T w="bold" style={{ fontSize: 13 }}>Report</T></PressScale>
+          <PressScale outer={{ flex: 1 }} style={[st.pill, { backgroundColor: '#FDECEC' }]} onPress={() => { setIdCheck(false); sos(); }}><T w="bold" style={{ fontSize: 13, color: colors.error }}>SOS</T></PressScale>
+        </View>
+      </Sheet>
     </KeyboardAvoidingView>
   );
 }

@@ -14,6 +14,7 @@ export type TaskerHome = {
   schedule: { id: string; status: string; start: string; end: string; buffer_min: number; client: string; area: string; service: string }[];
   availability: { days: number[]; from: string; to: string } | null;
   demand: { count: number; skill: string | null } | null; title: string | null; years: number | null;
+  busy?: boolean; delivering?: boolean; suspended_until?: string | null;
 };
 export const hm = (iso: string) => new Date(iso).toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
 
