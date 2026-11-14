@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { peso, rpc, supabase, when } from '../lib/supabase';
 
-type Tab = 'overview' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'settings' | 'profile';
+type Tab = 'overview' | 'revenue' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'settings' | 'profile';
 type Overview = Record<string, number | boolean>;
 type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string };
 
@@ -12,6 +12,7 @@ const ICON: Record<string, string> = {
   applications: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11l2 2 4-4',
   reviews: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 3 2 2 4-4',
   tickets: 'M12 3 2 20h20L12 3Zm0 6v5m0 3v.5',
+  revenue: 'M4 20V10m6 10V4m6 16v-7m6 7H2',
   bookings: 'M4 6h16v14H4V6Zm0 4h16M8 3v4m8-4v4',
   strikes: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Zm-3 9 6 0',
   fees: 'M3 7h18v10H3V7Zm9 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 10v4m12-4v4',
@@ -28,7 +29,7 @@ const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
 const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS', strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log' };
 const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.[0] ?? '')).toUpperCase() || 'A';
 const TITLES: Record<Tab, string> = {
-  overview: 'Overview', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
+  overview: 'Overview', revenue: 'Revenue', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
   strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log',
   bookings: 'Bookings', users: 'Users', settings: 'Settings', profile: 'My profile',
 };
@@ -80,7 +81,7 @@ export default function Admin() {
 
   const n = (k: string) => Number(ov?.[k] ?? 0);
   const items: [Tab, number?][] = [
-    ['overview'], ['applications', n('applications')], ['reviews', n('qr_pending') + n('skills_pending')],
+    ['overview'], ['revenue'], ['applications', n('applications')], ['reviews', n('qr_pending') + n('skills_pending')],
     ['tickets', n('tickets_open')], ['strikes'], ['fees'], ['bookings'], ['users'], ['access'], ['settings'],
   ];
   const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
@@ -112,6 +113,7 @@ export default function Admin() {
           {tab === 'applications' && <Applications onChange={loadOv} />}
           {tab === 'reviews' && <Reviews onChange={loadOv} />}
           {tab === 'tickets' && <Tickets onChange={loadOv} />}
+          {tab === 'revenue' && <Revenue />}
           {tab === 'strikes' && <Strikes />}
           {tab === 'fees' && <Fees />}
           {tab === 'access' && <AccessLog />}
@@ -585,6 +587,126 @@ function Users({ preset }: { preset?: string }) {
             ))}
           </tbody>
         </table></div>
+      )}
+    </>
+  );
+}
+
+const PERIODS: [string, string][] = [['today', 'Today'], ['week', 'This week'], ['month', 'This month'], ['30', 'Last 30 days'], ['all', 'All time']];
+function periodRange(k: string): [Date, Date] {
+  const now = new Date(); const end = new Date(now.getTime() + 60000);
+  const d = new Date(now); d.setHours(0, 0, 0, 0);
+  if (k === 'today') return [d, end];
+  if (k === 'week') { const w = new Date(d); w.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return [w, end]; }
+  if (k === 'month') return [new Date(d.getFullYear(), d.getMonth(), 1), end];
+  if (k === '30') return [new Date(now.getTime() - 30 * 864e5), end];
+  return [new Date('2020-01-01'), end];
+}
+function Revenue() {
+  const [period, setPeriod] = useState('month');
+  const [demo, setDemo] = useState(true);
+  const [r, setR] = useState<any>(null);
+  const [pays, setPays] = useState<any[]>([]);
+  const [err, setErr] = useState('');
+  const load = async () => {
+    setErr('');
+    const [from, to] = periodRange(period);
+    try {
+      setR(await rpc('admin_revenue', { p_from: from.toISOString(), p_to: to.toISOString(), p_include_demo: demo }));
+      let q = supabase.from('payments').select('id,purpose,amount_php,coins,gateway,gateway_txn_id,method,status,paid_at,user:profiles!payments_user_id_fkey(first_name,last_name,email,is_demo)')
+        .gte('paid_at', from.toISOString()).lt('paid_at', to.toISOString()).order('paid_at', { ascending: false }).limit(200);
+      if (!demo) q = q.neq('gateway', 'demo');
+      const { data } = await q; setPays((data ?? []).filter((x: any) => demo || !x.user?.is_demo));
+    } catch (e: any) { setErr(e.message); }
+  };
+  useEffect(() => { load(); }, [period, demo]);
+  const days: any[] = r?.by_day ?? [];
+  const max = Math.max(1, ...days.map((d) => Number(d.coins) + Number(d.plus)));
+  const used = r?.used ?? {};
+  const usedTotal = ['booking_fee', 'delivery_fee', 'skill_charge', 'penalty'].reduce((a, k) => a + Number(used[k] ?? 0), 0);
+  return (
+    <>
+      <p className="sub">Money paid to TSKR: coin packs (taskers) and TSKR Plus (clients). Payments for jobs and the ₱100 cancellation fee go straight to taskers, so they’re not counted here.</p>
+      <div className="row" style={{ marginBottom: 10 }}>
+        {PERIODS.map(([k, l]) => <button key={k} className={'btn' + (period === k ? ' primary' : '')} onClick={() => setPeriod(k)}>{l}</button>)}
+      </div>
+      <label className="muted" style={{ display: 'block', marginBottom: 16 }}>
+        <input type="checkbox" checked={demo} onChange={(e) => setDemo(e.target.checked)} /> Include test payments (demo mode and demo accounts)
+      </label>
+      {err && <div className="err">{err}</div>}
+      {!r ? <p className="muted">Loading…</p> : (
+        <>
+          {demo && <div className="note" style={{ marginBottom: 16 }}>Showing test payments too. Nobody was actually charged for these. Untick the box to see real money only.</div>}
+          <div className="grid" style={{ marginBottom: 20 }}>
+            <div className="card stat" style={{ borderLeftColor: 'var(--green)' }}><div className="v">{peso(r.total_php)}</div><div className="k">Total revenue</div></div>
+            <div className="card stat"><div className="v">{peso(r.coins_php)}</div><div className="k">Coin sales · {r.coins_count} {r.coins_count === 1 ? 'pack' : 'packs'}</div></div>
+            <div className="card stat"><div className="v">{peso(r.plus_php)}</div><div className="k">TSKR Plus · {r.plus_count} {r.plus_count === 1 ? 'payment' : 'payments'}</div></div>
+            <div className="card stat"><div className="v">{r.plus_active}</div><div className="k">Active Plus subscribers now</div></div>
+          </div>
+
+          <div className="card" style={{ marginBottom: 20 }}>
+            <div className="row between" style={{ marginBottom: 12 }}>
+              <h2>Revenue per day</h2>
+              <div className="row" style={{ gap: 14 }}><span className="legend"><i style={{ background: 'var(--teal)' }} />Coins</span><span className="legend"><i style={{ background: 'var(--green)' }} />Plus</span></div>
+            </div>
+            {days.length === 0 ? <p className="muted">No payments in this period.</p> : (
+              <div className="bars">
+                {days.map((d) => {
+                  const c = Number(d.coins), p = Number(d.plus);
+                  return (
+                    <div key={d.day} className="barcol" title={`${d.day}: coins ${peso(c)}, Plus ${peso(p)}`}>
+                      <div className="barval">{peso(c + p)}</div>
+                      <div className="bar">
+                        <div style={{ height: `${(p / max) * 100}%`, background: 'var(--green)' }} />
+                        <div style={{ height: `${(c / max) * 100}%`, background: 'var(--teal)' }} />
+                      </div>
+                      <div className="barlbl">{new Date(d.day + 'T00:00:00').toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="cols" style={{ marginBottom: 20 }}>
+            <div className="card">
+              <h2 style={{ marginBottom: 10 }}>Coins used by taskers</h2>
+              <p className="muted" style={{ marginTop: 0 }}>Coins already bought, now spent. 1 coin = ₱1.</p>
+              {([['Booking fees', used.booking_fee], ['Delivery fees', used.delivery_fee], ['Extra skill charges', used.skill_charge], ['Strike penalties', used.penalty]] as [string, number][]).map(([l, v]) => (
+                <div key={l} className="row between kv"><span>{l}</span><b>{Number(v ?? 0).toLocaleString()}</b></div>
+              ))}
+              <div className="row between kv" style={{ borderTop: '1px solid var(--border)', paddingTop: 8 }}><b>Total used</b><b>{usedTotal.toLocaleString()}</b></div>
+            </div>
+            <div className="card">
+              <h2 style={{ marginBottom: 10 }}>Good to know</h2>
+              <div className="row between kv"><span>Free bookings given (weekly reward)</span><b>{r.free_bookings}</b></div>
+              <div className="row between kv"><span>Free coins given (sign-up bonus, adjustments)</span><b>{Number(r.free_coins_given).toLocaleString()}</b></div>
+              <div className="row between kv"><span>Unused coins taskers hold now</span><b>{Number(r.coins_outstanding).toLocaleString()}</b></div>
+              <div className="row between kv"><span>Refunds</span><b>{peso(r.refunds_php)}</b></div>
+              <p className="muted" style={{ marginBottom: 0 }}>Unused coins are already paid for but not yet spent. Ask your accountant how to record them.</p>
+            </div>
+          </div>
+
+          <h2 style={{ marginBottom: 10 }}>Payments ({pays.length})</h2>
+          {pays.length === 0 ? <div className="card muted">No payments in this period.</div> : (
+            <div className="tablewrap"><table>
+              <thead><tr><th>When</th><th>Who</th><th>For</th><th>Amount</th><th>Method</th><th>Status</th><th>Transaction</th></tr></thead>
+              <tbody>
+                {pays.map((x) => (
+                  <tr key={x.id}>
+                    <td>{when(x.paid_at)}</td>
+                    <td>{x.user?.first_name} {x.user?.last_name}<div className="muted">{x.user?.email}</div></td>
+                    <td>{x.purpose === 'coins' ? `${Number(x.coins).toLocaleString()} coins` : 'TSKR Plus · 30 days'}</td>
+                    <td><b>{peso(x.amount_php)}</b></td>
+                    <td>{x.method}</td>
+                    <td><span className={'tag ' + (x.status === 'paid' ? 'ok' : 'warn')}>{x.status.toUpperCase()}</span></td>
+                    <td>{x.gateway === 'demo' ? <span className="tag warn">TEST</span> : x.gateway}<div className="muted">{x.gateway_txn_id}</div></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          )}
+        </>
       )}
     </>
   );
