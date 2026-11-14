@@ -42,6 +42,8 @@ export default function Admin() {
   const [me, setMe] = useState<Me | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
   const [ov, setOv] = useState<Overview | null>(null);
+  const [preset, setPreset] = useState('');
+  const go = (t: Tab, f = '') => { setPreset(f); setTab(t); };
 
   const loadMe = useCallback(async () => {
     const { data: u } = await supabase.auth.getUser();
@@ -88,7 +90,7 @@ export default function Admin() {
         <div className="brand"><img src="/logo.png" alt="tskr" /><span className="badge">ADMIN</span></div>
         <div className="navlist">
           {items.map(([k, c]) => (
-            <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>
+            <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => go(k)}>
               <Icon name={k} /><span className="lbl">{NAV[k] ?? TITLES[k]}</span>{c ? <span className="count">{c}</span> : null}
             </button>
           ))}
@@ -106,15 +108,15 @@ export default function Admin() {
             <button className="chip" onClick={() => setTab('profile')}><span className="avatar sm">{initials(me)}</span>{name}</button>
           </header>
           {ov && (tab === 'overview' || tab === 'settings') && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
-          {tab === 'overview' && <OverviewTab ov={ov} go={setTab} />}
+          {tab === 'overview' && <OverviewTab ov={ov} go={go} />}
           {tab === 'applications' && <Applications onChange={loadOv} />}
           {tab === 'reviews' && <Reviews onChange={loadOv} />}
           {tab === 'tickets' && <Tickets onChange={loadOv} />}
           {tab === 'strikes' && <Strikes />}
           {tab === 'fees' && <Fees />}
           {tab === 'access' && <AccessLog />}
-          {tab === 'bookings' && <Bookings />}
-          {tab === 'users' && <Users />}
+          {tab === 'bookings' && <Bookings key={preset} preset={preset} />}
+          {tab === 'users' && <Users key={preset} preset={preset} />}
           {tab === 'settings' && <Settings onChange={loadOv} />}
           {tab === 'profile' && me && <Profile me={me} onSaved={loadMe} />}
         </div>
@@ -247,16 +249,16 @@ function Login({ onDone }: { onDone: () => void }) {
 }
 
 /* ------------------------------------------------------------------ */
-function OverviewTab({ ov, go }: { ov: Overview | null; go: (t: Tab) => void }) {
+function OverviewTab({ ov, go }: { ov: Overview | null; go: (t: Tab, f?: string) => void }) {
   if (!ov) return <p className="muted">Loading…</p>;
-  const s = (k: string, label: string, alert?: boolean, tab?: Tab) => (
-    <div className={'card stat' + (alert && Number(ov[k]) > 0 ? ' alert' : '')} style={{ cursor: tab ? 'pointer' : 'default' }} onClick={() => tab && go(tab)}>
-      <div className="v">{String(ov[k] ?? 0)}</div><div className="k">{label}</div>
-    </div>
+  const s = (k: string, label: string, alert: boolean, tab: Tab, f = '') => (
+    <button className={'card stat click' + (alert && Number(ov[k]) > 0 ? ' alert' : '')} onClick={() => go(tab, f)}>
+      <div className="v">{String(ov[k] ?? 0)}</div><div className="k">{label} <span className="go">→</span></div>
+    </button>
   );
   return (
     <>
-      <p className="sub">What needs attention today.</p>
+      <p className="sub">What needs attention today. Click a box to open the list.</p>
       <h2 style={{ marginBottom: 10 }}>To do</h2>
       <div className="grid" style={{ marginBottom: 24 }}>
         {s('sos_open', 'Open SOS alerts', true, 'tickets')}
@@ -267,8 +269,12 @@ function OverviewTab({ ov, go }: { ov: Overview | null; go: (t: Tab) => void }) 
       </div>
       <h2 style={{ marginBottom: 10 }}>Activity</h2>
       <div className="grid">
-        {s('users', 'Users (not demo)')}{s('taskers', 'Active taskers')}{s('online', 'Taskers online now')}
-        {s('bookings_today', 'Bookings today', false, 'bookings')}{s('active_bookings', 'Bookings in progress', false, 'bookings')}{s('completed_total', 'Completed bookings')}
+        {s('users', 'Users (not demo)', false, 'users', 'all')}
+        {s('taskers', 'Active taskers', false, 'users', 'taskers')}
+        {s('online', 'Taskers online now', false, 'users', 'online')}
+        {s('bookings_today', 'Bookings today', false, 'bookings', 'today')}
+        {s('active_bookings', 'Bookings in progress', false, 'bookings', 'active')}
+        {s('completed_total', 'Completed bookings', false, 'bookings', 'completed')}
       </div>
     </>
   );
@@ -464,20 +470,30 @@ function Tickets({ onChange }: { onChange: () => void }) {
   );
 }
 
-function Bookings() {
+const BK_FILTERS: [string, string][] = [['all', 'All'], ['today', 'Today'], ['active', 'In progress'], ['completed', 'Completed'], ['cancelled', 'Cancelled']];
+const FINAL = '(completed,cancelled,declined_by_tasker)';
+function Bookings({ preset }: { preset?: string }) {
   const [rows, setRows] = useState<any[] | null>(null);
   const [q, setQ] = useState('');
+  const [f, setF] = useState(preset || 'all');
   const load = async () => {
     let s = supabase.from('bookings')
       .select('id,code,status,created_at,when_type,starting_total,initial_offer,final_price,fee_coins,cancel_reason,client:profiles!bookings_client_id_fkey(first_name,last_name,is_demo),tasker:profiles!bookings_tasker_id_fkey(first_name,last_name,is_demo)')
       .order('created_at', { ascending: false }).limit(200);
     if (q.trim()) s = s.ilike('code', `%${q.trim()}%`);
+    if (f === 'today') { const d = new Date(); d.setHours(0, 0, 0, 0); s = s.gte('created_at', d.toISOString()); }
+    if (f === 'active') s = s.not('status', 'in', FINAL);
+    if (f === 'completed') s = s.eq('status', 'completed');
+    if (f === 'cancelled') s = s.in('status', ['cancelled', 'declined_by_tasker']);
     const { data } = await s; setRows(data ?? []);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [f]);
   return (
     <>
       <p className="sub">Latest 200. Search by booking code.</p>
+      <div className="row" style={{ marginBottom: 10 }}>
+        {BK_FILTERS.map(([k, l]) => <button key={k} className={'btn' + (f === k ? ' primary' : '')} onClick={() => setF(k)}>{l}</button>)}
+      </div>
       <div className="row" style={{ marginBottom: 12 }}>
         <input className="input" placeholder="BK-…" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load()} />
         <button className="btn" onClick={load}>Search</button>
@@ -504,18 +520,24 @@ function Bookings() {
   );
 }
 
-function Users() {
+const US_FILTERS: [string, string][] = [['all', 'All'], ['clients', 'Clients'], ['taskers', 'Active taskers'], ['online', 'Online now']];
+function Users({ preset }: { preset?: string }) {
   const [rows, setRows] = useState<any[] | null>(null);
   const [q, setQ] = useState('');
   const [hideDemo, setHideDemo] = useState(true);
+  const [f, setF] = useState(preset || 'all');
   const load = async () => {
-    let s = supabase.from('profiles').select('id,first_name,last_name,email,phone,signup_role,is_tasker,tasker_status,status,plan,is_demo,created_at')
+    const cols = 'id,first_name,last_name,email,phone,signup_role,is_tasker,tasker_status,status,plan,is_demo,created_at';
+    let s = supabase.from('profiles').select(f === 'online' ? cols + ',tp:tasker_profiles!tasker_profiles_user_id_fkey!inner(is_online)' : cols)
       .order('created_at', { ascending: false }).limit(300);
     if (hideDemo) s = s.eq('is_demo', false);
+    if (f === 'clients') s = s.eq('is_tasker', false);
+    if (f === 'taskers') s = s.eq('is_tasker', true).eq('tasker_status', 'active');
+    if (f === 'online') s = s.eq('tp.is_online', true);
     if (q.trim()) s = s.or(`email.ilike.%${q.trim()}%,first_name.ilike.%${q.trim()}%,last_name.ilike.%${q.trim()}%,phone.ilike.%${q.trim()}%`);
     const { data } = await s; setRows(data ?? []);
   };
-  useEffect(() => { load(); }, [hideDemo]);
+  useEffect(() => { load(); }, [hideDemo, f]);
   const coinsFor = async (u: any) => {
     try {
       const bal = await rpc<number>('admin_coin_balance', { p_tasker: u.id });
@@ -535,6 +557,9 @@ function Users() {
   return (
     <>
       <p className="sub">Search by name, email or mobile number.</p>
+      <div className="row" style={{ marginBottom: 10 }}>
+        {US_FILTERS.map(([k, l]) => <button key={k} className={'btn' + (f === k ? ' primary' : '')} onClick={() => setF(k)}>{l}</button>)}
+      </div>
       <div className="row" style={{ marginBottom: 12 }}>
         <input className="input" placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load()} />
         <button className="btn" onClick={load}>Search</button>

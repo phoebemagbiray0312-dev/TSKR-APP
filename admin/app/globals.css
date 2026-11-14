@@ -53,6 +53,10 @@ h2 { font-size: 18px; font-weight: 800; margin: 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
 .card { background: #fff; border: 1px solid var(--border); border-radius: 18px 18px 18px 6px; padding: 16px; }
 .stat { min-height: 104px; display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--tint); }
+.stat.click { text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .15s, transform .15s, box-shadow .15s; }
+.stat.click:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(4,77,94,.08); }
+.stat .go { opacity: 0; transition: opacity .15s; font-weight: 800; color: var(--teal); }
+.stat.click:hover .go { opacity: 1; }
 .stat .v { font-size: 28px; font-weight: 800; line-height: 1.1; }
 .stat .k { font-size: 13px; color: var(--muted); }
 .stat.alert { border-color: #F3B8B2; border-left-color: var(--error); background: #FFF6F5; }
