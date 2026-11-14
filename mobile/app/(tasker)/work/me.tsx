@@ -30,8 +30,9 @@ export default function Me() {
   const [nick, setNick] = useState('');
   const [about, setAbout] = useState('');
   const [newPhoto, setNewPhoto] = useState<string | null>(null);
-  const [office, setOffice] = useState<{ path: string; url: string | null }[]>([]);
-  const [newOffice, setNewOffice] = useState<string[]>([]);
+  const [office, setOffice] = useState<{ id: string; path: string; taken: string; url: string | null }[]>([]);
+  const [top, setTop] = useState<any>(null);
+  const [portBusy, setPortBusy] = useState(false);
   const [offErr, setOffErr] = useState('');
   const [offBusy, setOffBusy] = useState(false);
   // earnings
@@ -52,13 +53,14 @@ export default function Me() {
     if (t?.photo_path) { const s = await supabase.storage.from('tasker-media').createSignedUrl(t.photo_path, 3600); setPhotoUrl(s.data?.signedUrl ?? null); }
     const uid = u.user!.id;
     const [pf, bk, pr] = await Promise.all([
-      supabase.from('portfolio_photos').select('photo_path').eq('tasker_id', uid).limit(12),
+      supabase.from('portfolio_photos').select('id,photo_path,taken_at').eq('tasker_id', uid).order('taken_at', { ascending: false }).limit(12),
       supabase.from('bookings').select('final_price,initial_offer,completed_at').eq('tasker_id', uid).eq('status', 'completed'),
       supabase.from('profiles').select('emergency_contact_name,emergency_contact_phone').eq('id', uid).maybeSingle(),
     ]);
-    const paths = (pf.data ?? []).map((x: any) => x.photo_path as string);
-    const signed = paths.length ? (await supabase.storage.from('tasker-media').createSignedUrls(paths, 3600)).data ?? [] : [];
-    setOffice(paths.map((pth, i) => ({ path: pth, url: signed[i]?.signedUrl ?? null })));
+    const rows = (pf.data ?? []) as any[];
+    const signed = rows.length ? (await supabase.storage.from('tasker-media').createSignedUrls(rows.map((r) => r.photo_path), 3600)).data ?? [] : [];
+    setOffice(rows.map((r, i) => ({ id: r.id, path: r.photo_path, taken: r.taken_at, url: signed[i]?.signedUrl ?? null })));
+    rpc('tasker_top_status', { p_tasker: uid }).then(setTop).catch(() => {});
     const now = new Date(); const weekAgo = new Date(now.getTime() - 7 * 864e5); const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const e = { week: 0, month: 0, all: 0, jobs: 0 };
     for (const r of (bk.data ?? []) as any[]) {
@@ -69,19 +71,31 @@ export default function Me() {
     setEmName((v) => v || pr.data?.emergency_contact_name || ''); setEmPhone((v) => v || pr.data?.emergency_contact_phone || '');
   }, []);
 
-  const startEdit = () => { setNick(tp?.nickname ?? ''); setAbout(tp?.bio ?? ''); setNewPhoto(null); setNewOffice([]); setOffErr(''); setEditing(true); };
+  const startEdit = () => { setNick(tp?.nickname ?? ''); setAbout(tp?.bio ?? ''); setNewPhoto(null); setOffErr(''); setEditing(true); };
   const takeSelfie = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) { setOffErr('Allow camera access in Settings to take your photo.'); return; }
     const r = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.7, cameraType: ImagePicker.CameraType.front, allowsEditing: true, aspect: [1, 1] });
     if (!r.canceled) setNewPhoto(r.assets[0].uri);
   };
-  const addOffice = async () => {
-    const left = 12 - office.length - newOffice.length;
-    if (left <= 0) { setOffErr('Up to 12 office photos.'); return; }
-    const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7, allowsMultipleSelection: true, selectionLimit: left });
-    if (!r.canceled) setNewOffice((c) => [...c, ...r.assets.map((a) => a.uri)].slice(0, 12 - office.length));
+  const addPortfolio = async () => {
+    if (office.length >= 12) { showToast('Up to 12 photos. Remove one first.'); return; }
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) { showToast('Allow camera access in Settings to add work photos.'); return; }
+    const r = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.7 });
+    if (r.canceled) return;
+    setPortBusy(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const path = await uploadImage('tasker-media', u.user!.id, r.assets[0].uri, 'work');
+      await rpc('add_portfolio_photo', { p_path: path });
+      showToast('Photo added to your portfolio'); load();
+    } catch (e: any) { showToast(e.message); } finally { setPortBusy(false); }
   };
+  const removePortfolio = (id: string) => Alert.alert('Remove this photo?', 'Clients won’t see it on your profile anymore.', [
+    { text: 'Keep', style: 'cancel' },
+    { text: 'Remove', style: 'destructive', onPress: async () => { try { await rpc('remove_portfolio_photo', { p_id: id }); load(); } catch (e: any) { showToast(e.message); } } },
+  ]);
   const saveOffice = async () => {
     setOffErr('');
     if (!nick.trim()) { setOffErr('Add a nickname.'); return; }
@@ -90,9 +104,7 @@ export default function Me() {
       const { data: u } = await supabase.auth.getUser(); const uid = u.user!.id;
       const photo = newPhoto ? await uploadImage('tasker-media', uid, newPhoto, 'profile') : tp?.photo_path;
       if (!photo) throw new Error('Add a profile photo to continue.');
-      const paths: string[] = [];
-      for (let i = 0; i < newOffice.length; i++) paths.push(await uploadImage('tasker-media', uid, newOffice[i], `office-${i + 1}`));
-      await rpc('save_tasker_office', { p_nickname: nick.trim(), p_about: about.trim(), p_photo_path: photo, p_office_paths: paths });
+      await rpc('save_tasker_office', { p_nickname: nick.trim(), p_about: about.trim(), p_photo_path: photo, p_office_paths: [] });
       setEditing(false); showToast('My office saved'); load();
     } catch (e: any) { setOffErr(e.message); } finally { setOffBusy(false); }
   };
@@ -177,15 +189,6 @@ export default function Me() {
               <T style={{ fontSize: 12, color: colors.muted }}>No phone numbers, links or social media.</T>
             </>
           ) : !!tp?.bio && <T style={{ fontSize: 14, color: colors.body, lineHeight: 21 }}>{tp.bio}</T>}
-          {(office.length > 0 || editing) && (
-            <View style={st.grid}>
-              {office.map((o) => o.url ? <Image key={o.path} source={{ uri: o.url }} style={st.thumb} /> : <View key={o.path} style={st.thumb} />)}
-              {newOffice.map((u) => <Image key={u} source={{ uri: u }} style={[st.thumb, { borderWidth: 2, borderColor: colors.green }]} />)}
-              {editing && office.length + newOffice.length < 12 && (
-                <PressScale onPress={addOffice} accessibilityLabel="Add office photos" style={[st.thumb, st.addThumb]}><T w="extrabold" style={{ fontSize: 24 }}>+</T></PressScale>
-              )}
-            </View>
-          )}
           {editing && (
             <>
               <ErrorText>{offErr}</ErrorText>
@@ -206,6 +209,61 @@ export default function Me() {
               ))}
             </View>
             <T style={{ fontSize: 12, color: colors.muted }}>{earn.jobs} completed {earn.jobs === 1 ? 'job' : 'jobs'}. Clients pay you directly, so this is what they agreed to pay, not money held by TSKR.</T>
+          </Rise>
+        )}
+
+        {top && (
+          <Rise i={2} style={[glassCard, { padding: 16, gap: 10 }, top.is_top && { borderColor: colors.green, borderWidth: 1.5 }]}>
+            <View style={st.rowB}>
+              <T w="extrabold" style={{ fontSize: 17 }}>Top Tasker</T>
+              <View style={[st.tag, { backgroundColor: top.is_top ? '#E9F8E6' : colors.warnBg }]}><T w="extrabold" style={{ fontSize: 10 }}>{top.is_top ? '★ YOU’RE A TOP TASKER' : 'ALMOST THERE'}</T></View>
+            </View>
+            <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Top Taskers get a badge on their profile. Only bookings made in TSKR count.</T>
+            {([
+              [`Rating ${top.min_rating} or higher`, top.rating > 0 ? String(top.rating) : 'No ratings yet', top.rating >= top.min_rating],
+              [`${top.min_jobs_30d}+ jobs in the last 30 days`, `${top.jobs_30d} of ${top.min_jobs_30d}`, top.jobs_30d >= top.min_jobs_30d],
+              [`${top.min_completion_pct}%+ jobs completed`, `${top.completion_pct}%`, top.completion_pct >= top.min_completion_pct],
+              ['No strikes in 90 days', String(top.strikes_90d), top.strikes_90d === 0],
+            ] as [string, string, boolean][]).map(([l, v, ok]) => (
+              <View key={l} style={[st.rowB, { gap: 10 }]}>
+                <View style={[st.dot, ok && { backgroundColor: colors.green, borderColor: colors.green }]}>{ok && <Ic d={P.check} size={12} color={colors.teal} w={3} />}</View>
+                <T w="semibold" style={{ fontSize: 14, flex: 1 }}>{l}</T>
+                <T w="extrabold" style={{ fontSize: 14, color: ok ? colors.teal : colors.muted }}>{v}</T>
+              </View>
+            ))}
+          </Rise>
+        )}
+
+        <Rise i={2} style={[glassCard, { padding: 16, gap: 10 }]}>
+          <View style={st.rowB}>
+            <T w="extrabold" style={{ fontSize: 17 }}>Portfolio · {office.length}</T>
+            <T style={{ fontSize: 12, color: colors.muted }}>Shown on your profile</T>
+          </View>
+          <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Photos of your finished work. Camera only, so every photo is real and stamped by TSKR.</T>
+          <View style={st.grid}>
+            {office.map((o) => (
+              <PressScale key={o.id} onPress={() => removePortfolio(o.id)} accessibilityLabel="Remove photo" style={st.thumb}>
+                {o.url ? <Image source={{ uri: o.url }} style={StyleSheet.absoluteFill} /> : null}
+                <View style={st.stamp}><T w="bold" style={{ fontSize: 8, color: '#FFF' }}>TSKR · {new Date(o.taken).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })}</T></View>
+              </PressScale>
+            ))}
+            {office.length < 12 && (
+              <PressScale onPress={addPortfolio} accessibilityLabel="Take a work photo" style={[st.thumb, st.addThumb]}>
+                <T w="extrabold" style={{ fontSize: 22 }}>{portBusy ? '…' : '+'}</T><T w="bold" style={{ fontSize: 10 }}>Take photo</T>
+              </PressScale>
+            )}
+          </View>
+          {office.length > 0 && <T style={{ fontSize: 12, color: colors.muted }}>Tap a photo to remove it.</T>}
+        </Rise>
+
+        {top && (
+          <Rise i={2} style={[glassCard, { padding: 16, gap: 8 }]}>
+            <View style={st.rowB}>
+              <T w="extrabold" style={{ fontSize: 17 }}>Reliability</T>
+              <View style={[st.tag, { backgroundColor: top.strikes_30d ? colors.warnBg : '#E9F8E6' }]}><T w="extrabold" style={{ fontSize: 10 }}>{top.strikes_30d ? `${top.strikes_30d} STRIKE${top.strikes_30d > 1 ? 'S' : ''}` : 'NO STRIKES'}</T></View>
+            </View>
+            <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>{top.strikes_30d ? `${top.strikes_30d} strike${top.strikes_30d > 1 ? 's' : ''} in the last 30 days. 3 strikes pauses new requests for 7 days.` : 'No cancellations or no-shows in the last 30 days. Keep it up!'}</T>
+            <T style={{ fontSize: 12, color: colors.muted, lineHeight: 17 }}>Strikes count for unjustified cancellations after the client accepts your offer. A no-show (not arriving and not cancelling) counts as 2 strikes.</T>
           </Rise>
         )}
 
@@ -266,6 +324,8 @@ const st = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   thumb: { width: 72, height: 72, borderRadius: 12, backgroundColor: colors.tint, overflow: 'hidden' },
   addThumb: { alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.teal, backgroundColor: '#FFF' },
+  dot: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#98A2B3', alignItems: 'center', justifyContent: 'center' },
+  stamp: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,77,94,0.75)', paddingVertical: 2, alignItems: 'center' },
   stat: { flex: 1, padding: 10, borderRadius: 14, backgroundColor: colors.tint, gap: 2 },
   prefix: { height: 50, paddingHorizontal: 12, borderRadius: 14, backgroundColor: colors.tint, alignItems: 'center', justifyContent: 'center' },
   pick: { minHeight: 56, borderRadius: 14, borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.teal, alignItems: 'center', justifyContent: 'center', padding: 10 },

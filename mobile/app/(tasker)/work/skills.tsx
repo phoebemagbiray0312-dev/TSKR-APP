@@ -32,6 +32,13 @@ export default function Skills() {
   const [price, setPrice] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [editK, setEditK] = useState<Mine | null>(null);
+  const [editPrice, setEditPrice] = useState('');
+  const [editErr, setEditErr] = useState('');
+  const [days, setDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
+  const [from, setFrom] = useState('08:00');
+  const [to, setTo] = useState('18:00');
+  const [availSaved, setAvailSaved] = useState(false);
   // service area
   const map = useRef<MapView>(null);
   const [center, setCenter] = useState({ lat: 14.5794, lng: 121.0359 });
@@ -57,6 +64,25 @@ export default function Skills() {
   useFocusEffect(useCallback(() => { load(); }, []));
 
   const name = (k: Mine) => k.custom_name ?? k.skills?.name ?? 'Skill';
+  useEffect(() => {
+    (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const { data } = await supabase.from('tasker_profiles').select('availability').eq('user_id', u.user!.id).maybeSingle();
+      const a = data?.availability as { days: number[]; from: string; to: string } | null;
+      if (a) { setDays(a.days); setFrom(a.from); setTo(a.to); }
+    })().catch(() => {});
+  }, []);
+  const saveEdit = async () => {
+    setEditErr('');
+    if (!Number(editPrice)) { setEditErr('Enter your starting price.'); return; }
+    try { await rpc('update_tasker_skill', { p_id: editK!.id, p_base_fee: Number(editPrice) }); setEditK(null); showToast('Price updated'); load(); }
+    catch (e: any) { setEditErr(e.message); }
+  };
+  const saveAvail = async () => {
+    try { await rpc('set_availability', { p_days: days, p_from: from, p_to: to }); setAvailSaved(true); showToast('Availability saved'); }
+    catch (e: any) { showToast(e.message); }
+  };
+
   const extras = mine.filter((k) => k.slot > 2 && k.status !== 'rejected').length;
 
   const add = async () => {
@@ -106,12 +132,32 @@ export default function Skills() {
               <T w="bold" style={{ fontSize: 15 }}>{name(k)}</T>
               <T style={{ fontSize: 13, color: colors.muted }}>Starts at {peso(Number(k.base_fee))}</T>
             </View>
+            {k.status !== 'rejected' && (
+              <PressScale accessibilityLabel="Edit price" onPress={() => { setEditK(k); setEditPrice(String(Math.round(Number(k.base_fee)))); setEditErr(''); }} style={st.iconBtn}>
+                <Ic d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" size={16} w={2} />
+              </PressScale>
+            )}
             <PressScale accessibilityLabel="Remove skill" onPress={() => remove(k)} style={st.iconBtn}><Ic d="M6 6l12 12M18 6 6 18" size={16} color={colors.error} w={2.4} /></PressScale>
           </Rise>
         ))}
         {mine.length < 5 && (
           <PressScale onPress={() => setOpen(true)} style={st.addBtn}><Ic d={P.plus} size={18} w={2.4} /><T w="bold" style={{ fontSize: 15 }}>{mine.length ? 'Add another skill' : 'Add your first skill'}</T></PressScale>
         )}
+
+        <T w="extrabold" style={{ fontSize: 20, marginTop: 10 }}>Availability</T>
+        <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Clients can only schedule you on these days and hours. Going Offline on Home pauses all new requests anytime.</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {DAYS.map((d, i) => <Chip key={d} label={d} on={days.includes(i + 1)} onPress={() => { setAvailSaved(false); setDays((c) => (c.includes(i + 1) ? c.filter((x) => x !== i + 1) : [...c, i + 1].sort())); }} />)}
+        </View>
+        <T w="semibold" style={{ fontSize: 13 }}>From</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {FROM.map((h) => <Chip key={h} label={hLabel(h)} on={from === h} onPress={() => { setAvailSaved(false); setFrom(h); }} />)}
+        </View>
+        <T w="semibold" style={{ fontSize: 13 }}>To</T>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {TO.map((h) => <Chip key={h} label={hLabel(h)} on={to === h} onPress={() => { setAvailSaved(false); setTo(h); }} />)}
+        </View>
+        <GlossyButton label={availSaved ? '✓ Saved' : `Save · ${days.length} days, ${hLabel(from)}–${hLabel(to)}`} onPress={saveAvail} disabled={!days.length} />
 
         <T w="extrabold" style={{ fontSize: 20, marginTop: 10 }}>Service area</T>
         <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Move the map to where you usually start from. Clients never see this exact spot, only your area and radius.</T>
@@ -161,10 +207,25 @@ export default function Skills() {
         <ErrorText>{err}</ErrorText>
         <GlossyButton label="Save skill" onPress={add} loading={busy} disabled={!pick} />
       </Sheet>
+      <Sheet open={!!editK} onClose={() => setEditK(null)} title={editK ? `Edit ${name(editK)}` : ''}>
+        <T w="semibold" style={{ fontSize: 13 }}>Starting price</T>
+        <View style={[st.input, { flexDirection: 'row', alignItems: 'center', gap: 6 }]}>
+          <T w="extrabold" style={{ fontSize: 16 }}>₱</T>
+          <TextInput value={editPrice} onChangeText={(v) => setEditPrice(v.replace(/\D/g, '').slice(0, 6))} keyboardType="number-pad" accessibilityLabel="Starting price" style={{ flex: 1, fontFamily: font.bold, fontSize: 16, color: colors.teal }} />
+        </View>
+        <T style={{ fontSize: 12, color: colors.muted }}>New bookings use the new price. Bookings already made keep their price.</T>
+        <ErrorText>{editErr}</ErrorText>
+        <GlossyButton label="Save price" onPress={saveEdit} />
+      </Sheet>
       <Toast text={toast} top={insets.top + 10} />
     </KeyboardAvoidingView>
   );
 }
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const FROM = ['06:00', '07:00', '08:00', '09:00', '10:00'];
+const TO = ['16:00', '17:00', '18:00', '19:00', '20:00'];
+const hLabel = (h: string) => { const n = Number(h.slice(0, 2)); return `${n % 12 || 12} ${n < 12 ? 'AM' : 'PM'}`; };
 
 const st = StyleSheet.create({
   rowB: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

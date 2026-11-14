@@ -295,7 +295,7 @@ export default function TaskerJob() {
           {b.status === 'ready' && (
             <View style={[glassCard, { padding: 16, gap: 10 }]}>
               <T style={{ fontSize: 14, color: colors.body }}>Final price agreed: <T w="extrabold" style={{ fontSize: 14 }}>{peso(amount)}</T>. Tap Start job when you begin. {b.fee_coins_due} coins will be deducted then.</T>
-              <GlossyButton label={`Start job · ${b.fee_coins_due} coins`} loading={busy === 'start'} onPress={() => act('start', () => rpc('start_job', { p_booking: b.id }), `Job started · ${b.fee_coins_due} coins deducted`)} />
+              <GlossyButton label={b.fee_coins_due === 0 ? 'Start job · free (weekly reward)' : `Start job · ${b.fee_coins_due} coins`} loading={busy === 'start'} onPress={() => act('start', () => rpc('start_job', { p_booking: b.id }), b.fee_coins_due === 0 ? 'Job started · free booking!' : `Job started · ${b.fee_coins_due} coins deducted`)} />
             </View>
           )}
 

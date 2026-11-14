@@ -8,7 +8,7 @@ import { T } from '../../../src/components/ui';
 import { Backdrop, PressScale, Rise } from '../../../src/components/glass';
 import { HeaderFill, HeaderLogo, Ic, P, StarIc, TealGloss, Toast, glassCard } from '../../../src/components/clientUi';
 import { peso, useClient } from '../../../src/lib/client';
-import { STATUS_LABEL, TaskerHome, coins, loadTaskerHome } from '../../../src/lib/tasker';
+import { STATUS_LABEL, TaskerHome, coins, hm, loadTaskerHome } from '../../../src/lib/tasker';
 import { rpc, supabase } from '../../../src/lib/supabase';
 
 /** Design: tasker HEADER + HOME — online switch, new requests, active job, today. */
@@ -185,6 +185,45 @@ export default function WorkHome() {
             </PressScale>
           ))}
 
+          {/* today's schedule */}
+          {h.schedule.length > 0 && (
+            <View style={[glassCard, { padding: 16, gap: 10 }]}>
+              <View style={st.row}>
+                <T w="extrabold" style={{ fontSize: 17 }}>Today’s schedule</T>
+                {(() => { const next = h.schedule.find((x) => new Date(x.start).getTime() > Date.now()); return next ? <T w="semibold" style={{ fontSize: 12, color: '#2E7D32' }}>Free until {hm(new Date(new Date(next.start).getTime() - next.buffer_min * 60000).toISOString())}</T> : null; })()}
+              </View>
+              {h.schedule.map((x) => (
+                <PressScale key={x.id} onPress={() => reply(x.id)} style={[st.row, { gap: 12, alignItems: 'flex-start' }]}>
+                  <View style={st.timeBox}><T w="extrabold" style={{ fontSize: 13 }}>{hm(x.start)}</T><T style={{ fontSize: 11, color: colors.muted }}>to {hm(x.end)}</T></View>
+                  <View style={{ flex: 1 }}>
+                    <T w="bold" style={{ fontSize: 14 }} numberOfLines={1}>{x.service}</T>
+                    <T style={{ fontSize: 12, color: colors.muted }}>{x.client} · {x.area} · {STATUS_LABEL[x.status]}</T>
+                  </View>
+                </PressScale>
+              ))}
+              <T style={{ fontSize: 12, color: colors.muted, lineHeight: 17 }}>You can take more bookings at other times. We add {h.schedule[0].buffer_min} minutes of travel time after each job.</T>
+            </View>
+          )}
+
+          {/* weekly reward */}
+          <View style={[glassCard, { padding: 16, gap: 10 }, h.week.free_next && { borderColor: colors.green, borderWidth: 1.5 }]}>
+            <View style={st.row}>
+              <T w="extrabold" style={{ fontSize: 11, letterSpacing: 0.8, color: '#2E7D32' }}>WEEKLY REWARD</T>
+              <T w="bold" style={{ fontSize: 12 }}>{h.week.count} of {h.week.target} this week</T>
+            </View>
+            <T w="extrabold" style={{ fontSize: 17 }}>{h.week.free_next ? 'Your next booking is free!' : `${h.week.target - h.week.count} more booking${h.week.target - h.week.count === 1 ? '' : 's'} to a free one`}</T>
+            <View style={{ flexDirection: 'row', gap: 6 }}>
+              {Array.from({ length: h.week.target + 1 }).map((_, i) => (
+                <View key={i} style={[st.seg, i < h.week.count && { backgroundColor: colors.teal }, i === h.week.target && { backgroundColor: h.week.free_next ? colors.green : '#E9F8E6' }]} />
+              ))}
+            </View>
+            <T style={{ fontSize: 12, color: colors.muted, lineHeight: 17 }}>Finish {h.week.target} bookings in a week and your {h.week.target + 1}th booking is free: no coins deducted. The count resets after your free booking, and every Monday.</T>
+            <View style={[st.row, st.priceBox, { gap: 10 }]}>
+              <T w="extrabold" style={{ fontSize: 15 }}>{h.week.streak}/{h.week.streak_weeks}</T>
+              <T style={{ fontSize: 12, color: colors.body, flex: 1, lineHeight: 17 }}>Streak bonus: hit {h.week.target}+ bookings for {h.week.streak_weeks} weeks in a row and get {h.week.streak_bonus} bonus coins.</T>
+            </View>
+          </View>
+
           {/* today */}
           <View style={[glassCard, st.row, { padding: 16 }]}>
             <Stat v={peso(Number(h.today_earned))} k="Earned today" />
@@ -232,6 +271,8 @@ const st = StyleSheet.create({
   repeat: { alignSelf: 'flex-start', backgroundColor: '#E9F8E6', borderRadius: 6, paddingVertical: 3, paddingHorizontal: 7 },
   demoBtn: { borderRadius: 14, borderWidth: 1.5, borderColor: '#E0A96D', backgroundColor: colors.warnBg, padding: 12, alignItems: 'center', gap: 2 },
   priceBox: { backgroundColor: 'rgba(230,241,243,0.8)', borderRadius: 14, padding: 12 },
+  timeBox: { width: 74, paddingVertical: 6, borderRadius: 10, backgroundColor: colors.tint, alignItems: 'center' },
+  seg: { flex: 1, height: 8, borderRadius: 4, backgroundColor: '#E4E7EC' },
   ghost: { height: 48, borderRadius: 14, borderWidth: 1.5, borderColor: colors.teal, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF' },
   solid: { height: 48, borderRadius: 14, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
 });

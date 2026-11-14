@@ -110,6 +110,14 @@ export default function TaskerProfile() {
           <Rise i={0} style={{ paddingHorizontal: 20, alignItems: 'center', gap: 6 }}>
             <T w="extrabold" style={{ fontSize: 24, lineHeight: 30, textAlign: 'center' }}>{t.name}</T>
             <T style={{ fontSize: 14, color: colors.body, textAlign: 'center' }}>{t.title} · {t.area}</T>
+            {(t as any).top && (
+              <View style={{ alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.green, borderRadius: 999, paddingVertical: 4, paddingHorizontal: 10 }}>
+                <T w="extrabold" style={{ fontSize: 11, color: colors.teal, letterSpacing: 0.6 }}>★ TOP TASKER</T>
+              </View>
+            )}
+            {(t as any).availability && (
+              <T style={{ fontSize: 12, color: colors.muted, textAlign: 'center' }}>Works {availText((t as any).availability)}</T>
+            )}
             <T style={{ fontSize: 13, color: colors.muted }}>{t.services.length} skills · Service starts at {peso(minPrice)}</T>
           </Rise>
 
@@ -350,3 +358,12 @@ const st = StyleSheet.create({
   barBtn: { height: 52, paddingHorizontal: 22, ...bubble(18, 6), overflow: 'hidden', justifyContent: 'center' },
   barBtnText: { color: '#FFF', fontSize: 15 },
 });
+
+const DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const h12 = (h: string) => { const n = Number(h.slice(0, 2)); return `${n % 12 || 12} ${n < 12 ? 'AM' : 'PM'}`; };
+function availText(a: { days: number[]; from: string; to: string }) {
+  const d = [...a.days].sort();
+  const run = d.length > 2 && d.every((x, i) => i === 0 || x === d[i - 1] + 1);
+  const days = d.length === 7 ? 'every day' : run ? `${DAY[d[0] - 1]}–${DAY[d[d.length - 1] - 1]}` : d.map((x) => DAY[x - 1]).join(', ');
+  return `${days}, ${h12(a.from)}–${h12(a.to)}`;
+}

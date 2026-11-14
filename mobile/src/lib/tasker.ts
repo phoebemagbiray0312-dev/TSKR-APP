@@ -10,7 +10,11 @@ export type TaskerHome = {
   area_label: string | null; base_set: boolean; qr_status: 'none' | 'pending' | 'approved' | 'rejected'; require_qr: boolean;
   rating: number; rating_count: number; jobs_done: number; coins: number; fee: number; repeat_fee: number;
   skills: number; skills_pending: number; today_jobs: number; today_earned: number; requests: Req[]; active: ActiveJob[];
+  week: { count: number; target: number; free_next: boolean; week_total: number; streak: number; streak_weeks: number; streak_bonus: number };
+  schedule: { id: string; status: string; start: string; end: string; buffer_min: number; client: string; area: string; service: string }[];
+  availability: { days: number[]; from: string; to: string } | null;
 };
+export const hm = (iso: string) => new Date(iso).toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
 
 export const STATUS_LABEL: Record<string, string> = {
   requested: 'New request', chatting: 'Chatting', offer_sent: 'Offer sent', offer_accepted: 'Offer accepted',
