@@ -26,11 +26,11 @@ const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
     <path d={ICON[name]} />
   </svg>
 );
-const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS', strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log' };
+const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS', strikes: 'Strikes, pauses and suspensions', fees: 'Cancellation fees', access: 'ID access log' };
 const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.[0] ?? '')).toUpperCase() || 'A';
 const TITLES: Record<Tab, string> = {
   overview: 'Overview', revenue: 'Revenue', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
-  strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log',
+  strikes: 'Strikes, pauses and suspensions', fees: 'Cancellation fees', access: 'ID access log',
   bookings: 'Bookings', users: 'Users', settings: 'Settings', profile: 'My profile',
 };
 
@@ -715,7 +715,15 @@ function Revenue() {
 function Strikes() {
   const [rows, setRows] = useState<any[] | null>(null);
   const [pauses, setPauses] = useState<any[]>([]);
+  const [susp, setSusp] = useState<any[]>([]);
+  const [warns, setWarns] = useState<any[]>([]);
   const load = async () => {
+    const [c, d] = await Promise.all([
+      supabase.from('profiles').select('id,first_name,last_name,email,suspended_until').gt('suspended_until', new Date().toISOString()).order('suspended_until'),
+      supabase.from('contact_attempts').select('id,created_at,user:profiles!contact_attempts_user_id_fkey(id,first_name,last_name,email,is_tasker,is_demo),booking:bookings!contact_attempts_booking_id_fkey(code)')
+        .gt('created_at', new Date(Date.now() - 90 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(200),
+    ]);
+    setSusp(c.data ?? []); setWarns(d.data ?? []);
     const [a, b] = await Promise.all([
       supabase.from('strikes').select('id,reason,weight,created_at,tasker:profiles!strikes_tasker_id_fkey(first_name,last_name,email,is_demo),booking:bookings!strikes_booking_id_fkey(code)')
         .gt('created_at', new Date(Date.now() - 90 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(200),
@@ -734,6 +742,11 @@ function Strikes() {
     if (!confirm(`End the pause for ${p.tasker?.first_name} ${p.tasker?.last_name} now?`)) return;
     try { await rpc('admin_end_pause', { p_id: p.id }); load(); } catch (e: any) { alert(e.message); }
   };
+  const lift = async (u: any) => {
+    const clear = confirm(`Lift the contact-number suspension for ${u.first_name} ${u.last_name}?\n\nOK = lift it and clear their warning (use this if it was a mistake).\nCancel = don't change anything.`);
+    if (!clear) return;
+    try { await rpc('admin_lift_suspension', { p_user: u.id, p_clear_warnings: true }); load(); } catch (e: any) { alert(e.message); }
+  };
   return (
     <>
       <p className="sub">Strikes from the last 90 days. 1st strike: 100 coins, 2nd: 200 coins, 3rd in 30 days: 7-day pause. A no-show counts as 2. Remove a strike if it was given by mistake.</p>
@@ -747,6 +760,31 @@ function Strikes() {
           </div>
         ))}
       </div>
+      <h2 style={{ marginBottom: 10 }}>Suspended clients ({susp.length})</h2>
+      <div className="list" style={{ marginBottom: 24 }}>
+        {susp.length === 0 && <div className="card muted">No suspended clients.</div>}
+        {susp.map((u) => (
+          <div key={u.id} className="card row between">
+            <div><h2>{u.first_name} {u.last_name}</h2><div className="muted">{u.email} · shared a contact number after a warning · until {when(u.suspended_until)}</div></div>
+            <button className="btn" onClick={() => lift(u)}>Lift suspension</button>
+          </div>
+        ))}
+      </div>
+      <h2 style={{ marginBottom: 10 }}>Contact number attempts in chat ({warns.length})</h2>
+      <p className="sub">Messages with a phone number or another app are never sent or stored. 1st attempt: warning. 2nd within 90 days: 1-week suspension. Taskers suspended this way also show under Paused taskers (reason: contact sharing).</p>
+      <div className="tablewrap" style={{ marginBottom: 24 }}><table>
+        <thead><tr><th>User</th><th>Role</th><th>Booking</th><th>When</th><th></th></tr></thead>
+        <tbody>
+          {warns.length === 0 && <tr><td colSpan={5} className="muted">No attempts in the last 90 days.</td></tr>}
+          {warns.map((w) => (
+            <tr key={w.id}>
+              <td><b>{w.user?.first_name} {w.user?.last_name}</b> {w.user?.is_demo && <span className="tag warn">DEMO</span>}<div className="muted">{w.user?.email}</div></td>
+              <td>{w.user?.is_tasker ? 'Tasker' : 'Client'}</td><td>{w.booking?.code ?? '—'}</td><td>{when(w.created_at)}</td>
+              <td><button className="btn" onClick={() => lift(w.user)}>Clear warning</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
       <h2 style={{ marginBottom: 10 }}>Strikes</h2>
       {rows === null ? <p className="muted">Loading…</p> : rows.length === 0 ? <div className="card muted">No strikes in the last 90 days.</div> : (
         <div className="tablewrap"><table>
