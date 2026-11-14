@@ -144,20 +144,7 @@ export default function Skills() {
           <PressScale onPress={() => setOpen(true)} style={st.addBtn}><Ic d={P.plus} size={18} w={2.4} /><T w="bold" style={{ fontSize: 15 }}>{mine.length ? 'Add another skill' : 'Add your first skill'}</T></PressScale>
         )}
 
-        <T w="extrabold" style={{ fontSize: 20, marginTop: 10 }}>Availability</T>
-        <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Clients can only schedule you on these days and hours. Going Offline on Home pauses all new requests anytime.</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {DAYS.map((d, i) => <Chip key={d} label={d} on={days.includes(i + 1)} onPress={() => { setAvailSaved(false); setDays((c) => (c.includes(i + 1) ? c.filter((x) => x !== i + 1) : [...c, i + 1].sort())); }} />)}
-        </View>
-        <T w="semibold" style={{ fontSize: 13 }}>From</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {FROM.map((h) => <Chip key={h} label={hLabel(h)} on={from === h} onPress={() => { setAvailSaved(false); setFrom(h); }} />)}
-        </View>
-        <T w="semibold" style={{ fontSize: 13 }}>To</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {TO.map((h) => <Chip key={h} label={hLabel(h)} on={to === h} onPress={() => { setAvailSaved(false); setTo(h); }} />)}
-        </View>
-        <GlossyButton label={availSaved ? '✓ Saved' : `Save · ${days.length} days, ${hLabel(from)}–${hLabel(to)}`} onPress={saveAvail} disabled={!days.length} />
+        <T style={{ fontSize: 12, color: colors.muted }}>Set the days and hours you work in Me › Availability.</T>
 
         <T w="extrabold" style={{ fontSize: 20, marginTop: 10 }}>Service area</T>
         <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Move the map to where you usually start from. Clients never see this exact spot, only your area and radius.</T>
