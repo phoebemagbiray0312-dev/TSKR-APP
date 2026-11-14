@@ -288,7 +288,7 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
   const eta = b.eta_at ? Math.max(1, Math.round((new Date(b.eta_at).getTime() - Date.now()) / 60000)) : null;
   const cancelled = b.status === 'cancelled';
   const D = b.is_delivery;
-  const status: [string, string] = cancelled ? ['Cancelled', b.cancel_reason === 'final_price_declined' ? 'You declined the final price. Nobody is charged.' : 'This booking was cancelled.']
+  const status: [string, string] = cancelled ? ['Cancelled', b.cancel_reason === 'final_price_declined' ? 'You declined the final price. Nobody is charged.' : b.cancel_reason === 'tasker_no_reply' ? `${first} didn’t reply in time. Nobody is charged. Book another tasker from Explore.` : b.cancel_reason === 'no_show' ? `${first} didn’t arrive. Nobody is charged, and our team has been notified.` : 'This booking was cancelled.']
     : ([
       ['Offer accepted', `You accepted ${first}’s offer of ${peso(agreed)}.`],
       [D ? 'On the way to pick up' : 'On the way', `${first} is on the way.${eta ? ` ETA ${eta} min.` : ''}`],
