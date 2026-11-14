@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Circle as MapCircle } from 'react-native-maps';
+import MapView, { Circle as MapCircle } from '../../../src/components/Maps';
 import * as Location from 'expo-location';
 import { bubble, colors, font } from '../../../src/theme';
 import { ErrorText, T } from '../../../src/components/ui';

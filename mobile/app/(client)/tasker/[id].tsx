@@ -3,7 +3,7 @@ import { ActivityIndicator, Dimensions, Image, ScrollView, Share, StyleSheet, Vi
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Circle, Path } from 'react-native-svg';
-import MapView, { Circle as MapCircle } from 'react-native-maps';
+import MapView, { Circle as MapCircle } from '../../../src/components/Maps';
 import { bubble, colors } from '../../../src/theme';
 import { T } from '../../../src/components/ui';
 import { PressScale, Rise } from '../../../src/components/glass';

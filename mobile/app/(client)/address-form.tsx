@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Region } from 'react-native-maps';
+import MapView, { Region } from '../../src/components/Maps';
 import * as Location from 'expo-location';
 import { bubble, colors } from '../../src/theme';
 import { ErrorText, T } from '../../src/components/ui';
