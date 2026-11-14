@@ -330,12 +330,13 @@ function Track({ b, first, agreed, busy, act, onCancel, setFav, onChat }: {
         </PressScale>
       )}
       {fee && (
-        <View style={[st.card, { gap: 8, borderColor: fee.status === 'received' ? colors.borderSoft : '#F5D9B5', backgroundColor: fee.status === 'received' ? '#FFF' : colors.warnBg }]}>
+        <View style={[st.card, { gap: 8, borderColor: ['received', 'settled'].includes(fee.status) ? colors.borderSoft : '#F5D9B5', backgroundColor: ['received', 'settled'].includes(fee.status) ? '#FFF' : colors.warnBg }]}>
           <T w="extrabold" style={{ fontSize: 16 }}>Cancellation fee · {peso(Number(fee.amount))}</T>
           {fee.status === 'unpaid' && <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>{first} was already on the way, so a {peso(Number(fee.amount))} fee goes to {first}. Pay it to {first}’s QR, then send the reference number. You can book again once it’s sent.</T>}
           {fee.status === 'submitted' && <T style={{ fontSize: 13, color: colors.body, lineHeight: 19 }}>Reference {fee.reference} sent. Waiting for {first} to confirm they received it.</T>}
           {fee.status === 'not_received' && <T style={{ fontSize: 13, color: colors.error, lineHeight: 19 }}>{first} says they didn’t receive reference {fee.reference}. Check your receipt and send the correct reference. Our team is also looking into it.</T>}
           {fee.status === 'received' && <T style={{ fontSize: 13, color: colors.body }}>Paid. {first} confirmed they received it. Thank you!</T>}
+          {fee.status === 'settled' && <T style={{ fontSize: 13, color: colors.body }}>TSKR waived this fee. You can book again.</T>}
           {(fee.status === 'unpaid' || fee.status === 'not_received') && <GlossyButton label={`Pay ${peso(Number(fee.amount))} to ${first}`} onPress={() => setFeeOpen(true)} />}
         </View>
       )}

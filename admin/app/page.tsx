@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { peso, rpc, supabase, when } from '../lib/supabase';
 
-type Tab = 'overview' | 'applications' | 'reviews' | 'tickets' | 'bookings' | 'users' | 'settings' | 'profile';
+type Tab = 'overview' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'settings' | 'profile';
 type Overview = Record<string, number | boolean>;
 type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string };
 
@@ -13,6 +13,9 @@ const ICON: Record<string, string> = {
   reviews: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 3 2 2 4-4',
   tickets: 'M12 3 2 20h20L12 3Zm0 6v5m0 3v.5',
   bookings: 'M4 6h16v14H4V6Zm0 4h16M8 3v4m8-4v4',
+  strikes: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Zm-3 9 6 0',
+  fees: 'M3 7h18v10H3V7Zm9 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 10v4m12-4v4',
+  access: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
   users: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6m2-6c3.3 0 6 2.7 6 6',
   settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7-3 2-1-2-4-2 1-2-2V4h-4v2L9 7 7 6 5 10l2 1v2l-2 1 2 4 2-1 2 2v2h4v-2l2-2 2 1 2-4-2-1v-2Z',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
@@ -22,10 +25,11 @@ const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
     <path d={ICON[name]} />
   </svg>
 );
-const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS' };
+const NAV: Partial<Record<Tab, string>> = { applications: 'Applications', reviews: 'QR and skills', tickets: 'Reports and SOS', strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log' };
 const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.[0] ?? '')).toUpperCase() || 'A';
 const TITLES: Record<Tab, string> = {
   overview: 'Overview', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
+  strikes: 'Strikes and pauses', fees: 'Cancellation fees', access: 'ID access log',
   bookings: 'Bookings', users: 'Users', settings: 'Settings', profile: 'My profile',
 };
 
@@ -75,7 +79,7 @@ export default function Admin() {
   const n = (k: string) => Number(ov?.[k] ?? 0);
   const items: [Tab, number?][] = [
     ['overview'], ['applications', n('applications')], ['reviews', n('qr_pending') + n('skills_pending')],
-    ['tickets', n('tickets_open')], ['bookings'], ['users'], ['settings'],
+    ['tickets', n('tickets_open')], ['strikes'], ['fees'], ['bookings'], ['users'], ['access'], ['settings'],
   ];
   const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
   return (
@@ -106,6 +110,9 @@ export default function Admin() {
           {tab === 'applications' && <Applications onChange={loadOv} />}
           {tab === 'reviews' && <Reviews onChange={loadOv} />}
           {tab === 'tickets' && <Tickets onChange={loadOv} />}
+          {tab === 'strikes' && <Strikes />}
+          {tab === 'fees' && <Fees />}
+          {tab === 'access' && <AccessLog />}
           {tab === 'bookings' && <Bookings />}
           {tab === 'users' && <Users />}
           {tab === 'settings' && <Settings onChange={loadOv} />}
@@ -509,6 +516,17 @@ function Users() {
     const { data } = await s; setRows(data ?? []);
   };
   useEffect(() => { load(); }, [hideDemo]);
+  const coinsFor = async (u: any) => {
+    try {
+      const bal = await rpc<number>('admin_coin_balance', { p_tasker: u.id });
+      const amt = prompt(`${u.first_name} ${u.last_name} has ${bal.toLocaleString()} coins.\n\nCoins to add (use a minus sign to deduct, e.g. -300):`);
+      if (!amt) return;
+      const n = parseInt(amt, 10); if (!n) { alert('Enter a whole number.'); return; }
+      const why = prompt('Reason (the tasker will see this):'); if (!why) return;
+      const nb = await rpc<number>('admin_adjust_coins', { p_tasker: u.id, p_amount: n, p_note: why });
+      alert(`Done. New balance: ${nb.toLocaleString()} coins.`);
+    } catch (e: any) { alert(e.message); }
+  };
   const toggle = async (u: any) => {
     const active = u.status !== 'active';
     if (!confirm(`${active ? 'Restore' : 'Suspend'} ${u.first_name} ${u.last_name}?`)) return;
@@ -534,7 +552,146 @@ function Users() {
                 <td>{u.plan}</td>
                 <td><span className={'tag ' + (u.status === 'active' ? 'ok' : 'err')}>{u.status}</span></td>
                 <td>{when(u.created_at)}</td>
-                <td><button className={'btn ' + (u.status === 'active' ? 'danger' : '')} onClick={() => toggle(u)}>{u.status === 'active' ? 'Suspend' : 'Restore'}</button></td>
+                <td><div className="row" style={{ flexWrap: 'nowrap' }}>
+                  {(u.is_tasker || u.tasker_status !== 'none') && <button className="btn" onClick={() => coinsFor(u)}>Coins</button>}
+                  <button className={'btn ' + (u.status === 'active' ? 'danger' : '')} onClick={() => toggle(u)}>{u.status === 'active' ? 'Suspend' : 'Restore'}</button>
+                </div></td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      )}
+    </>
+  );
+}
+
+function Strikes() {
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [pauses, setPauses] = useState<any[]>([]);
+  const load = async () => {
+    const [a, b] = await Promise.all([
+      supabase.from('strikes').select('id,reason,weight,created_at,tasker:profiles!strikes_tasker_id_fkey(first_name,last_name,email,is_demo),booking:bookings!strikes_booking_id_fkey(code)')
+        .gt('created_at', new Date(Date.now() - 90 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(200),
+      supabase.from('tasker_pauses').select('id,reason,starts_at,ends_at,tasker:profiles!tasker_pauses_tasker_id_fkey(first_name,last_name,email)')
+        .gt('ends_at', new Date().toISOString()).order('ends_at'),
+    ]);
+    setRows(a.data ?? []); setPauses(b.data ?? []);
+  };
+  useEffect(() => { load(); }, []);
+  const remove = async (s: any) => {
+    const note = prompt(`Remove this strike from ${s.tasker?.first_name} ${s.tasker?.last_name}?\nThe coin penalty is refunded. Reason (the tasker will see this):`);
+    if (note === null) return;
+    try { await rpc('admin_remove_strike', { p_id: s.id, p_refund: true, p_note: note || null }); load(); } catch (e: any) { alert(e.message); }
+  };
+  const endPause = async (p: any) => {
+    if (!confirm(`End the pause for ${p.tasker?.first_name} ${p.tasker?.last_name} now?`)) return;
+    try { await rpc('admin_end_pause', { p_id: p.id }); load(); } catch (e: any) { alert(e.message); }
+  };
+  return (
+    <>
+      <p className="sub">Strikes from the last 90 days. 1st strike: 100 coins, 2nd: 200 coins, 3rd in 30 days: 7-day pause. A no-show counts as 2. Remove a strike if it was given by mistake.</p>
+      <h2 style={{ marginBottom: 10 }}>Paused taskers ({pauses.length})</h2>
+      <div className="list" style={{ marginBottom: 24 }}>
+        {pauses.length === 0 && <div className="card muted">Nobody is paused.</div>}
+        {pauses.map((p) => (
+          <div key={p.id} className="card row between">
+            <div><h2>{p.tasker?.first_name} {p.tasker?.last_name}</h2><div className="muted">{p.tasker?.email} · {p.reason.replace(/_/g, ' ')} · until {when(p.ends_at)}</div></div>
+            <button className="btn" onClick={() => endPause(p)}>End pause now</button>
+          </div>
+        ))}
+      </div>
+      <h2 style={{ marginBottom: 10 }}>Strikes</h2>
+      {rows === null ? <p className="muted">Loading…</p> : rows.length === 0 ? <div className="card muted">No strikes in the last 90 days.</div> : (
+        <div className="tablewrap"><table>
+          <thead><tr><th>Tasker</th><th>Reason</th><th>Booking</th><th>When</th><th></th></tr></thead>
+          <tbody>
+            {rows.map((s) => (
+              <tr key={s.id}>
+                <td><b>{s.tasker?.first_name} {s.tasker?.last_name}</b> {s.tasker?.is_demo && <span className="tag warn">DEMO</span>}<div className="muted">{s.tasker?.email}</div></td>
+                <td>{s.reason}</td><td>{s.booking?.code ?? '—'}</td><td>{when(s.created_at)}</td>
+                <td><button className="btn" onClick={() => remove(s)}>Remove</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      )}
+    </>
+  );
+}
+
+function Fees() {
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [filter, setFilter] = useState<'open' | 'all'>('open');
+  const load = async () => {
+    let q = supabase.from('cancellation_fees')
+      .select('id,amount_php,status,reference_no,created_at,submitted_at,client:profiles!cancellation_fees_client_id_fkey(first_name,last_name,email),tasker:profiles!cancellation_fees_tasker_id_fkey(first_name,last_name,email),booking:bookings!cancellation_fees_booking_id_fkey(code)')
+      .order('created_at', { ascending: false }).limit(200);
+    if (filter === 'open') q = q.in('status', ['unpaid', 'submitted', 'not_received']);
+    const { data } = await q; setRows(data ?? []);
+  };
+  useEffect(() => { load(); }, [filter]);
+  const set = async (f: any, st: 'received' | 'settled') => {
+    const msg = st === 'received' ? 'Mark as paid? Use this when the client shows proof of payment.' : 'Waive this fee? The client won’t have to pay and can book again.';
+    if (!confirm(msg)) return;
+    try { await rpc('admin_set_fee', { p_id: f.id, p_status: st }); load(); } catch (e: any) { alert(e.message); }
+  };
+  const label: Record<string, [string, string]> = {
+    unpaid: ['UNPAID', 'warn'], submitted: ['REFERENCE SENT', 'warn'], not_received: ['DISPUTED', 'err'], received: ['PAID', 'ok'], settled: ['WAIVED', 'ok'],
+  };
+  return (
+    <>
+      <p className="sub">The ₱100 fee when a client cancels after the tasker is on the way. Clients can’t book again until it’s paid or waived. Disputed = the tasker says they didn’t receive it.</p>
+      <div className="row" style={{ marginBottom: 14 }}>
+        <button className={'btn' + (filter === 'open' ? ' primary' : '')} onClick={() => setFilter('open')}>Open</button>
+        <button className={'btn' + (filter === 'all' ? ' primary' : '')} onClick={() => setFilter('all')}>All</button>
+      </div>
+      {rows === null ? <p className="muted">Loading…</p> : rows.length === 0 ? <div className="card muted">No open cancellation fees.</div> : (
+        <div className="tablewrap"><table>
+          <thead><tr><th>Booking</th><th>Client</th><th>Tasker</th><th>Amount</th><th>Status</th><th>Reference</th><th></th></tr></thead>
+          <tbody>
+            {rows.map((f) => (
+              <tr key={f.id}>
+                <td><b>{f.booking?.code}</b><div className="muted">{when(f.created_at)}</div></td>
+                <td>{f.client?.first_name} {f.client?.last_name}<div className="muted">{f.client?.email}</div></td>
+                <td>{f.tasker?.first_name} {f.tasker?.last_name}<div className="muted">{f.tasker?.email}</div></td>
+                <td>{peso(f.amount_php)}</td>
+                <td><span className={'tag ' + (label[f.status]?.[1] ?? '')}>{label[f.status]?.[0] ?? f.status}</span></td>
+                <td>{f.reference_no ?? '—'}{f.submitted_at && <div className="muted">{when(f.submitted_at)}</div>}</td>
+                <td>{!['received', 'settled'].includes(f.status) && (
+                  <div className="row" style={{ flexWrap: 'nowrap' }}>
+                    <button className="btn" onClick={() => set(f, 'received')}>Mark paid</button>
+                    <button className="btn" onClick={() => set(f, 'settled')}>Waive</button>
+                  </div>
+                )}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      )}
+    </>
+  );
+}
+
+function AccessLog() {
+  const [rows, setRows] = useState<any[] | null>(null);
+  useEffect(() => {
+    supabase.from('kyc_access_log')
+      .select('id,action,created_at,admin:profiles!kyc_access_log_admin_id_fkey(first_name,last_name,email),ver:tasker_verifications!kyc_access_log_verification_id_fkey(user:profiles!tasker_verifications_user_id_fkey(first_name,last_name))')
+      .order('created_at', { ascending: false }).limit(300).then(({ data }) => setRows(data ?? []));
+  }, []);
+  return (
+    <>
+      <p className="sub">Every time someone opens a tasker’s ID photos. Required for data privacy: review this regularly.</p>
+      {rows === null ? <p className="muted">Loading…</p> : rows.length === 0 ? <div className="card muted">Nobody has opened ID photos yet.</div> : (
+        <div className="tablewrap"><table>
+          <thead><tr><th>When</th><th>Admin</th><th>Whose IDs</th><th>Action</th></tr></thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.id}>
+                <td>{when(r.created_at)}</td>
+                <td>{r.admin?.first_name} {r.admin?.last_name}<div className="muted">{r.admin?.email}</div></td>
+                <td>{r.ver?.user?.first_name} {r.ver?.user?.last_name}</td>
+                <td>{r.action}</td>
               </tr>
             ))}
           </tbody>

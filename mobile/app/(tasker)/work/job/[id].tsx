@@ -361,6 +361,7 @@ export default function TaskerJob() {
               )}
               {fee.status === 'received' && <T style={{ fontSize: 13, color: colors.body }}>You confirmed you received it.</T>}
               {fee.status === 'not_received' && <T style={{ fontSize: 13, color: colors.body }}>You said you didn’t receive it. Our team is looking into it.</T>}
+              {fee.status === 'settled' && <T style={{ fontSize: 13, color: colors.body }}>Our team closed this fee after reviewing it.</T>}
             </View>
           )}
 
