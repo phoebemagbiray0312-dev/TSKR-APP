@@ -706,6 +706,83 @@ function UserProfile({ id, onClose }: { id: string; onClose: () => void }) {
   );
 }
 
+function CoinsModal({ u, onClose }: { u: any; onClose: () => void }) {
+  const [bal, setBal] = useState<number | null>(null);
+  const [mode, setMode] = useState<'add' | 'deduct'>('add');
+  const [amt, setAmt] = useState('');
+  const [why, setWhy] = useState('');
+  const [step, setStep] = useState<'form' | 'confirm' | 'done'>('form');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [newBal, setNewBal] = useState<number | null>(null);
+  useEffect(() => { rpc<number>('admin_coin_balance', { p_tasker: u.id }).then(setBal).catch((e) => setErr(e.message)); }, [u.id]);
+  const n = Math.floor(Number(amt.replace(/[^0-9]/g, '')) || 0);
+  const delta = mode === 'add' ? n : -n;
+  const after = (bal ?? 0) + delta;
+  const name = `${u.first_name} ${u.last_name}`;
+  const next = () => {
+    setErr('');
+    if (!n) return setErr('Enter how many coins.');
+    if (n > 100000) return setErr('That’s a lot of coins. Enter 100,000 or less.');
+    if (why.trim().length < 5) return setErr('Write a short reason. The tasker will see it.');
+    if (after < 0) return setErr(`They only have ${(bal ?? 0).toLocaleString()} coins.`);
+    setStep('confirm');
+  };
+  const save = async () => {
+    setBusy(true); setErr('');
+    try { setNewBal(await rpc<number>('admin_adjust_coins', { p_tasker: u.id, p_amount: delta, p_note: why.trim() })); setStep('done'); }
+    catch (e: any) { setErr(e.message); setStep('form'); } finally { setBusy(false); }
+  };
+  return (
+    <div className="modal-bg" onClick={() => !busy && onClose()}>
+      <div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <h2>Coins · {name}</h2>
+        <p className="muted">{u.email}</p>
+        <div className="card" style={{ padding: 12 }}>Current balance: <b>{bal === null ? '…' : `${bal.toLocaleString()} coins`}</b></div>
+
+        {step === 'form' && (<>
+          <div className="row" style={{ gap: 8 }}>
+            <button className={'btn' + (mode === 'add' ? ' primary' : '')} onClick={() => setMode('add')}>Add coins</button>
+            <button className={'btn' + (mode === 'deduct' ? ' primary' : '')} onClick={() => setMode('deduct')}>Deduct coins</button>
+          </div>
+          <input className="input" inputMode="numeric" placeholder="How many coins, e.g. 300" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9]/g, ''))} />
+          <input className="input" placeholder="Reason (the tasker will see this)" value={why} onChange={(e) => setWhy(e.target.value)} maxLength={200} />
+          {n > 0 && bal !== null && <p className="muted">New balance will be <b>{after.toLocaleString()} coins</b>.</p>}
+          {err && <div className="err">{err}</div>}
+          <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
+            <button className="btn" onClick={onClose}>Cancel</button>
+            <button className="btn primary" disabled={bal === null} onClick={next}>Review</button>
+          </div>
+        </>)}
+
+        {step === 'confirm' && (<>
+          <div className={'modal-icon ' + (mode === 'add' ? 'ok' : 'err')}>{mode === 'add' ? '+' : '−'}</div>
+          <h2>{mode === 'add' ? `Add ${n.toLocaleString()} coins to ${name}?` : `Deduct ${n.toLocaleString()} coins from ${name}?`}</h2>
+          <ul>
+            <li>Balance goes from <b>{(bal ?? 0).toLocaleString()}</b> to <b>{after.toLocaleString()}</b> coins.</li>
+            <li>Reason they’ll see: “{why.trim()}”</li>
+            <li>It shows in their coin history as a TSKR adjustment, and they get a notification.</li>
+          </ul>
+          {err && <div className="err">{err}</div>}
+          <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
+            <button className="btn" disabled={busy} onClick={() => setStep('form')}>Back</button>
+            <button className={'btn ' + (mode === 'add' ? 'primary' : 'solid-danger')} disabled={busy} onClick={save}>
+              {busy ? 'Please wait…' : mode === 'add' ? 'Yes, add coins' : 'Yes, deduct coins'}
+            </button>
+          </div>
+        </>)}
+
+        {step === 'done' && (<>
+          <div className="modal-icon ok">✓</div>
+          <h2>Done</h2>
+          <p>New balance: <b>{(newBal ?? after).toLocaleString()} coins</b>.</p>
+          <div className="row" style={{ justifyContent: 'flex-end' }}><button className="btn primary" onClick={onClose}>Close</button></div>
+        </>)}
+      </div>
+    </div>
+  );
+}
+
 function Users({ preset }: { preset?: string }) {
   const [rows, setRows] = useState<any[] | null>(null);
   const [q, setQ] = useState('');
@@ -724,17 +801,8 @@ function Users({ preset }: { preset?: string }) {
     const { data } = await s; setRows(data ?? []);
   };
   useEffect(() => { load(); }, [hideDemo, f]);
-  const coinsFor = async (u: any) => {
-    try {
-      const bal = await rpc<number>('admin_coin_balance', { p_tasker: u.id });
-      const amt = prompt(`${u.first_name} ${u.last_name} has ${bal.toLocaleString()} coins.\n\nCoins to add (use a minus sign to deduct, e.g. -300):`);
-      if (!amt) return;
-      const n = parseInt(amt, 10); if (!n) { alert('Enter a whole number.'); return; }
-      const why = prompt('Reason (the tasker will see this):'); if (!why) return;
-      const nb = await rpc<number>('admin_adjust_coins', { p_tasker: u.id, p_amount: n, p_note: why });
-      alert(`Done. New balance: ${nb.toLocaleString()} coins.`);
-    } catch (e: any) { alert(e.message); }
-  };
+  const [coinU, setCoinU] = useState<any>(null);
+  const coinsFor = (u: any) => setCoinU(u);
   const [ask, setAsk] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const toggle = (u: any) => setAsk(u);
@@ -810,6 +878,7 @@ function Users({ preset }: { preset?: string }) {
           </div>
         );
       })()}
+      {coinU && <CoinsModal u={coinU} onClose={() => setCoinU(null)} />}
     </>
   );
 }
