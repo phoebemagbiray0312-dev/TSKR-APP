@@ -117,3 +117,12 @@ td { padding: 10px; border-top: 1px solid var(--border); vertical-align: top; }
 .brandlogo i { position: absolute; top: 41.6%; width: 3.75%; aspect-ratio: 1; border-radius: 50%; background: #fff; opacity: .45; animation: tskr-type 1.4s ease-in-out infinite; }
 @keyframes tskr-type { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-38%); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .brandlogo i { animation: none; opacity: 1; } }
+
+/* confirm popup */
+.modal-bg { position: fixed; inset: 0; background: rgba(4,30,38,.45); z-index: 60; display: grid; place-items: center; padding: 20px; }
+.modal { background: #fff; border-radius: 20px; padding: 24px; width: min(460px, 100%); box-shadow: 0 20px 60px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 8px; }
+.modal ul { margin: 4px 0 6px 18px; padding: 0; display: flex; flex-direction: column; gap: 6px; line-height: 1.45; }
+.modal-icon { width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center; font-weight: 800; font-size: 22px; }
+.modal-icon.err { background: #FDECEC; color: var(--error, #B42318); }
+.modal-icon.ok { background: #E9F8E6; color: #2E7D32; }
+.btn.solid-danger { background: var(--error, #B42318); border-color: var(--error, #B42318); color: #fff; }

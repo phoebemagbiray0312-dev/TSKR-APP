@@ -735,10 +735,14 @@ function Users({ preset }: { preset?: string }) {
       alert(`Done. New balance: ${nb.toLocaleString()} coins.`);
     } catch (e: any) { alert(e.message); }
   };
-  const toggle = async (u: any) => {
-    const active = u.status !== 'active';
-    if (!confirm(`${active ? 'Restore' : 'Suspend'} ${u.first_name} ${u.last_name}?`)) return;
-    try { await rpc('admin_set_account', { p_user: u.id, p_active: active }); load(); } catch (e: any) { alert(e.message); }
+  const [ask, setAsk] = useState<any>(null);
+  const [busy, setBusy] = useState(false);
+  const toggle = (u: any) => setAsk(u);
+  const doToggle = async () => {
+    const u = ask; if (!u) return;
+    setBusy(true);
+    try { await rpc('admin_set_account', { p_user: u.id, p_active: u.status !== 'active' }); setAsk(null); load(); }
+    catch (e: any) { alert(e.message); } finally { setBusy(false); }
   };
   return (
     <>
@@ -774,6 +778,38 @@ function Users({ preset }: { preset?: string }) {
         </table></div>
       )}
       {open && <UserProfile id={open} onClose={() => { setOpen(null); load(); }} />}
+      {ask && (() => {
+        const restoring = ask.status !== 'active';
+        const name = `${ask.first_name} ${ask.last_name}`;
+        return (
+          <div className="modal-bg" onClick={() => !busy && setAsk(null)}>
+            <div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className={'modal-icon ' + (restoring ? 'ok' : 'err')}>{restoring ? '↺' : '!'}</div>
+              <h2>{restoring ? `Restore ${name}?` : `Suspend ${name}?`}</h2>
+              <p className="muted">{ask.email}{ask.is_tasker ? ' · tasker' : ' · client'}</p>
+              {restoring ? (
+                <ul>
+                  <li>They can use TSKR again: book{ask.is_tasker ? ', go online and take jobs' : ' taskers'}.</li>
+                  <li>Their bookings, coins and history are kept as they were.</li>
+                </ul>
+              ) : (
+                <ul>
+                  <li>They can’t book{ask.is_tasker ? ', go online or get new requests' : ' taskers'}.</li>
+                  {ask.is_tasker && <li>They’re taken offline right away and hidden from clients.</li>}
+                  <li>Nothing is deleted. You can restore them anytime from this list.</li>
+                  <li>Check their open bookings first so no client or tasker is left waiting.</li>
+                </ul>
+              )}
+              <div className="row" style={{ justifyContent: 'flex-end', gap: 8, marginTop: 6 }}>
+                <button className="btn" disabled={busy} onClick={() => setAsk(null)}>Cancel</button>
+                <button className={'btn ' + (restoring ? 'primary' : 'solid-danger')} disabled={busy} onClick={doToggle}>
+                  {busy ? 'Please wait…' : restoring ? 'Yes, restore' : 'Yes, suspend'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }
