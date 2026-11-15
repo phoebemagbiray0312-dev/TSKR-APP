@@ -40,8 +40,8 @@ const TITLES: Record<Tab, string> = {
 function BrandLogo({ height, dark, style }: { height: number; dark?: boolean; style?: React.CSSProperties }) {
   return (
     <span className="brandlogo" style={{ height, width: height * (350 / 96), ...style }}>
-      <img src="/logo.png" alt="tskr" style={dark ? { filter: 'brightness(0.3)' } : undefined} />
-      {[13.1, 18.85, 24.55].map((l, i) => <i key={i} style={{ left: `${l}%`, animationDelay: `${i * 0.18}s` }} />)}
+      <img src={dark ? '/logo-dark.png' : '/logo.png'} alt="tskr" />
+      {[13.1, 18.85, 24.55].map((l, i) => <i key={i} style={{ left: `${l}%`, animationDelay: `${i * 0.18}s`, background: dark ? '#044D5E' : '#FFFFFF' }} />)}
     </span>
   );
 }
