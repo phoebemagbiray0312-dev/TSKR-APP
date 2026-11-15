@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { peso, rpc, supabase, when } from '../lib/supabase';
 
-type Tab = 'overview' | 'revenue' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'settings' | 'profile';
+type Tab = 'overview' | 'revenue' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'team' | 'settings' | 'profile';
 type Overview = Record<string, number | boolean>;
 type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string };
 
@@ -19,6 +19,7 @@ const ICON: Record<string, string> = {
   access: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
   users: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6m2-6c3.3 0 6 2.7 6 6',
   settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7-3 2-1-2-4-2 1-2-2V4h-4v2L9 7 7 6 5 10l2 1v2l-2 1 2 4 2-1 2 2v2h4v-2l2-2 2 1 2-4-2-1v-2Z',
+  team: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6 1.6 0 3 .6 4 1.6M18 13v8m-4-4h8',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
 };
 const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
@@ -31,7 +32,7 @@ const initials = (m: Me | null) => ((m?.first_name?.[0] ?? '') + (m?.last_name?.
 const TITLES: Record<Tab, string> = {
   overview: 'Overview', revenue: 'Revenue', applications: 'Tasker applications', reviews: 'QR and skill reviews', tickets: 'Reports and SOS',
   strikes: 'Strikes, pauses and suspensions', fees: 'Cancellation fees', access: 'ID access log',
-  bookings: 'Bookings', users: 'Users', settings: 'Settings', profile: 'My profile',
+  bookings: 'Bookings', users: 'Users', team: 'Admins', settings: 'Settings', profile: 'My profile',
 };
 
 /* ------------------------------------------------------------------ */
@@ -59,7 +60,12 @@ export default function Admin() {
     const { data } = await supabase.auth.getSession();
     if (!data.session) return setState('out');
     setEmail(data.session.user.email ?? '');
-    const { data: isAdmin } = await supabase.rpc('is_admin');
+    let { data: isAdmin } = await supabase.rpc('is_admin');
+    if (!isAdmin) {
+      // invited by a superadmin? the role is given once the email is confirmed
+      const { data: claimed } = await supabase.rpc('claim_admin_invite');
+      if (claimed) isAdmin = true;
+    }
     if (isAdmin) loadMe();
     setState(isAdmin ? 'in' : 'notadmin');
   }, []);
@@ -74,7 +80,7 @@ export default function Admin() {
     <div className="login"><div className="card">
       <img src="/logo.png" alt="tskr" style={{ height: 30, alignSelf: 'flex-start', filter: 'brightness(0.3)' }} />
       <h2>No admin access yet</h2>
-      <p className="muted">Signed in as <b>{email}</b>. Ask the TSKR owner to give this account admin access, then sign in again.</p>
+      <p className="muted">Signed in as <b>{email}</b>. Ask a superadmin to add this email under <b>Admins</b>, then sign in again. If you were just invited, open the confirmation link sent to your email first.</p>
       <button className="btn" onClick={signOut}>Sign out</button>
     </div></div>
   );
@@ -82,7 +88,7 @@ export default function Admin() {
   const n = (k: string) => Number(ov?.[k] ?? 0);
   const items: [Tab, number?][] = [
     ['overview'], ['revenue'], ['applications', n('applications')], ['reviews', n('qr_pending') + n('skills_pending')],
-    ['tickets', n('tickets_open')], ['strikes'], ['fees'], ['bookings'], ['users'], ['access'], ['settings'],
+    ['tickets', n('tickets_open')], ['strikes'], ['fees'], ['bookings'], ['users'], ['access'], ['team'], ['settings'],
   ];
   const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
   return (
@@ -119,6 +125,7 @@ export default function Admin() {
           {tab === 'access' && <AccessLog />}
           {tab === 'bookings' && <Bookings key={preset} preset={preset} />}
           {tab === 'users' && <Users key={preset} preset={preset} />}
+          {tab === 'team' && me && <Team me={me} />}
           {tab === 'settings' && <Settings onChange={loadOv} />}
           {tab === 'profile' && me && <Profile me={me} onSaved={loadMe} />}
         </div>
@@ -221,7 +228,7 @@ function Login({ onDone }: { onDone: () => void }) {
         const { data, error } = await supabase.auth.signUp({ email, password: pw, options: { data: { full_name: 'TSKR Admin' }, emailRedirectTo: window.location.origin } });
         if (error) throw error;
         if (data.session) onDone();
-        else setMsg('Login created. Ask the TSKR owner to confirm it and give it admin access, then sign in.');
+        else setMsg('Login created. Open the confirmation link we sent to your email, then sign in here. You get access if a superadmin added this email under Admins.');
       }
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   };
@@ -244,7 +251,7 @@ function Login({ onDone }: { onDone: () => void }) {
         <button className="btn" onClick={() => { setMode(mode === 'in' ? 'up' : 'in'); setErr(''); setMsg(''); }}>
           {mode === 'in' ? 'First time? Create an admin login' : 'I already have a login'}
         </button>
-        <p className="muted">Only accounts given admin access by the owner can see this panel.</p>
+        <p className="muted">Only emails added by a superadmin under Admins can see this panel. Invited? Choose “Create an admin login” and use the invited email.</p>
       </div>
     </div>
   );
@@ -881,6 +888,86 @@ function AccessLog() {
             ))}
           </tbody>
         </table></div>
+      )}
+    </>
+  );
+}
+
+function Team({ me }: { me: Me }) {
+  const [t, setT] = useState<{ admins: any[]; invites: any[] } | null>(null);
+  const [f, setF] = useState({ first: '', last: '', email: '', role: 'admin' });
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const sup = me.role === 'superadmin';
+  const load = async () => { try { setT(await rpc('admin_team')); } catch (e: any) { setMsg(e.message); } };
+  useEffect(() => { load(); }, []);
+  const invite = async () => {
+    setBusy(true); setMsg('');
+    try {
+      const r = await rpc<string>('admin_invite', { p_email: f.email, p_role: f.role, p_first: f.first || null, p_last: f.last || null });
+      setMsg(r === 'added'
+        ? `${f.email} already had a TSKR login, so they’re an admin now. They’ll see the panel the next time they sign in.`
+        : `Invite saved. Send ${f.email} this link: ${window.location.origin} — they choose “Create an admin login”, use this same email, open the confirmation email, then sign in.`);
+      setF({ first: '', last: '', email: '', role: 'admin' }); load();
+    } catch (e: any) { setMsg(e.message); } finally { setBusy(false); }
+  };
+  const act = async (fn: string, args: any, ask: string) => {
+    if (!confirm(ask)) return;
+    try { await rpc(fn, args); load(); } catch (e: any) { alert(e.message); }
+  };
+  return (
+    <>
+      <p className="sub">People who can open this admin panel. <b>Superadmin</b> can do everything, including adding and removing admins. <b>Admin</b> can do everything except manage this list.</p>
+      {sup ? (
+        <div className="card" style={{ marginBottom: 20, gap: 10, display: 'flex', flexDirection: 'column' }}>
+          <h2>Add an admin</h2>
+          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+            <input className="input" style={{ flex: 1, minWidth: 140 }} placeholder="First name" value={f.first} onChange={(e) => setF({ ...f, first: e.target.value })} />
+            <input className="input" style={{ flex: 1, minWidth: 140 }} placeholder="Last name" value={f.last} onChange={(e) => setF({ ...f, last: e.target.value })} />
+            <input className="input" style={{ flex: 2, minWidth: 220 }} type="email" placeholder="Their email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
+            <select className="input" style={{ minWidth: 140 }} value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })}>
+              <option value="admin">Admin</option><option value="superadmin">Superadmin</option>
+            </select>
+            <button className="btn primary" disabled={busy || !f.email} onClick={invite}>{busy ? 'Please wait…' : 'Add admin'}</button>
+          </div>
+          <p className="muted">They make their own password, so you never need to know it. Their access starts after they confirm their email.</p>
+          {msg && <div className="note" style={{ wordBreak: 'break-word' }}>{msg}</div>}
+        </div>
+      ) : <div className="note" style={{ marginBottom: 20 }}>Only a superadmin can add or remove admins.</div>}
+      {t === null ? <p className="muted">Loading…</p> : (
+        <>
+          <div className="tablewrap" style={{ marginBottom: 24 }}><table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last sign-in</th><th></th></tr></thead>
+            <tbody>
+              {t.admins.map((a) => (
+                <tr key={a.user_id}>
+                  <td><b>{a.name || '—'}</b>{a.user_id === me.id && <span className="tag" style={{ marginLeft: 6 }}>YOU</span>}</td>
+                  <td>{a.email}</td>
+                  <td><span className={'tag' + (a.role === 'superadmin' ? ' ok' : '')}>{a.role.toUpperCase()}</span></td>
+                  <td className="muted">{a.last_sign_in ? when(a.last_sign_in) : 'never'}</td>
+                  <td>{sup && a.user_id !== me.id && (
+                    <div className="row" style={{ gap: 6 }}>
+                      <button className="btn" onClick={() => act('admin_set_role', { p_user: a.user_id, p_role: a.role === 'superadmin' ? 'admin' : 'superadmin' }, `Make ${a.name || a.email} ${a.role === 'superadmin' ? 'an Admin' : 'a Superadmin'}?`)}>
+                        {a.role === 'superadmin' ? 'Make admin' : 'Make superadmin'}
+                      </button>
+                      <button className="btn danger" onClick={() => act('admin_remove', { p_user: a.user_id }, `Remove admin access for ${a.name || a.email}? Their TSKR login stays, but they can’t open this panel.`)}>Remove</button>
+                    </div>
+                  )}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table></div>
+          <h2 style={{ marginBottom: 10 }}>Waiting to sign up ({t.invites.length})</h2>
+          <div className="list">
+            {t.invites.length === 0 && <div className="card muted">No pending invites.</div>}
+            {t.invites.map((i) => (
+              <div key={i.email} className="card row between">
+                <div><h2>{i.name || i.email}</h2><div className="muted">{i.email} · {i.role} · invited {when(i.at)}</div></div>
+                {sup && <button className="btn" onClick={() => act('admin_cancel_invite', { p_email: i.email }, `Cancel the invite for ${i.email}?`)}>Cancel invite</button>}
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </>
   );
