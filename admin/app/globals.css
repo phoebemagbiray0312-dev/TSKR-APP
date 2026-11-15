@@ -126,3 +126,14 @@ td { padding: 10px; border-top: 1px solid var(--border); vertical-align: top; }
 .modal-icon.err { background: #FDECEC; color: var(--error, #B42318); }
 .modal-icon.ok { background: #E9F8E6; color: #2E7D32; }
 .btn.solid-danger { background: var(--error, #B42318); border-color: var(--error, #B42318); color: #fff; }
+
+/* icon-only row actions (hover shows the name) */
+.iconbtn { position: relative; width: 40px; height: 40px; border-radius: 12px; border: 1.5px solid rgba(4,77,94,.25); background: #fff; color: var(--teal, #044D5E); display: inline-grid; place-items: center; cursor: pointer; transition: background .15s, border-color .15s; }
+.iconbtn:hover { background: #EAF4F5; border-color: var(--teal, #044D5E); }
+.iconbtn.danger { color: var(--error, #B42318); border-color: rgba(180,35,24,.35); }
+.iconbtn.danger:hover { background: #FDECEC; border-color: var(--error, #B42318); }
+.iconbtn.ok { color: #2E7D32; border-color: rgba(46,125,50,.35); }
+.iconbtn.ok:hover { background: #E9F8E6; }
+.iconbtn-spacer { width: 40px; height: 40px; display: inline-block; }
+.iconbtn::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0E2A31; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; }
+.iconbtn:hover::after, .iconbtn:focus-visible::after { opacity: 1; }

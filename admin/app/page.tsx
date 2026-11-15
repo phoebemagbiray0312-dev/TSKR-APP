@@ -22,6 +22,9 @@ const ICON: Record<string, string> = {
   settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7-3 2-1-2-4-2 1-2-2V4h-4v2L9 7 7 6 5 10l2 1v2l-2 1 2 4 2-1 2 2v2h4v-2l2-2 2 1 2-4-2-1v-2Z',
   team: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6 1.6 0 3 .6 4 1.6M18 13v8m-4-4h8',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
+  coins: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3-12.5c-.6-.9-1.7-1.5-3-1.5-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.6-3.2-1.6M12 5.5v1.5m0 10v1.5',
+  ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM5.6 5.6l12.8 12.8',
+  restore: 'M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5',
 };
 const Icon = ({ name, size = 18 }: { name: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -836,9 +839,13 @@ function Users({ preset }: { preset?: string }) {
                 <td><span className={'tag ' + (u.status === 'active' ? 'ok' : 'err')}>{u.status}</span></td>
                 <td>{when(u.created_at)}</td>
                 <td><div className="row" style={{ flexWrap: 'nowrap' }}>
-                  <button className="btn" onClick={() => setOpen(u.id)}>Profile</button>
-                  {(u.is_tasker || u.tasker_status !== 'none') && <button className="btn" onClick={() => coinsFor(u)}>Coins</button>}
-                  <button className={'btn ' + (u.status === 'active' ? 'danger' : '')} onClick={() => toggle(u)}>{u.status === 'active' ? 'Suspend' : 'Restore'}</button>
+                  <button className="iconbtn" onClick={() => setOpen(u.id)} data-tip="Profile" aria-label={`Profile of ${u.first_name} ${u.last_name}`}><Icon name="profile" /></button>
+                  {(u.is_tasker || u.tasker_status !== 'none')
+                    ? <button className="iconbtn" onClick={() => coinsFor(u)} data-tip="Coins" aria-label={`Coins of ${u.first_name} ${u.last_name}`}><Icon name="coins" /></button>
+                    : <span className="iconbtn-spacer" aria-hidden />}
+                  {u.status === 'active'
+                    ? <button className="iconbtn danger" onClick={() => toggle(u)} data-tip="Suspend" aria-label={`Suspend ${u.first_name} ${u.last_name}`}><Icon name="ban" /></button>
+                    : <button className="iconbtn ok" onClick={() => toggle(u)} data-tip="Restore" aria-label={`Restore ${u.first_name} ${u.last_name}`}><Icon name="restore" /></button>}
                 </div></td>
               </tr>
             ))}
