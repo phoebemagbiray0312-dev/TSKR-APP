@@ -137,3 +137,7 @@ td { padding: 10px; border-top: 1px solid var(--border); vertical-align: top; }
 .iconbtn-spacer { width: 40px; height: 40px; display: inline-block; }
 .iconbtn::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0E2A31; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; }
 .iconbtn:hover::after, .iconbtn:focus-visible::after { opacity: 1; }
+
+/* admin profile pictures */
+.avatar.xl { width: 88px; height: 88px; font-size: 30px; border-radius: 24px; }
+img.avatar.photo { object-fit: cover; background: #DDE8EA; padding: 0; }

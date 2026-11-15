@@ -5,7 +5,7 @@ import { peso, rpc, supabase, when } from '../lib/supabase';
 
 type Tab = 'overview' | 'revenue' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'team' | 'settings' | 'profile';
 type Overview = Record<string, number | boolean>;
-type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string };
+type Me = { id: string; email: string; first_name: string; last_name: string; phone: string | null; role: string; photo: string | null };
 
 /* simple line icons (24px grid) */
 const ICON: Record<string, string> = {
@@ -66,9 +66,9 @@ export default function Admin() {
     if (!u.user) return;
     const [{ data: p }, { data: a }] = await Promise.all([
       supabase.from('profiles').select('first_name,last_name,phone').eq('id', u.user.id).maybeSingle(),
-      supabase.from('admin_users').select('role').eq('user_id', u.user.id).maybeSingle(),
+      supabase.from('admin_users').select('role,photo_path').eq('user_id', u.user.id).maybeSingle(),
     ]);
-    setMe({ id: u.user.id, email: u.user.email ?? '', first_name: p?.first_name ?? '', last_name: p?.last_name ?? '', phone: p?.phone ?? null, role: a?.role ?? 'admin' });
+    setMe({ id: u.user.id, email: u.user.email ?? '', first_name: p?.first_name ?? '', last_name: p?.last_name ?? '', phone: p?.phone ?? null, role: a?.role ?? 'admin', photo: a?.photo_path ?? null });
   }, []);
   const check = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
@@ -120,7 +120,7 @@ export default function Admin() {
           ))}
         </div>
         <button className={'me' + (tab === 'profile' ? ' on' : '')} onClick={() => setTab('profile')}>
-          <span className="avatar">{initials(me)}</span>
+          <Avatar path={me?.photo} text={initials(me)} />
           <span className="who"><b>{name}</b><small>{me?.role ?? 'admin'}</small></span>
         </button>
         <button className="signout" onClick={signOut}>Sign out</button>
@@ -129,7 +129,7 @@ export default function Admin() {
         <div className="wrap">
           <header className="top">
             <h1>{TITLES[tab]}</h1>
-            <button className="chip" onClick={() => setTab('profile')}><span className="avatar sm">{initials(me)}</span>{name}</button>
+            <button className="chip" onClick={() => setTab('profile')}><Avatar path={me?.photo} text={initials(me)} size="sm" />{name}</button>
           </header>
           {ov && (tab === 'overview' || tab === 'settings') && (ov.demo_mode || ov.payments_demo) ? <div className="note" style={{ marginBottom: 16 }}>TEST BUILD: demo codes and demo payments are ON. Turn them off in Settings before launch.</div> : null}
           {tab === 'overview' && <OverviewTab ov={ov} go={go} />}
@@ -174,6 +174,30 @@ function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
     if (error) return setErr(error.message.includes('duplicate') ? 'That mobile number is already used by another account.' : error.message);
     setMsg('Saved.'); onSaved();
   };
+  // shrink to a 512px square JPEG before upload, so photos stay small and fast
+  const uploadPhoto = async (file: File) => {
+    setMsg(''); setErr('');
+    if (file.size > 15 * 1024 * 1024) return setErr('That photo is too big. Use one under 15 MB.');
+    setBusy('photo');
+    try {
+      const img = await new Promise<HTMLImageElement>((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => bad(new Error('Can’t read that image.')); i.src = URL.createObjectURL(file); });
+      const side = Math.min(img.width, img.height); const c = document.createElement('canvas'); c.width = c.height = 512;
+      c.getContext('2d')!.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 512, 512);
+      const blob: Blob = await new Promise((ok) => c.toBlob((b) => ok(b!), 'image/jpeg', 0.86));
+      const path = `${me.id}/${Date.now()}.jpg`;
+      const { error } = await supabase.storage.from('admin-avatars').upload(path, blob, { contentType: 'image/jpeg' });
+      if (error) throw error;
+      await rpc('admin_set_my_photo', { p_path: path });
+      if (me.photo) await supabase.storage.from('admin-avatars').remove([me.photo]);
+      setMsg('Photo updated.'); onSaved();
+    } catch (e: any) { setErr(e.message); } finally { setBusy(''); }
+  };
+  const removePhoto = async () => {
+    if (!confirm('Remove your profile photo?')) return;
+    setBusy('photo');
+    try { await rpc('admin_set_my_photo', { p_path: null }); if (me.photo) await supabase.storage.from('admin-avatars').remove([me.photo]); onSaved(); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(''); }
+  };
   const savePw = async () => {
     setPwMsg(''); setPwErr('');
     if (pw.length < 10) return setPwErr('Use at least 10 characters.');
@@ -190,8 +214,18 @@ function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
       <div className="cols">
         <section className="card form">
           <div className="row" style={{ gap: 14, marginBottom: 6 }}>
-            <span className="avatar lg">{initials({ ...me, first_name: first, last_name: last })}</span>
-            <div><h2>{`${first} ${last}`.trim() || 'Your name'}</h2><span className="tag">{me.role.toUpperCase()}</span></div>
+            <Avatar path={me.photo} text={initials({ ...me, first_name: first, last_name: last })} size="xl" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <h2>{`${first} ${last}`.trim() || 'Your name'}</h2>
+              <span className="tag" style={{ alignSelf: 'flex-start' }}>{me.role.toUpperCase()}</span>
+              <div className="row" style={{ gap: 6 }}>
+                <label className="btn" style={{ cursor: 'pointer' }}>
+                  {busy === 'photo' ? 'Uploading…' : me.photo ? 'Change photo' : 'Add photo'}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={busy === 'photo'} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) uploadPhoto(f); }} />
+                </label>
+                {me.photo && <button className="btn" disabled={busy === 'photo'} onClick={removePhoto}>Remove</button>}
+              </div>
+            </div>
           </div>
           <label>First name<input className="input" value={first} onChange={(e) => setFirst(e.target.value)} /></label>
           <label>Last name<input className="input" value={last} onChange={(e) => setLast(e.target.value)} /></label>
@@ -347,6 +381,11 @@ function useSigned(bucket: string, path?: string | null) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => { if (!path) return; supabase.storage.from(bucket).createSignedUrl(path, 600).then(({ data }) => setUrl(data?.signedUrl ?? null)); }, [bucket, path]);
   return url;
+}
+function Avatar({ path, text, size }: { path?: string | null; text: string; size?: 'sm' | 'lg' | 'xl' }) {
+  const url = useSigned('admin-avatars', path ?? null);
+  const cls = 'avatar' + (size ? ' ' + size : '');
+  return path && url ? <img className={cls + ' photo'} src={url} alt="" /> : <span className={cls}>{text}</span>;
 }
 function Photo({ bucket, path, label, onZoom }: { bucket: string; path?: string | null; label: string; onZoom: (u: string) => void }) {
   const url = useSigned(bucket, path);
@@ -1253,7 +1292,10 @@ function Team({ me }: { me: Me }) {
             <tbody>
               {t.admins.map((a) => (
                 <tr key={a.user_id}>
-                  <td><b>{a.name || '—'}</b>{a.user_id === me.id && <span className="tag" style={{ marginLeft: 6 }}>YOU</span>}</td>
+                  <td><div className="row" style={{ gap: 10, alignItems: 'center', flexWrap: 'nowrap' }}>
+                    <Avatar path={a.photo} text={((a.name || a.email || '?').split(' ').map((w: string) => w[0]).join('').slice(0, 2)).toUpperCase()} />
+                    <b>{a.name || '—'}</b>{a.user_id === me.id && <span className="tag">YOU</span>}
+                  </div></td>
                   <td>{a.email}</td>
                   <td><span className={'tag' + (a.role === 'superadmin' ? ' ok' : '')}>{a.role.toUpperCase()}</span></td>
                   <td className="muted">{a.last_sign_in ? when(a.last_sign_in) : 'never'}</td>
