@@ -50,7 +50,7 @@ function BrandLogo({ height, dark, style }: { height: number; dark?: boolean; st
 /* Admin shell: login gate + sidebar                                    */
 /* ------------------------------------------------------------------ */
 export default function Admin() {
-  const [state, setState] = useState<'loading' | 'out' | 'notadmin' | 'in'>('loading');
+  const [state, setState] = useState<'loading' | 'out' | 'setpw' | 'notadmin' | 'in'>('loading');
   const [email, setEmail] = useState('');
   const [me, setMe] = useState<Me | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
@@ -71,6 +71,8 @@ export default function Admin() {
     const { data } = await supabase.auth.getSession();
     if (!data.session) return setState('out');
     setEmail(data.session.user.email ?? '');
+    // opened from an invite or "forgot password" email: choose a password first
+    if (new URLSearchParams(window.location.search).get('setpw') === '1') return setState('setpw');
     let { data: isAdmin } = await supabase.rpc('is_admin');
     if (!isAdmin) {
       // invited by a superadmin? the role is given once the email is confirmed
@@ -87,11 +89,12 @@ export default function Admin() {
 
   if (state === 'loading') return <div className="login"><p className="muted">Loading…</p></div>;
   if (state === 'out') return <Login onDone={check} />;
+  if (state === 'setpw') return <SetPassword email={email} onDone={() => { window.history.replaceState(null, '', window.location.pathname); check(); }} />;
   if (state === 'notadmin') return (
     <div className="login"><div className="card">
       <BrandLogo height={30} dark style={{ alignSelf: 'flex-start' }} />
       <h2>No admin access yet</h2>
-      <p className="muted">Signed in as <b>{email}</b>. Ask a superadmin to add this email under <b>Admins</b>, then sign in again. If you were just invited, open the confirmation link sent to your email first.</p>
+      <p className="muted">Signed in as <b>{email}</b>. Ask a superadmin to invite this email under <b>Admins</b>. They’ll get an email with a link to set up their admin login.</p>
       <button className="btn" onClick={signOut}>Sign out</button>
     </div></div>
   );
@@ -220,7 +223,7 @@ function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
 }
 
 function Login({ onDone }: { onDone: () => void }) {
-  const [mode, setMode] = useState<'in' | 'up'>('in');
+  const [mode, setMode] = useState<'in' | 'forgot'>('in');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
@@ -235,11 +238,9 @@ function Login({ onDone }: { onDone: () => void }) {
         if (error) throw error;
         onDone();
       } else {
-        if (pw.length < 10) throw new Error('Use at least 10 characters for the password.');
-        const { data, error } = await supabase.auth.signUp({ email, password: pw, options: { data: { full_name: 'TSKR Admin' }, emailRedirectTo: window.location.origin } });
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/?setpw=1` });
         if (error) throw error;
-        if (data.session) onDone();
-        else setMsg('Login created. Open the confirmation link we sent to your email, then sign in here. You get access if a superadmin added this email under Admins.');
+        setMsg('If this email has an admin login, we sent a link to set a new password. Check your inbox and spam folder.');
       }
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   };
@@ -247,22 +248,60 @@ function Login({ onDone }: { onDone: () => void }) {
     <div className="login">
       <div className="card">
         <div className="row"><BrandLogo height={30} dark /><span className="badge">ADMIN</span></div>
-        <h2>{mode === 'in' ? 'Sign in' : 'Create an admin login'}</h2>
-        <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />
-        <div className="pw">
-          <input className="input" type={showPw ? 'text' : 'password'} placeholder="Password" value={pw} onChange={(e) => setPw(e.target.value)}
-            autoComplete={mode === 'in' ? 'current-password' : 'new-password'} onKeyDown={(e) => e.key === 'Enter' && go()} />
-          <button type="button" className="eye" onClick={() => setShowPw(!showPw)} aria-label={showPw ? 'Hide password' : 'Show password'}>
-            {showPw ? 'Hide' : 'Show'}
-          </button>
-        </div>
+        <h2>{mode === 'in' ? 'Sign in' : 'Reset your password'}</h2>
+        <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username"
+          onKeyDown={(e) => mode === 'forgot' && e.key === 'Enter' && go()} />
+        {mode === 'in' && (
+          <div className="pw">
+            <input className="input" type={showPw ? 'text' : 'password'} placeholder="Password" value={pw} onChange={(e) => setPw(e.target.value)}
+              autoComplete="current-password" onKeyDown={(e) => e.key === 'Enter' && go()} />
+            <button type="button" className="eye" onClick={() => setShowPw(!showPw)} aria-label={showPw ? 'Hide password' : 'Show password'}>
+              {showPw ? 'Hide' : 'Show'}
+            </button>
+          </div>
+        )}
         {err && <div className="err">{err}</div>}
         {msg && <div className="note">{msg}</div>}
-        <button className="btn primary" disabled={busy || !email || !pw} onClick={go}>{busy ? 'Please wait…' : mode === 'in' ? 'Sign in' : 'Create login'}</button>
-        <button className="btn" onClick={() => { setMode(mode === 'in' ? 'up' : 'in'); setErr(''); setMsg(''); }}>
-          {mode === 'in' ? 'First time? Create an admin login' : 'I already have a login'}
+        <button className="btn primary" disabled={busy || !email || (mode === 'in' && !pw)} onClick={go}>
+          {busy ? 'Please wait…' : mode === 'in' ? 'Sign in' : 'Send reset link'}
         </button>
-        <p className="muted">Only emails added by a superadmin under Admins can see this panel. Invited? Choose “Create an admin login” and use the invited email.</p>
+        <button className="btn" onClick={() => { setMode(mode === 'in' ? 'forgot' : 'in'); setErr(''); setMsg(''); }}>
+          {mode === 'in' ? 'Forgot password?' : 'Back to sign in'}
+        </button>
+        <p className="muted">Admin logins are by invite only. A superadmin adds you under Admins and you get an email to set your password.</p>
+      </div>
+    </div>
+  );
+}
+
+function SetPassword({ email, onDone }: { email: string; onDone: () => void }) {
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [show, setShow] = useState(false);
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const save = async () => {
+    setErr('');
+    if (pw.length < 10) return setErr('Use at least 10 characters.');
+    if (pw !== pw2) return setErr('The two passwords don’t match.');
+    setBusy(true);
+    try { const { error } = await supabase.auth.updateUser({ password: pw }); if (error) throw error; onDone(); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="login">
+      <div className="card">
+        <div className="row"><BrandLogo height={30} dark /><span className="badge">ADMIN</span></div>
+        <h2>Set your password</h2>
+        <p className="muted">For <b>{email}</b>. Use at least 10 characters. Only you will know it.</p>
+        <div className="pw">
+          <input className="input" type={show ? 'text' : 'password'} placeholder="New password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" />
+          <button type="button" className="eye" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'}>{show ? 'Hide' : 'Show'}</button>
+        </div>
+        <input className="input" type={show ? 'text' : 'password'} placeholder="Type it again" value={pw2} onChange={(e) => setPw2(e.target.value)}
+          autoComplete="new-password" onKeyDown={(e) => e.key === 'Enter' && save()} />
+        {err && <div className="err">{err}</div>}
+        <button className="btn primary" disabled={busy || !pw || !pw2} onClick={save}>{busy ? 'Saving…' : 'Save password and continue'}</button>
       </div>
     </div>
   );
@@ -1044,12 +1083,27 @@ function Team({ me }: { me: Me }) {
   const invite = async () => {
     setBusy(true); setMsg('');
     try {
-      const r = await rpc<string>('admin_invite', { p_email: f.email, p_role: f.role, p_first: f.first || null, p_last: f.last || null });
-      setMsg(r === 'added'
-        ? `${f.email} already had a TSKR login, so they’re an admin now. They’ll see the panel the next time they sign in.`
-        : `Invite saved. Send ${f.email} this link: ${window.location.origin} — they choose “Create an admin login”, use this same email, open the confirmation email, then sign in.`);
+      const r = await sendInvite(f.email, f.role, f.first, f.last);
+      setMsg(r);
       setF({ first: '', last: '', email: '', role: 'admin' }); load();
     } catch (e: any) { setMsg(e.message); } finally { setBusy(false); }
+  };
+  const sendInvite = async (email: string, role: string, first?: string, last?: string, resend = false) => {
+    const { data, error } = await supabase.functions.invoke('admin-invite', {
+      body: { email, role, first_name: first || null, last_name: last || null, origin: window.location.origin, resend },
+    });
+    if (error) {
+      let m = error.message;
+      try { const b = await (error as any).context?.json?.(); if (b?.error) m = b.error; } catch { /* keep message */ }
+      throw new Error(m);
+    }
+    if (data?.result === 'added') return `${email} already had a TSKR login, so they’re an admin now. They’ll see the panel the next time they sign in.`;
+    if (data?.result === 'invited_no_email') return data.warning;
+    return `Invite email sent to ${email}. They open the link, set their own password, and they’re in. The link works once; use Resend if it expires.`;
+  };
+  const resend = async (i: any) => {
+    try { const [first, ...rest] = (i.name || '').split(' '); alert(await sendInvite(i.email, i.role, first, rest.join(' '), true)); load(); }
+    catch (e: any) { alert(e.message); }
   };
   const act = async (fn: string, args: any, ask: string) => {
     if (!confirm(ask)) return;
@@ -1070,7 +1124,7 @@ function Team({ me }: { me: Me }) {
             </select>
             <button className="btn primary" disabled={busy || !f.email} onClick={invite}>{busy ? 'Please wait…' : 'Add admin'}</button>
           </div>
-          <p className="muted">They make their own password, so you never need to know it. Their access starts after they confirm their email.</p>
+          <p className="muted">They get an email invite and set their own password, so you never need to know it.</p>
           {msg && <div className="note" style={{ wordBreak: 'break-word' }}>{msg}</div>}
         </div>
       ) : <div className="note" style={{ marginBottom: 20 }}>Only a superadmin can add or remove admins.</div>}
@@ -1103,7 +1157,10 @@ function Team({ me }: { me: Me }) {
             {t.invites.map((i) => (
               <div key={i.email} className="card row between">
                 <div><h2>{i.name || i.email}</h2><div className="muted">{i.email} · {i.role} · invited {when(i.at)}</div></div>
-                {sup && <button className="btn" onClick={() => act('admin_cancel_invite', { p_email: i.email }, `Cancel the invite for ${i.email}?`)}>Cancel invite</button>}
+                {sup && <div className="row" style={{ gap: 6 }}>
+                  <button className="btn" onClick={() => resend(i)}>Resend email</button>
+                  <button className="btn" onClick={() => act('admin_cancel_invite', { p_email: i.email }, `Cancel the invite for ${i.email}?`)}>Cancel invite</button>
+                </div>}
               </div>
             ))}
           </div>
