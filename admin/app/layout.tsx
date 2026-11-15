@@ -4,7 +4,7 @@ import AnimatedFavicon from './AnimatedFavicon';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
 export const metadata = {
-  title: 'TSKR Admin', robots: { index: false, follow: false },
+  title: 'TSKR', robots: { index: false, follow: false },
   icons: { icon: '/icon.png', apple: '/apple-icon.png' },
 };
 
