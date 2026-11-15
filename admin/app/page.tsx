@@ -582,7 +582,7 @@ function Bookings({ preset }: { preset?: string }) {
   );
 }
 
-const US_FILTERS: [string, string][] = [['all', 'All'], ['clients', 'Clients'], ['taskers', 'Active taskers'], ['online', 'Online now']];
+const US_FILTERS: [string, string][] = [['all', 'All'], ['clients', 'Clients'], ['taskers', 'Active taskers'], ['online', 'Online now'], ['admins', 'Admins']];
 function UserProfile({ id, onClose }: { id: string; onClose: () => void }) {
   const [u, setU] = useState<any>(null);
   const [err, setErr] = useState('');
@@ -801,7 +801,13 @@ function Users({ preset }: { preset?: string }) {
     if (f === 'taskers') s = s.eq('is_tasker', true).eq('tasker_status', 'active');
     if (f === 'online') s = s.eq('tp.is_online', true);
     if (q.trim()) s = s.or(`email.ilike.%${q.trim()}%,first_name.ilike.%${q.trim()}%,last_name.ilike.%${q.trim()}%,phone.ilike.%${q.trim()}%`);
-    const { data } = await s; setRows(data ?? []);
+    const [{ data }, { data: adm }] = await Promise.all([s, supabase.from('admin_users').select('user_id,role')]);
+    const roles = new Map((adm ?? []).map((a: any) => [a.user_id, a.role]));
+    let list = (data ?? []).map((u: any) => ({ ...u, admin_role: roles.get(u.id) ?? null }));
+    // admin logins are staff, not customers: keep them out of Clients, show them under Admins
+    if (f === 'clients') list = list.filter((u: any) => !u.admin_role);
+    if (f === 'admins') list = list.filter((u: any) => u.admin_role);
+    setRows(list);
   };
   useEffect(() => { load(); }, [hideDemo, f]);
   const [coinU, setCoinU] = useState<any>(null);
@@ -834,7 +840,7 @@ function Users({ preset }: { preset?: string }) {
               <tr key={u.id}>
                 <td><button className="link" onClick={() => setOpen(u.id)}><b>{u.first_name} {u.last_name}</b></button> {u.is_demo && <span className="tag warn">DEMO</span>}</td>
                 <td>{u.email}<div className="muted">{u.phone ? `+63 ${u.phone}` : 'no mobile'}</div></td>
-                <td>{u.signup_role}{u.is_tasker ? <div className="muted">tasker · {u.tasker_status}</div> : u.tasker_status !== 'none' ? <div className="muted">tasker {u.tasker_status}</div> : null}</td>
+                <td>{u.admin_role ? <span className="tag ok">{String(u.admin_role).toUpperCase()}</span> : u.signup_role}{u.is_tasker ? <div className="muted">tasker · {u.tasker_status}</div> : u.tasker_status !== 'none' ? <div className="muted">tasker {u.tasker_status}</div> : null}</td>
                 <td>{u.plan}</td>
                 <td><span className={'tag ' + (u.status === 'active' ? 'ok' : 'err')}>{u.status}</span></td>
                 <td>{when(u.created_at)}</td>
@@ -843,7 +849,7 @@ function Users({ preset }: { preset?: string }) {
                   {(u.is_tasker || u.tasker_status !== 'none')
                     ? <button className="iconbtn" onClick={() => coinsFor(u)} data-tip="Coins" aria-label={`Coins of ${u.first_name} ${u.last_name}`}><Icon name="coins" /></button>
                     : <span className="iconbtn-spacer" aria-hidden />}
-                  {u.status === 'active'
+                  {u.admin_role ? <span className="iconbtn-spacer" aria-hidden /> : u.status === 'active'
                     ? <button className="iconbtn danger" onClick={() => toggle(u)} data-tip="Suspend" aria-label={`Suspend ${u.first_name} ${u.last_name}`}><Icon name="ban" /></button>
                     : <button className="iconbtn ok" onClick={() => toggle(u)} data-tip="Restore" aria-label={`Restore ${u.first_name} ${u.last_name}`}><Icon name="restore" /></button>}
                 </div></td>
