@@ -23,6 +23,8 @@ const ICON: Record<string, string> = {
   team: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6 1.6 0 3 .6 4 1.6M18 13v8m-4-4h8',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
   coins: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3-12.5c-.6-.9-1.7-1.5-3-1.5-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.6-3.2-1.6M12 5.5v1.5m0 10v1.5',
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4V8Zm8 9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
+  trash: 'M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3',
   ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM5.6 5.6l12.8 12.8',
   restore: 'M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5',
 };
@@ -214,17 +216,20 @@ function Profile({ me, onSaved }: { me: Me; onSaved: () => void }) {
       <div className="cols">
         <section className="card form">
           <div className="row" style={{ gap: 14, marginBottom: 6 }}>
-            <Avatar path={me.photo} text={initials({ ...me, first_name: first, last_name: last })} size="xl" />
+            <div className="avatar-edit">
+              <Avatar path={me.photo} text={initials({ ...me, first_name: first, last_name: last })} size="xl" />
+              {busy === 'photo' && <span className="avatar-busy">…</span>}
+              <label className="avatar-cam" data-tip={me.photo ? 'Change photo' : 'Add photo'} aria-label={me.photo ? 'Change photo' : 'Add photo'}>
+                <Icon name="camera" size={16} />
+                <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={busy === 'photo'} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) uploadPhoto(f); }} />
+              </label>
+              {me.photo && (
+                <button className="avatar-del" data-tip="Remove photo" aria-label="Remove photo" disabled={busy === 'photo'} onClick={removePhoto}><Icon name="trash" size={14} /></button>
+              )}
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <h2>{`${first} ${last}`.trim() || 'Your name'}</h2>
               <span className="tag" style={{ alignSelf: 'flex-start' }}>{me.role.toUpperCase()}</span>
-              <div className="row" style={{ gap: 6 }}>
-                <label className="btn" style={{ cursor: 'pointer' }}>
-                  {busy === 'photo' ? 'Uploading…' : me.photo ? 'Change photo' : 'Add photo'}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={busy === 'photo'} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) uploadPhoto(f); }} />
-                </label>
-                {me.photo && <button className="btn" disabled={busy === 'photo'} onClick={removePhoto}>Remove</button>}
-              </div>
             </div>
           </div>
           <label>First name<input className="input" value={first} onChange={(e) => setFirst(e.target.value)} /></label>

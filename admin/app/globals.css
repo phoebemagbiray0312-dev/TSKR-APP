@@ -141,3 +141,14 @@ td { padding: 10px; border-top: 1px solid var(--border); vertical-align: top; }
 /* admin profile pictures */
 .avatar.xl { width: 88px; height: 88px; font-size: 30px; border-radius: 24px; }
 img.avatar.photo { object-fit: cover; background: #DDE8EA; padding: 0; }
+
+/* photo edit icons on the profile picture */
+.avatar-edit { position: relative; flex: none; }
+.avatar-cam, .avatar-del { position: absolute; display: grid; place-items: center; border-radius: 999px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.avatar-cam { right: -6px; bottom: -6px; width: 34px; height: 34px; background: var(--teal, #044D5E); color: #fff; }
+.avatar-cam:hover { filter: brightness(1.15); }
+.avatar-del { right: -6px; top: -6px; width: 28px; height: 28px; background: #fff; color: var(--error, #B42318); padding: 0; }
+.avatar-del:hover { background: #FDECEC; }
+.avatar-busy { position: absolute; inset: 0; border-radius: 24px; background: rgba(255,255,255,.7); display: grid; place-items: center; font-weight: 800; font-size: 22px; color: var(--teal, #044D5E); }
+.avatar-cam::after, .avatar-del::after { content: attr(data-tip); position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0E2A31; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; z-index: 2; }
+.avatar-cam:hover::after, .avatar-del:hover::after { opacity: 1; }
