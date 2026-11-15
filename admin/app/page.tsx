@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
+import type React from 'react';
 import { peso, rpc, supabase, when } from '../lib/supabase';
 
 type Tab = 'overview' | 'revenue' | 'applications' | 'reviews' | 'tickets' | 'strikes' | 'fees' | 'bookings' | 'users' | 'access' | 'team' | 'settings' | 'profile';
@@ -34,6 +35,16 @@ const TITLES: Record<Tab, string> = {
   strikes: 'Strikes, pauses and suspensions', fees: 'Cancellation fees', access: 'ID access log',
   bookings: 'Bookings', users: 'Users', team: 'Admins', settings: 'Settings', profile: 'My profile',
 };
+
+/** Same header logo as the app: three white dots that keep "typing" (1.4s loop, 0.18s apart). */
+function BrandLogo({ height, dark, style }: { height: number; dark?: boolean; style?: React.CSSProperties }) {
+  return (
+    <span className="brandlogo" style={{ height, width: height * (350 / 96), ...style }}>
+      <img src="/logo.png" alt="tskr" style={dark ? { filter: 'brightness(0.3)' } : undefined} />
+      {[13.1, 18.85, 24.55].map((l, i) => <i key={i} style={{ left: `${l}%`, animationDelay: `${i * 0.18}s` }} />)}
+    </span>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /* Admin shell: login gate + sidebar                                    */
@@ -78,7 +89,7 @@ export default function Admin() {
   if (state === 'out') return <Login onDone={check} />;
   if (state === 'notadmin') return (
     <div className="login"><div className="card">
-      <img src="/logo.png" alt="tskr" style={{ height: 30, alignSelf: 'flex-start', filter: 'brightness(0.3)' }} />
+      <BrandLogo height={30} dark style={{ alignSelf: 'flex-start' }} />
       <h2>No admin access yet</h2>
       <p className="muted">Signed in as <b>{email}</b>. Ask a superadmin to add this email under <b>Admins</b>, then sign in again. If you were just invited, open the confirmation link sent to your email first.</p>
       <button className="btn" onClick={signOut}>Sign out</button>
@@ -94,7 +105,7 @@ export default function Admin() {
   return (
     <div className="shell">
       <aside className="side">
-        <div className="brand"><img src="/logo.png" alt="tskr" /><span className="badge">ADMIN</span></div>
+        <div className="brand"><BrandLogo height={34} /><span className="badge">ADMIN</span></div>
         <div className="navlist">
           {items.map(([k, c]) => (
             <button key={k} className={'nav' + (tab === k ? ' on' : '')} onClick={() => go(k)}>
@@ -235,7 +246,7 @@ function Login({ onDone }: { onDone: () => void }) {
   return (
     <div className="login">
       <div className="card">
-        <div className="row"><img src="/logo.png" alt="tskr" style={{ height: 30, filter: 'brightness(0.3)' }} /><span className="badge">ADMIN</span></div>
+        <div className="row"><BrandLogo height={30} dark /><span className="badge">ADMIN</span></div>
         <h2>{mode === 'in' ? 'Sign in' : 'Create an admin login'}</h2>
         <input className="input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />
         <div className="pw">
