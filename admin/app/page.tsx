@@ -530,11 +530,138 @@ function Bookings({ preset }: { preset?: string }) {
 }
 
 const US_FILTERS: [string, string][] = [['all', 'All'], ['clients', 'Clients'], ['taskers', 'Active taskers'], ['online', 'Online now']];
+function UserProfile({ id, onClose }: { id: string; onClose: () => void }) {
+  const [u, setU] = useState<any>(null);
+  const [err, setErr] = useState('');
+  const [ids, setIds] = useState(false);
+  const [zoom, setZoom] = useState<string | null>(null);
+  useEffect(() => { rpc('admin_user_profile', { p_user: id }).then(setU).catch((e) => setErr(e.message)); }, [id]);
+  const t = u?.tasker;
+  const photo = useSigned('tasker-media', t?.photo_path);
+  const showIds = async () => { await rpc('admin_log_kyc_view', { p_verification: t.verification.id }); setIds(true); };
+  const stat = (k: string, v: any) => <div className="card stat"><div className="v">{v ?? '—'}</div><div className="k">{k}</div></div>;
+  const ini = u ? ((u.first_name?.[0] ?? '') + (u.last_name?.[0] ?? '')).toUpperCase() : '';
+  return (
+    <div className="drawer-bg" onClick={onClose}>
+      <aside className="drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="row between" style={{ marginBottom: 12 }}><h2>Profile</h2><button className="btn" onClick={onClose}>Close</button></div>
+        {err && <div className="err">{err}</div>}
+        {!u && !err && <p className="muted">Loading…</p>}
+        {u && (<>
+          <div className="row" style={{ gap: 14, alignItems: 'center', marginBottom: 14 }}>
+            {photo ? <img src={photo} alt="" onClick={() => setZoom(photo)} style={{ width: 84, height: 84, borderRadius: 20, objectFit: 'cover', cursor: 'zoom-in' }} />
+              : <span className="avatar" style={{ width: 84, height: 84, fontSize: 28, borderRadius: 20 }}>{ini}</span>}
+            <div>
+              <h2 style={{ fontSize: 22 }}>{u.first_name} {u.last_name}{t?.nickname ? <span className="muted" style={{ fontWeight: 600 }}> · “{t.nickname}”</span> : null}</h2>
+              {t?.title && <div>{t.title}{t.years ? ` · ${t.years} yrs` : ''}</div>}
+              <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                <span className="tag">{u.is_tasker ? 'TASKER' : 'CLIENT'}</span>
+                <span className={'tag ' + (u.status === 'active' ? 'ok' : 'err')}>{String(u.status).toUpperCase()}</span>
+                {u.plan === 'plus' && <span className="tag ok">PLUS</span>}
+                {t?.top && <span className="tag ok">★ TOP TASKER</span>}
+                {u.is_admin && <span className="tag">ADMIN</span>}
+                {u.is_demo && <span className="tag warn">DEMO</span>}
+                {u.suspended_until && <span className="tag err">SUSPENDED UNTIL {when(u.suspended_until)}</span>}
+                {t?.paused && !u.suspended_until && <span className="tag err">PAUSED</span>}
+              </div>
+            </div>
+          </div>
+          {!t && <p className="muted" style={{ marginBottom: 12 }}>Clients don’t upload a photo or ID in the app, so there’s no face to show. Their name, contact and history are below.</p>}
+
+          <h3>Contact</h3>
+          <div className="card" style={{ marginBottom: 14 }}>
+            <div>{u.email}</div>
+            <div>{u.phone ? `+63 ${u.phone}` : <span className="muted">no mobile</span>}</div>
+            <div className="muted">Emergency contact: {u.emergency_name ? `${u.emergency_name} · ${u.emergency_phone ?? ''}` : 'none'}</div>
+            <div className="muted">Areas: {u.areas.length ? u.areas.join(' · ') : '—'}</div>
+            <div className="muted">Joined {when(u.created_at)}{u.closed_at ? ` · closed ${when(u.closed_at)} (${u.close_reason ?? ''})` : ''}</div>
+          </div>
+
+          <h3>As a client</h3>
+          <div className="stats" style={{ marginBottom: 14 }}>
+            {stat('Bookings', u.as_client.total)}{stat('Completed', u.as_client.completed)}{stat('Cancelled by them', u.as_client.cancelled)}
+            {stat('Rating from taskers', u.as_client.rating ? `★ ${u.as_client.rating} (${u.as_client.rating_count})` : '—')}
+          </div>
+
+          {t && (<>
+            <h3>As a tasker</h3>
+            <div className="stats" style={{ marginBottom: 10 }}>
+              {stat('Rating', t.rating ? `★ ${t.rating} (${t.rating_count})` : '—')}{stat('Jobs done', t.jobs_done)}
+              {stat('Cancelled by them', t.as_tasker.cancelled)}{stat('Strikes (90 days)', t.strikes_90d)}{stat('Coins', Number(t.coins).toLocaleString())}
+              {stat('Status', t.online ? 'Online' : 'Offline')}
+            </div>
+            {t.bio && <p style={{ marginBottom: 10 }}>{t.bio}</p>}
+            <div className="muted" style={{ marginBottom: 10 }}>Works around {t.area ?? '—'} · up to {t.radius_km ?? '—'} km</div>
+            <div className="row" style={{ gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+              {t.skills.map((k: any, i: number) => <span key={i} className={'tag' + (k.status === 'active' ? ' ok' : ' warn')}>{k.name} · ₱{Number(k.price).toLocaleString()}{k.status !== 'active' ? ` · ${k.status.replace(/_/g, ' ')}` : ''}</span>)}
+            </div>
+            <h3>Payment QR</h3>
+            <div className="card" style={{ marginBottom: 14 }}>
+              <div>{t.qr_wallet ?? '—'} · account name: <b>{t.qr_name ?? '—'}</b> · <span className="tag">{String(t.qr_status).toUpperCase()}</span></div>
+              {t.qr_path && <div className="photos"><Photo bucket="tasker-media" path={t.qr_path} label="Payment QR" onZoom={setZoom} /></div>}
+            </div>
+            {t.portfolio.length > 0 && (<>
+              <h3>Portfolio</h3>
+              <div className="photos" style={{ marginBottom: 14 }}>{t.portfolio.map((pth: string) => <Photo key={pth} bucket="tasker-media" path={pth} label="" onZoom={setZoom} />)}</div>
+            </>)}
+            <h3>ID verification</h3>
+            <div className="card" style={{ marginBottom: 14 }}>
+              {!t.verification ? <span className="muted">No ID submitted.</span> : (<>
+                <div className="row" style={{ gap: 6 }}>
+                  <span className={'tag ' + (t.verification.status === 'approved' ? 'ok' : t.verification.status === 'rejected' ? 'err' : 'warn')}>{String(t.verification.status).toUpperCase()}</span>
+                  <span className="tag">{t.verification.id1_type}</span><span className="tag">{t.verification.id2_type}</span>
+                </div>
+                {ids ? (
+                  <div className="photos">
+                    <Photo bucket="kyc" path={t.verification.id1_path} label={`ID 1 · ${t.verification.id1_type}`} onZoom={setZoom} />
+                    <Photo bucket="kyc" path={t.verification.id2_path} label={`ID 2 · ${t.verification.id2_type}`} onZoom={setZoom} />
+                    <Photo bucket="kyc" path={t.verification.selfie_path} label="Face-check selfie" onZoom={setZoom} />
+                  </div>
+                ) : <button className="btn" style={{ marginTop: 8 }} onClick={showIds}>Show ID photos (logged)</button>}
+              </>)}
+            </div>
+          </>)}
+
+          <h3>Safety</h3>
+          <div className="stats" style={{ marginBottom: 10 }}>
+            {stat('Reports against', u.reports_count)}{stat('Blocked by', u.blocked_by)}{stat('Contact-number attempts (90 days)', u.contact_attempts_90d)}
+          </div>
+          {u.reports_against.length > 0 && (
+            <div className="tablewrap" style={{ marginBottom: 14 }}><table>
+              <thead><tr><th>Ticket</th><th>Kind</th><th>Reasons</th><th>Status</th><th>When</th></tr></thead>
+              <tbody>{u.reports_against.map((r: any) => <tr key={r.no}><td>{r.no}</td><td>{r.kind}</td><td>{(r.reasons ?? []).join(', ') || '—'}</td><td>{r.status}</td><td>{when(r.at)}</td></tr>)}</tbody>
+            </table></div>
+          )}
+
+          {u.reviews.length > 0 && (<>
+            <h3>Latest reviews</h3>
+            <div className="list" style={{ marginBottom: 14 }}>
+              {u.reviews.map((r: any, i: number) => <div key={i} className="card"><b>★ {r.rating}</b> <span className="muted">· from a {r.direction === 'client_to_tasker' ? 'client' : 'tasker'} · {when(r.at)}</span>{r.body && <div>{r.body}</div>}</div>)}
+            </div>
+          </>)}
+
+          <h3>Latest bookings</h3>
+          {u.bookings.length === 0 ? <p className="muted">No bookings yet.</p> : (
+            <div className="tablewrap" style={{ marginBottom: 14 }}><table>
+              <thead><tr><th>Code</th><th>As</th><th>With</th><th>Status</th><th>Amount</th><th>When</th></tr></thead>
+              <tbody>{u.bookings.map((b: any) => <tr key={b.id}><td>{b.code}</td><td>{b.role}</td><td>{b.other ?? '—'}</td><td>{String(b.status).replace(/_/g, ' ')}</td><td>{b.amount != null ? peso(Number(b.amount)) : '—'}</td><td>{when(b.at)}</td></tr>)}</tbody>
+            </table></div>
+          )}
+
+          <p className="muted" style={{ fontSize: 12 }}>Opening this profile is logged. Recently viewed by: {u.views.map((v: any) => `${v.by} (${when(v.at)})`).join(', ')}</p>
+        </>)}
+        <Zoom url={zoom} onClose={() => setZoom(null)} />
+      </aside>
+    </div>
+  );
+}
+
 function Users({ preset }: { preset?: string }) {
   const [rows, setRows] = useState<any[] | null>(null);
   const [q, setQ] = useState('');
   const [hideDemo, setHideDemo] = useState(true);
   const [f, setF] = useState(preset || 'all');
+  const [open, setOpen] = useState<string | null>(null);
   const load = async () => {
     const cols = 'id,first_name,last_name,email,phone,signup_role,is_tasker,tasker_status,status,plan,is_demo,created_at';
     let s = supabase.from('profiles').select(f === 'online' ? cols + ',tp:tasker_profiles!tasker_profiles_user_id_fkey!inner(is_online)' : cols)
@@ -580,13 +707,14 @@ function Users({ preset }: { preset?: string }) {
           <tbody>
             {rows.map((u) => (
               <tr key={u.id}>
-                <td><b>{u.first_name} {u.last_name}</b> {u.is_demo && <span className="tag warn">DEMO</span>}</td>
+                <td><button className="link" onClick={() => setOpen(u.id)}><b>{u.first_name} {u.last_name}</b></button> {u.is_demo && <span className="tag warn">DEMO</span>}</td>
                 <td>{u.email}<div className="muted">{u.phone ? `+63 ${u.phone}` : 'no mobile'}</div></td>
                 <td>{u.signup_role}{u.is_tasker ? <div className="muted">tasker · {u.tasker_status}</div> : u.tasker_status !== 'none' ? <div className="muted">tasker {u.tasker_status}</div> : null}</td>
                 <td>{u.plan}</td>
                 <td><span className={'tag ' + (u.status === 'active' ? 'ok' : 'err')}>{u.status}</span></td>
                 <td>{when(u.created_at)}</td>
                 <td><div className="row" style={{ flexWrap: 'nowrap' }}>
+                  <button className="btn" onClick={() => setOpen(u.id)}>Profile</button>
                   {(u.is_tasker || u.tasker_status !== 'none') && <button className="btn" onClick={() => coinsFor(u)}>Coins</button>}
                   <button className={'btn ' + (u.status === 'active' ? 'danger' : '')} onClick={() => toggle(u)}>{u.status === 'active' ? 'Suspend' : 'Restore'}</button>
                 </div></td>
@@ -595,6 +723,7 @@ function Users({ preset }: { preset?: string }) {
           </tbody>
         </table></div>
       )}
+      {open && <UserProfile id={open} onClose={() => { setOpen(null); load(); }} />}
     </>
   );
 }
