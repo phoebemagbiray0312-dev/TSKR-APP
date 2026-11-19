@@ -43,6 +43,21 @@ const TITLES: Record<Tab, string> = {
   bookings: 'Bookings', users: 'Users', team: 'Admins', settings: 'Settings', profile: 'My profile',
 };
 
+// green line under the page title on phones (Overview shows the greeting)
+const TAGLINE: Partial<Record<Tab, string>> = {
+  revenue: 'How TSKR is earning',
+  applications: 'New taskers waiting for a yes',
+  reviews: 'QR codes and skills to check',
+  tickets: 'Keep everyone safe',
+  strikes: 'Fair rules, fair warnings',
+  fees: 'Cancellation fees to settle',
+  bookings: 'Every job, start to finish',
+  users: 'Clients and taskers',
+  access: 'Who opened which ID',
+  team: 'Your admin team',
+  settings: 'How TSKR runs',
+  profile: 'Your admin account',
+};
 const greet = () => { const h = Number(new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'Asia/Manila' })); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; };
 
 /** Same header logo as the app: three white dots that keep "typing" (1.4s loop, 0.18s apart). */
@@ -125,7 +140,7 @@ export default function Admin() {
           <button className="mtop-me" onClick={() => setTab('profile')} aria-label="My profile"><Avatar path={me?.photo} text={initials(me)} /></button>
         </div>
         <div className="mtop-title">{TITLES[tab]}</div>
-        <div className="mtop-hello">{greet()}, {me?.first_name || 'admin'}!</div>
+        <div className="mtop-hello">{tab === 'overview' ? `${greet()}, ${me?.first_name || 'admin'}!` : TAGLINE[tab]}</div>
       </header>
       {/* phone: floating bottom bar like the app */}
       <nav className="mbar" aria-label="Main">
