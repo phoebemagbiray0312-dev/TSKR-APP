@@ -24,6 +24,7 @@ const ICON: Record<string, string> = {
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
   coins: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3-12.5c-.6-.9-1.7-1.5-3-1.5-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.6-3.2-1.6M12 5.5v1.5m0 10v1.5',
   menu: 'M4 7h16M4 12h16M4 17h16',
+  more: 'M5 5h5v5H5V5Zm9 0h5v5h-5V5ZM5 14h5v5H5v-5Zm9 0h5v5h-5v-5Z',
   camera: 'M4 8h3l2-3h6l2 3h3v11H4V8Zm8 9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
   trash: 'M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3',
   ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM5.6 5.6l12.8 12.8',
@@ -41,6 +42,8 @@ const TITLES: Record<Tab, string> = {
   strikes: 'Strikes, pauses and suspensions', fees: 'Cancellation fees', access: 'ID access log',
   bookings: 'Bookings', users: 'Users', team: 'Admins', settings: 'Settings', profile: 'My profile',
 };
+
+const greet = () => { const h = Number(new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'Asia/Manila' })); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; };
 
 /** Same header logo as the app: three white dots that keep "typing" (1.4s loop, 0.18s apart). */
 function BrandLogo({ height, dark, style }: { height: number; dark?: boolean; style?: React.CSSProperties }) {
@@ -115,11 +118,26 @@ export default function Admin() {
   const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
   return (
     <div className={'shell' + (menu ? ' menu-open' : '')}>
-      <div className="mtop">
-        <button className="iconbtn" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
-        <div className="row" style={{ gap: 8, flexWrap: 'nowrap' }}><BrandLogo height={28} dark /><span className="badge">ADMIN</span></div>
-        <button className="mtop-me" onClick={() => setTab('profile')} aria-label="My profile"><Avatar path={me?.photo} text={initials(me)} /></button>
-      </div>
+      {/* phone: teal header like the app */}
+      <header className="mtop">
+        <div className="mtop-row">
+          <div className="row" style={{ gap: 8, flexWrap: 'nowrap' }}><BrandLogo height={26} /><span className="badge">ADMIN</span></div>
+          <button className="mtop-me" onClick={() => setTab('profile')} aria-label="My profile"><Avatar path={me?.photo} text={initials(me)} /></button>
+        </div>
+        <div className="mtop-title">{TITLES[tab]}</div>
+        <div className="mtop-hello">{greet()}, {me?.first_name || 'admin'}!</div>
+      </header>
+      {/* phone: floating bottom bar like the app */}
+      <nav className="mbar" aria-label="Main">
+        {([['overview', 'Overview'], ['users', 'Users'], ['bookings', 'Bookings'], ['tickets', 'Reports']] as [Tab, string][]).map(([k, l]) => (
+          <button key={k} className={'mbar-i' + (tab === k ? ' on' : '')} onClick={() => go(k)}>
+            <span className="mbar-ic"><Icon name={k} />{k === 'tickets' && n('tickets_open') > 0 ? <i>{n('tickets_open')}</i> : null}</span>{l}
+          </button>
+        ))}
+        <button className={'mbar-i' + (!['overview', 'users', 'bookings', 'tickets'].includes(tab) || menu ? ' on' : '')} onClick={() => setMenu(true)}>
+          <span className="mbar-ic"><Icon name="more" /></span>More
+        </button>
+      </nav>
       <div className="side-bg" onClick={() => setMenu(false)} aria-hidden />
       <aside className="side">
         <button className="side-close" onClick={() => setMenu(false)} aria-label="Close menu">×</button>
