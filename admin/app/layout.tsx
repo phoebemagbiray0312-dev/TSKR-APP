@@ -3,6 +3,8 @@ import { Poppins } from 'next/font/google';
 import AnimatedFavicon from './AnimatedFavicon';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
+export const viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#044D5E' };
+
 export const metadata = {
   title: 'TSKR', robots: { index: false, follow: false },
   icons: { icon: '/icon.png', apple: '/apple-icon.png' },
