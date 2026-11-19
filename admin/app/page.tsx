@@ -23,6 +23,7 @@ const ICON: Record<string, string> = {
   team: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 9c0-3.3 2.7-6 6-6 1.6 0 3 .6 4 1.6M18 13v8m-4-4h8',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4.4 3.6-8 8-8s8 3.6 8 8',
   coins: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3-12.5c-.6-.9-1.7-1.5-3-1.5-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.6-3.2-1.6M12 5.5v1.5m0 10v1.5',
+  menu: 'M4 7h16M4 12h16M4 17h16',
   camera: 'M4 8h3l2-3h6l2 3h3v11H4V8Zm8 9a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
   trash: 'M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3',
   ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM5.6 5.6l12.8 12.8',
@@ -59,6 +60,8 @@ export default function Admin() {
   const [email, setEmail] = useState('');
   const [me, setMe] = useState<Me | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
+  const [menu, setMenu] = useState(false); // phone: sidebar slides in
+  useEffect(() => { setMenu(false); window.scrollTo?.(0, 0); }, [tab]);
   const [ov, setOv] = useState<Overview | null>(null);
   const [preset, setPreset] = useState('');
   const go = (t: Tab, f = '') => { setPreset(f); setTab(t); };
@@ -111,8 +114,15 @@ export default function Admin() {
   ];
   const name = me ? `${me.first_name} ${me.last_name}`.trim() || me.email : email;
   return (
-    <div className="shell">
+    <div className={'shell' + (menu ? ' menu-open' : '')}>
+      <div className="mtop">
+        <button className="iconbtn" onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
+        <div className="row" style={{ gap: 8, flexWrap: 'nowrap' }}><BrandLogo height={28} dark /><span className="badge">ADMIN</span></div>
+        <button className="mtop-me" onClick={() => setTab('profile')} aria-label="My profile"><Avatar path={me?.photo} text={initials(me)} /></button>
+      </div>
+      <div className="side-bg" onClick={() => setMenu(false)} aria-hidden />
       <aside className="side">
+        <button className="side-close" onClick={() => setMenu(false)} aria-label="Close menu">×</button>
         <div className="brand"><BrandLogo height={34} /><span className="badge">ADMIN</span></div>
         <div className="navlist">
           {items.map(([k, c]) => (
